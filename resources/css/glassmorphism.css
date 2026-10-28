@@ -1,53 +1,67 @@
 /**
- * Rap-iPhone Glassmorphism Design System
- * Apple Retail (iBox / Digimap) Inspired UI Architecture
+ * Rap-iPhone Design System v2.0 — Digimap Daylight & Frosted White Theme
+ * Mode ATM (Amati, Tiru, Modifikasi) Digimap Indonesia (https://www.digimap.co.id/)
  */
 
 :root {
-  /* Canvas & Glass Surfaces */
-  --canvas-bg: #0B0C10;
-  --glass-surface: rgba(22, 27, 34, 0.65);
-  --glass-surface-elevated: rgba(33, 38, 45, 0.85);
-  --glass-surface-subtle: rgba(255, 255, 255, 0.04);
-  --glass-surface-hover: rgba(45, 52, 64, 0.75);
+  /* Digimap Daylight Core Tokens */
+  --dm-canvas: #FFFFFF;
+  --dm-surface: #F5F5F7;
+  --dm-surface-hover: #EBEBED;
+  --dm-glass-white: rgba(255, 255, 255, 0.84);
+  --dm-border: #D2D2D7;
+  --dm-border-subtle: #E5E5EA;
+  --dm-text-primary: #1D1D1F;
+  --dm-text-secondary: #6E6E73;
+  --dm-text-muted: #86868B;
+  --dm-blue: #0066CC;
+  --dm-blue-cta: #0071E3;
+  --dm-dark-cta: #1D1D1F;
 
-  /* Glass Borders */
-  --glass-border: rgba(255, 255, 255, 0.12);
-  --glass-border-hover: rgba(255, 255, 255, 0.28);
-  --glass-border-subtle: rgba(255, 255, 255, 0.06);
+  /* Mapped Legacy Tokens to Digimap Daylight & Frosted White */
+  --canvas-bg: #FFFFFF;
+  --glass-surface: #F5F5F7;
+  --glass-surface-elevated: #FFFFFF;
+  --glass-surface-subtle: #F5F5F7;
+  --glass-surface-hover: #EFEFF4;
+
+  /* Daylight Borders */
+  --glass-border: #E5E5EA;
+  --glass-border-hover: #D2D2D7;
+  --glass-border-subtle: #E8E8ED;
 
   /* Accent & Brand Colors */
-  --apple-blue: #0071E3;
-  --apple-blue-hover: #0077ED;
-  --apple-blue-glow: rgba(0, 113, 227, 0.35);
-  --apple-blue-subtle: rgba(0, 113, 227, 0.12);
+  --apple-blue: #0066CC;
+  --apple-blue-hover: #0071E3;
+  --apple-blue-glow: rgba(0, 102, 204, 0.16);
+  --apple-blue-subtle: #E8F2FF;
 
   /* Typography Colors */
-  --text-primary: #F5F5F7;
-  --text-titanium: #E5E5EA;
-  --text-secondary: #8E8E93;
-  --text-muted: #636366;
+  --text-primary: #1D1D1F;
+  --text-titanium: #1D1D1F;
+  --text-secondary: #6E6E73;
+  --text-muted: #86868B;
 
-  /* Status Colors */
-  --status-emerald: #34C759;
-  --status-emerald-glow: rgba(52, 199, 89, 0.3);
-  --status-emerald-bg: rgba(52, 199, 89, 0.12);
+  /* Semantic Status Colors (High-Contrast Daylight Badges) */
+  --status-emerald: #008040;
+  --status-emerald-glow: rgba(0, 128, 64, 0.15);
+  --status-emerald-bg: #E8F8EE;
 
-  --status-amber: #FF9F0A;
-  --status-amber-glow: rgba(255, 159, 10, 0.3);
-  --status-amber-bg: rgba(255, 159, 10, 0.12);
+  --status-amber: #B25000;
+  --status-amber-glow: rgba(178, 80, 0, 0.15);
+  --status-amber-bg: #FFF8E6;
 
-  --status-crimson: #FF453A;
-  --status-crimson-glow: rgba(255, 69, 58, 0.3);
-  --status-crimson-bg: rgba(255, 69, 58, 0.12);
+  --status-crimson: #D70015;
+  --status-crimson-glow: rgba(215, 0, 21, 0.15);
+  --status-crimson-bg: #FFEBEA;
 
-  --status-purple: #AF52DE;
-  --status-purple-glow: rgba(175, 82, 222, 0.3);
-  --status-purple-bg: rgba(175, 82, 222, 0.12);
+  --status-purple: #6E3AFF;
+  --status-purple-glow: rgba(110, 58, 255, 0.15);
+  --status-purple-bg: #F2EDFF;
 
-  --status-cyan: #32ADE6;
-  --status-cyan-glow: rgba(50, 173, 230, 0.3);
-  --status-cyan-bg: rgba(50, 173, 230, 0.12);
+  --status-cyan: #0066CC;
+  --status-cyan-glow: rgba(0, 102, 204, 0.15);
+  --status-cyan-bg: #E8F2FF;
 
   /* Apple Official iPhone Finish Color Tokens */
   --dot-natural-titanium: #9A958E;
@@ -66,44 +80,53 @@
   /* Blur Filters */
   --blur-sm: blur(12px);
   --blur-md: blur(20px);
-  --blur-lg: blur(30px);
+  --blur-lg: blur(28px);
 
-  /* Shadows */
-  --shadow-glass: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(255, 255, 255, 0.05);
-  --shadow-glass-elevated: 0 20px 50px -10px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(255, 255, 255, 0.08);
-  --shadow-glow-blue: 0 0 25px rgba(0, 113, 227, 0.45);
+  /* Daylight Retail Shadows */
+  --shadow-glass: 0 2px 12px rgba(0, 0, 0, 0.03), 0 0 1px rgba(0, 0, 0, 0.04);
+  --shadow-glass-elevated: 0 10px 30px -5px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.03);
+  --shadow-glow-blue: 0 4px 16px rgba(0, 113, 227, 0.22);
 }
 
 /* ==========================================================================
-   Base & Global Atmosphere
+   Base & Global Daylight Atmosphere
    ========================================================================== */
 body {
-  background-color: var(--canvas-bg);
-  color: var(--text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", sans-serif;
+  background-color: var(--dm-canvas);
+  color: var(--dm-text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar (Daylight) */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--canvas-bg);
+  background: #F5F5F7;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: #D2D2D7;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: #86868B;
+}
+
+/* Hidescrollbar utility for horizontal ribbons */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* ==========================================================================
-   Ambient Glow Effects (Atmospheric Space)
+   Subtle Daylight Ambient Accents
    ========================================================================== */
 .ambient-glow-wrapper {
   position: fixed;
@@ -111,126 +134,108 @@ body {
   overflow: hidden;
   pointer-events: none;
   z-index: 0;
+  opacity: 0.35;
 }
 
 .ambient-orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(100px);
-  opacity: 0.4;
-  animation: orbFloat 20s ease-in-out infinite alternate;
+  filter: blur(110px);
+  opacity: 0.25;
 }
 
 .ambient-orb-blue {
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(0, 113, 227, 0.5) 0%, rgba(0, 113, 227, 0) 70%);
-  top: -150px;
+  background: radial-gradient(circle, rgba(0, 113, 227, 0.14) 0%, rgba(0, 113, 227, 0) 70%);
+  top: -180px;
   left: 20%;
 }
 
 .ambient-orb-purple {
   width: 450px;
   height: 450px;
-  background: radial-gradient(circle, rgba(142, 68, 173, 0.35) 0%, rgba(142, 68, 173, 0) 70%);
+  background: radial-gradient(circle, rgba(245, 245, 247, 0.8) 0%, rgba(245, 245, 247, 0) 70%);
   top: 30%;
   right: -100px;
-  animation-duration: 25s;
 }
 
 .ambient-orb-cyan {
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, rgba(50, 173, 230, 0.3) 0%, rgba(50, 173, 230, 0) 70%);
+  background: radial-gradient(circle, rgba(0, 102, 204, 0.1) 0%, rgba(0, 102, 204, 0) 70%);
   bottom: 5%;
   left: 10%;
-  animation-duration: 18s;
-}
-
-@keyframes orbFloat {
-  0% { transform: translateY(0px) scale(1); }
-  50% { transform: translateY(30px) translateX(20px) scale(1.05); }
-  100% { transform: translateY(-20px) translateX(-20px) scale(0.95); }
 }
 
 /* ==========================================================================
-   Frosted Glass Components
+   Daylight Frosted Glass & Surface Components
    ========================================================================== */
 
-/* Glass Cards */
+/* Digimap Surface Cards (#F5F5F7 / Frosted White) */
 .glass-card {
-  background: var(--glass-surface);
+  background: var(--dm-surface);
   backdrop-filter: var(--blur-md);
   -webkit-backdrop-filter: var(--blur-md);
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--dm-border-subtle);
   border-radius: 20px;
   box-shadow: var(--shadow-glass);
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
-              border-color 0.3s ease, 
-              box-shadow 0.3s ease, 
-              background 0.3s ease;
+  color: var(--dm-text-primary);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.25s ease,
+              box-shadow 0.28s ease,
+              background 0.25s ease;
   position: relative;
   overflow: hidden;
 }
 
 .glass-card-interactive:hover {
-  transform: translateY(-5px);
-  border-color: var(--glass-border-hover);
+  transform: translateY(-4px);
+  border-color: var(--dm-border);
   box-shadow: var(--shadow-glass-elevated);
-  background: var(--glass-surface-hover);
+  background: #EFEFF4;
 }
 
 .glass-card-elevated {
-  background: var(--glass-surface-elevated);
+  background: #FFFFFF;
   backdrop-filter: var(--blur-lg);
   -webkit-backdrop-filter: var(--blur-lg);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--dm-border-subtle);
   border-radius: 24px;
   box-shadow: var(--shadow-glass-elevated);
+  color: var(--dm-text-primary);
 }
 
-/* Subtle Shimmer Highlight for Cards */
-.glass-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
-  pointer-events: none;
-}
-
-/* Frosted Glass Navbar */
+/* Daylight Frosted Glass Navbar */
 .glass-navbar {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(11, 12, 16, 0.78);
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  border-bottom: 1px solid var(--glass-border-subtle);
+  background: var(--dm-glass-white);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--dm-border-subtle);
   transition: background 0.3s ease, border-color 0.3s ease;
 }
 
-/* Frosted Glass Sidebar (Admin / Owner) */
+/* Digimap Enterprise Clean Light Sidebar (Admin / Owner) */
 .glass-sidebar {
-  background: rgba(15, 18, 24, 0.88);
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  border-right: 1px solid var(--glass-border-subtle);
+  background: #F5F5F7;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid #E5E5EA;
   position: relative;
   z-index: 40;
 }
 
-/* Glass Modal & Dialogs */
+/* Daylight Frosted Glass Modal & Dialogs */
 .glass-modal-backdrop {
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(29, 29, 31, 0.42);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -246,13 +251,14 @@ body {
 }
 
 .glass-modal {
-  background: rgba(22, 27, 34, 0.94);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid #E5E5EA;
   border-radius: 24px;
-  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(255, 255, 255, 0.1);
-  transform: scale(0.95) translateY(10px);
+  box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.18), 0 0 1px 1px rgba(0, 0, 0, 0.04);
+  color: var(--dm-text-primary);
+  transform: scale(0.96) translateY(8px);
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
   width: 100%;
   max-width: 600px;
@@ -264,14 +270,14 @@ body {
 }
 
 /* ==========================================================================
-   Glass Buttons
+   Digimap & Apple Retail Pill Buttons
    ========================================================================== */
 .glass-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  font-weight: 500;
+  font-weight: 600;
   border-radius: 9999px;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
@@ -282,80 +288,87 @@ body {
 }
 
 .glass-btn:active {
-  transform: scale(0.97);
+  transform: scale(0.98);
 }
 
 /* Sizes */
 .glass-btn-sm {
   font-size: 0.8125rem;
-  padding: 0.4rem 0.9rem;
+  padding: 0.45rem 1rem;
 }
 .glass-btn-md {
   font-size: 0.9375rem;
-  padding: 0.65rem 1.4rem;
+  padding: 0.65rem 1.45rem;
 }
 .glass-btn-lg {
-  font-size: 1.0625rem;
-  padding: 0.85rem 1.9rem;
+  font-size: 1rem;
+  padding: 0.85rem 1.85rem;
 }
 
 /* Variants */
 .glass-btn-primary {
-  background: linear-gradient(135deg, #0071E3 0%, #0056b3 100%);
-  color: #FFFFFF;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 18px rgba(0, 113, 227, 0.4);
+  background: #0071E3;
+  color: #FFFFFF !important;
+  border: 1px solid #0071E3;
+  box-shadow: 0 2px 10px rgba(0, 113, 227, 0.22);
 }
 .glass-btn-primary:hover {
-  background: linear-gradient(135deg, #0077ED 0%, #0064d2 100%);
-  box-shadow: 0 6px 24px rgba(0, 113, 227, 0.6);
-  color: #FFFFFF;
+  background: #0077ED;
+  border-color: #0077ED;
+  box-shadow: 0 4px 16px rgba(0, 113, 227, 0.32);
+  color: #FFFFFF !important;
+}
+
+.glass-btn-dark {
+  background: #1D1D1F;
+  color: #FFFFFF !important;
+  border: 1px solid #1D1D1F;
+}
+.glass-btn-dark:hover {
+  background: #333336;
+  color: #FFFFFF !important;
 }
 
 .glass-btn-secondary {
-  background: rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: var(--text-primary);
-  border: 1px solid var(--glass-border);
+  background: #FFFFFF;
+  color: #1D1D1F;
+  border: 1px solid #D2D2D7;
 }
 .glass-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.14);
-  border-color: var(--glass-border-hover);
-  color: #FFFFFF;
+  background: #1D1D1F;
+  border-color: #1D1D1F;
+  color: #FFFFFF !important;
 }
 
 .glass-btn-danger {
-  background: var(--status-crimson-bg);
-  color: var(--status-crimson);
-  border: 1px solid rgba(255, 69, 58, 0.3);
+  background: #FFEBEA;
+  color: #D70015;
+  border: 1px solid rgba(215, 0, 21, 0.25);
 }
 .glass-btn-danger:hover {
-  background: rgba(255, 69, 58, 0.25);
-  box-shadow: 0 4px 15px var(--status-crimson-glow);
+  background: #D70015;
+  color: #FFFFFF !important;
 }
 
 .glass-btn-ghost {
   background: transparent;
-  color: var(--text-secondary);
+  color: #6E6E73;
   border: 1px solid transparent;
 }
 .glass-btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--text-primary);
+  background: #F5F5F7;
+  color: #1D1D1F;
 }
 
 /* ==========================================================================
-   Form Controls (Glass Inputs)
+   Form Controls (Daylight Inputs)
    ========================================================================== */
 .glass-input {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--glass-border);
-  border-radius: 14px;
-  color: var(--text-primary);
-  padding: 0.65rem 1.1rem;
+  background: #F5F5F7;
+  border: 1px solid #D2D2D7;
+  border-radius: 12px;
+  color: #1D1D1F;
+  padding: 0.65rem 1rem;
   font-size: 0.9375rem;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
@@ -363,30 +376,28 @@ body {
 }
 
 .glass-input::placeholder {
-  color: var(--text-muted);
+  color: #86868B;
 }
 
 .glass-input:focus {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: var(--apple-blue);
-  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.25);
+  background: #FFFFFF;
+  border-color: #0066CC;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.15);
 }
 
 /* ==========================================================================
-   Status Badges (Pills)
+   Status Badges (Digimap Semantic Pills)
    ========================================================================== */
 .glass-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.3rem 0.75rem;
+  gap: 0.4rem;
+  padding: 0.28rem 0.75rem;
   border-radius: 9999px;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   border: 1px solid transparent;
 }
 
@@ -396,72 +407,67 @@ body {
   border-radius: 50%;
 }
 
-/* Badges Themes */
+/* Badges Themes (Table 3.2 redesign.md) */
 .badge-pending {
-  background: var(--status-amber-bg);
-  color: var(--status-amber);
-  border-color: rgba(255, 159, 10, 0.25);
+  background: #FFF8E6;
+  color: #B25000;
+  border-color: rgba(178, 80, 0, 0.2);
 }
 .badge-pending .glass-badge-dot {
-  background: var(--status-amber);
-  box-shadow: 0 0 6px var(--status-amber);
+  background: #B25000;
 }
 
 .badge-paid, .badge-completed {
-  background: var(--status-emerald-bg);
-  color: var(--status-emerald);
-  border-color: rgba(52, 199, 89, 0.25);
+  background: #E8F8EE;
+  color: #008040;
+  border-color: rgba(0, 128, 64, 0.2);
 }
 .badge-paid .glass-badge-dot, .badge-completed .glass-badge-dot {
-  background: var(--status-emerald);
-  box-shadow: 0 0 6px var(--status-emerald);
+  background: #008040;
 }
 
 .badge-processing {
-  background: var(--apple-blue-subtle);
-  color: #38A6FF;
-  border-color: rgba(0, 113, 227, 0.25);
+  background: #E8F2FF;
+  color: #0066CC;
+  border-color: rgba(0, 102, 204, 0.2);
 }
 .badge-processing .glass-badge-dot {
-  background: #38A6FF;
-  box-shadow: 0 0 6px rgba(0, 113, 227, 0.8);
+  background: #0066CC;
 }
 
 .badge-shipped {
-  background: var(--status-purple-bg);
-  color: #D39CFF;
-  border-color: rgba(175, 82, 222, 0.25);
+  background: #F2EDFF;
+  color: #6E3AFF;
+  border-color: rgba(110, 58, 255, 0.2);
 }
 .badge-shipped .glass-badge-dot {
-  background: #D39CFF;
-  box-shadow: 0 0 6px #D39CFF;
+  background: #6E3AFF;
 }
 
 .badge-cancelled {
-  background: var(--status-crimson-bg);
-  color: var(--status-crimson);
-  border-color: rgba(255, 69, 58, 0.25);
+  background: #FFEBEA;
+  color: #D70015;
+  border-color: rgba(215, 0, 21, 0.2);
 }
 .badge-cancelled .glass-badge-dot {
-  background: var(--status-crimson);
-  box-shadow: 0 0 6px var(--status-crimson);
+  background: #D70015;
 }
 
 /* Warranty & Condition Badges */
 .badge-warranty-ibox {
-  background: rgba(0, 113, 227, 0.15);
-  color: #5AC8FA;
-  border-color: rgba(90, 200, 250, 0.3);
+  background: #E8F2FF;
+  color: #0066CC;
+  border-color: rgba(0, 102, 204, 0.2);
 }
 
 .badge-second-grade {
-  background: rgba(52, 199, 89, 0.15);
-  color: #34C759;
-  border-color: rgba(52, 199, 89, 0.3);
+  background: #E8F8EE;
+  color: #008040;
+  border-color: rgba(0, 128, 64, 0.2);
 }
 
 /* ==========================================================================
-   Color Dots (Apple Official Finish Dots)
+   Color Dots (Apple Official Finish Dots with Daylight Ring)
    ========================================================================== */
 .color-dot-selector {
   display: inline-flex;
@@ -470,10 +476,10 @@ body {
 }
 
 .color-dot-btn {
-  width: 18px;
-  height: 18px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
-  border: 2px solid transparent;
+  border: 1px solid rgba(0, 0, 0, 0.18);
   padding: 0;
   cursor: pointer;
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
@@ -482,52 +488,52 @@ body {
 }
 
 .color-dot-btn:hover {
-  transform: scale(1.25);
+  transform: scale(1.2);
 }
 
 .color-dot-btn.active {
-  transform: scale(1.2);
+  transform: scale(1.18);
   border-color: #FFFFFF;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 0 2px #0066CC;
 }
 
-/* Storage Capacity Chips */
+/* Storage Capacity Chips (Product Card) */
 .storage-chip {
-  padding: 0.25rem 0.6rem;
-  border-radius: 8px;
-  font-size: 0.75rem;
+  padding: 0.22rem 0.55rem;
+  border-radius: 6px;
+  font-size: 0.72rem;
   font-weight: 600;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--glass-border);
-  color: var(--text-secondary);
+  background: #FFFFFF;
+  border: 1px solid #D2D2D7;
+  color: #6E6E73;
   transition: all 0.2s ease;
   cursor: pointer;
 }
 
 .storage-chip:hover, .storage-chip.active {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.35);
-  color: var(--text-primary);
+  background: #FFFFFF;
+  border-color: #0066CC;
+  color: #1D1D1F;
 }
 
 /* ==========================================================================
-   Battery Health Meter
+   Battery Health Meter (Daylight Trust Indicator)
    ========================================================================== */
 .battery-meter-container {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.25rem 0.65rem;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--glass-border-subtle);
-  font-size: 0.8125rem;
+  gap: 0.4rem;
+  padding: 0.22rem 0.6rem;
+  border-radius: 9999px;
+  background: #E8F8EE;
+  border: 1px solid rgba(0, 128, 64, 0.2);
+  font-size: 0.75rem;
 }
 
 .battery-icon-shell {
-  width: 22px;
-  height: 12px;
-  border: 1.5px solid var(--text-secondary);
+  width: 20px;
+  height: 11px;
+  border: 1.5px solid #008040;
   border-radius: 3px;
   padding: 1.5px;
   display: flex;
@@ -539,10 +545,10 @@ body {
   content: '';
   position: absolute;
   right: -3.5px;
-  top: 2.5px;
+  top: 2px;
   width: 2px;
   height: 4px;
-  background: var(--text-secondary);
+  background: #008040;
   border-radius: 0 1.5px 1.5px 0;
 }
 
@@ -553,83 +559,160 @@ body {
 }
 
 .battery-optimal .battery-fill-bar {
-  background: var(--status-emerald);
+  background: #008040;
 }
 .battery-optimal .battery-text {
-  color: var(--status-emerald);
+  color: #008040;
 }
 
+.battery-normal {
+  background: #FFF8E6;
+  border-color: rgba(178, 80, 0, 0.2);
+}
+.battery-normal .battery-icon-shell {
+  border-color: #B25000;
+}
+.battery-normal .battery-icon-shell::after,
 .battery-normal .battery-fill-bar {
-  background: var(--status-amber);
+  background: #B25000;
 }
 .battery-normal .battery-text {
-  color: var(--status-amber);
+  color: #B25000;
 }
 
+.battery-service {
+  background: #FFEBEA;
+  border-color: rgba(215, 0, 21, 0.2);
+}
+.battery-service .battery-icon-shell {
+  border-color: #D70015;
+}
+.battery-service .battery-icon-shell::after,
 .battery-service .battery-fill-bar {
-  background: var(--status-crimson);
+  background: #D70015;
 }
 .battery-service .battery-text {
-  color: var(--status-crimson);
+  color: #D70015;
 }
 
 /* ==========================================================================
-   Product Detail Page (PDP) Interactive Controls
+   Product Detail Page (PDP) Interactive Controls — Digimap Style
    ========================================================================== */
 .pdp-color-dot {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  border: 2px solid transparent;
+  border: 1.5px solid rgba(0, 0, 0, 0.18);
   padding: 0;
   cursor: pointer;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.25s ease;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.22s ease;
   position: relative;
   outline: none;
 }
 
 .pdp-color-dot:hover {
-  transform: scale(1.15);
+  transform: scale(1.08);
 }
 
 .pdp-color-dot.active {
-  transform: scale(1.2);
+  transform: scale(1.08);
   border-color: #FFFFFF;
-  box-shadow: 0 0 14px rgba(255, 255, 255, 0.5), 0 0 0 2px rgba(0, 113, 227, 0.4);
+  box-shadow: 0 0 0 2.5px #0066CC, 0 4px 10px rgba(0, 102, 204, 0.2);
 }
 
 .pdp-storage-btn {
-  padding: 0.75rem 0.5rem;
+  padding: 0.9rem 1rem;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--glass-border);
-  color: var(--text-primary);
-  text-align: center;
+  background: #FFFFFF;
+  border: 1px solid #D2D2D7;
+  color: #1D1D1F;
+  text-align: left;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
   outline: none;
 }
 
 .pdp-storage-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--glass-border-hover);
-  transform: translateY(-2px);
+  border-color: #86868B;
+  background: #F5F5F7;
 }
 
 .pdp-storage-btn.active {
-  background: rgba(0, 113, 227, 0.15);
-  border-color: var(--apple-blue);
-  box-shadow: 0 0 15px rgba(0, 113, 227, 0.3);
-  color: #FFFFFF;
+  background: #FFFFFF;
+  border: 2px solid #0066CC;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+  color: #1D1D1F;
 }
 
 .pdp-thumb-btn {
   cursor: pointer;
   transition: all 0.2s ease;
+  background: #F5F5F7;
 }
 
 .pdp-thumb-btn.active {
-  border-color: var(--apple-blue) !important;
-  background: rgba(0, 113, 227, 0.12);
+  border-color: #0066CC !important;
+  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.15);
+  background: #FFFFFF;
 }
 
+/* ==========================================================================
+   Daylight Enterprise Theme Compatibility Layer (for Admin/Owner Sub-views)
+   ========================================================================== */
+.daylight-enterprise .glass-card,
+.daylight-enterprise .glass-card-elevated {
+  background: #FFFFFF;
+  border-color: #E5E5EA;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.daylight-enterprise .glass-card .text-white,
+.daylight-enterprise .glass-card-elevated .text-white,
+.daylight-enterprise .glass-modal .text-white,
+.daylight-enterprise table .text-white {
+  color: #1D1D1F;
+}
+
+.daylight-enterprise .glass-btn-primary .text-white,
+.daylight-enterprise .glass-btn-primary,
+.daylight-enterprise .bg-\[\#0071E3\],
+.daylight-enterprise .bg-\[\#1D1D1F\],
+.daylight-enterprise .bg-\[\#34C759\],
+.daylight-enterprise .bg-\[\#FF453A\] {
+  color: #FFFFFF;
+}
+
+.daylight-enterprise .text-\[\#E5E5EA\] {
+  color: #1D1D1F;
+}
+
+.daylight-enterprise .text-\[\#8E8E93\] {
+  color: #6E6E73;
+}
+
+.daylight-enterprise .text-\[\#5AC8FA\] {
+  color: #0066CC;
+}
+
+.daylight-enterprise .border-white\/10,
+.daylight-enterprise .border-white\/15,
+.daylight-enterprise .border-white\/20,
+.daylight-enterprise .border-white\/5 {
+  border-color: #E5E5EA !important;
+}
+
+.daylight-enterprise .divide-white\/10 > :not([hidden]) ~ :not([hidden]),
+.daylight-enterprise .divide-white\/5 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #E5E5EA !important;
+}
+
+.daylight-enterprise .bg-white\/5,
+.daylight-enterprise .bg-white\/10,
+.daylight-enterprise .bg-white\/\[0\.02\],
+.daylight-enterprise .bg-white\/\[0\.03\],
+.daylight-enterprise .bg-black\/20,
+.daylight-enterprise .bg-black\/30,
+.daylight-enterprise .bg-black\/40,
+.daylight-enterprise .bg-\[\#161B22\] {
+  background-color: #F5F5F7 !important;
+}

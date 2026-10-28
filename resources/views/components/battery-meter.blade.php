@@ -10,15 +10,12 @@
     if ($pct >= 90) {
         $tierClass = 'battery-optimal';
         $healthStatus = 'Prima';
-        $fillColor = '#34C759';
     } elseif ($pct >= 80) {
         $tierClass = 'battery-normal';
         $healthStatus = 'Normal';
-        $fillColor = '#FF9F0A';
     } else {
         $tierClass = 'battery-service';
         $healthStatus = 'Servis';
-        $fillColor = '#FF453A';
     }
 @endphp
 
@@ -29,13 +26,13 @@
     </div>
     
     <!-- Percentage & Health Status -->
-    <span class="battery-text font-bold text-xs tracking-tight">
-        {{ $pct }}%
+    <span class="battery-text font-bold text-[11px] tracking-tight">
+        BH {{ $pct }}%
     </span>
 
     @if($showLabel)
-        <span class="text-[10px] text-[#8E8E93] font-medium hidden sm:inline">
-            BH {{ $healthStatus }}
+        <span class="text-[10px] text-[#6E6E73] font-medium hidden sm:inline">
+            ({{ $healthStatus }})
         </span>
     @endif
 </div>

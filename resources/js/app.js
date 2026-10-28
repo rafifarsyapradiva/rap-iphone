@@ -1,7 +1,7 @@
 import './bootstrap';
 
 /**
- * Rap-iPhone Interactive UI Engine (Glassmorphism, Cart, Live Search, PDP Configurator)
+ * Rap-iPhone v2.0 Interactive UI Engine (Digimap Daylight Minimalist, Live Search, PDP Configurator, Inline Trade-In, Sticky Buy Bar)
  */
 document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------------------------
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     refreshIcons();
 
     // -------------------------------------------------------------------------
-    // 2. Glassmorphism Toast Notification Engine
+    // 2. Daylight Frosted Toast Notification Engine
     // -------------------------------------------------------------------------
     const showToast = (message, type = 'success') => {
         let toastContainer = document.getElementById('glass-toast-container');
@@ -27,37 +27,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const toast = document.createElement('div');
-        toast.className = `glass-card-elevated p-4 rounded-2xl border shadow-2xl flex items-center gap-3 pointer-events-auto transform transition-all duration-300 translate-y-4 opacity-0 ${
+        toast.className = `glass-card-elevated p-4 rounded-2xl border shadow-xl flex items-center gap-3 pointer-events-auto transform transition-all duration-300 translate-y-4 opacity-0 ${
             type === 'success' 
-                ? 'border-[#34C759]/40 bg-[#161B22]/95 text-white' 
-                : 'border-[#FF453A]/40 bg-[#161B22]/95 text-white'
+                ? 'border-[#008040]/30 bg-white text-[#1D1D1F]' 
+                : 'border-[#D70015]/30 bg-white text-[#1D1D1F]'
         }`;
 
         const iconHtml = type === 'success' 
-            ? `<div class="w-8 h-8 rounded-xl bg-[#34C759]/20 flex items-center justify-center text-[#34C759] shrink-0"><i data-lucide="check-circle" class="w-4 h-4"></i></div>`
-            : `<div class="w-8 h-8 rounded-xl bg-[#FF453A]/20 flex items-center justify-center text-[#FF453A] shrink-0"><i data-lucide="alert-circle" class="w-4 h-4"></i></div>`;
+            ? `<div class="w-8 h-8 rounded-xl bg-[#E8F8EE] flex items-center justify-center text-[#008040] shrink-0"><i data-lucide="check-circle" class="w-4 h-4"></i></div>`
+            : `<div class="w-8 h-8 rounded-xl bg-[#FFEBEA] flex items-center justify-center text-[#D70015] shrink-0"><i data-lucide="alert-circle" class="w-4 h-4"></i></div>`;
 
         toast.innerHTML = `
             ${iconHtml}
-            <div class="text-xs font-medium flex-grow leading-relaxed">${message}</div>
-            <button type="button" class="text-[#8E8E93] hover:text-white p-1 text-sm font-bold">&times;</button>
+            <div class="text-xs font-semibold flex-grow leading-relaxed text-[#1D1D1F]">${message}</div>
+            <button type="button" class="text-[#6E6E73] hover:text-[#1D1D1F] p-1 text-sm font-bold">&times;</button>
         `;
 
         toastContainer.appendChild(toast);
         refreshIcons();
 
-        // Animate in
         requestAnimationFrame(() => {
             toast.classList.remove('translate-y-4', 'opacity-0');
         });
 
-        // Close on button click
         toast.querySelector('button').addEventListener('click', () => {
             toast.classList.add('opacity-0', 'translate-y-2');
             setTimeout(() => toast.remove(), 300);
         });
 
-        // Auto dismiss
         setTimeout(() => {
             if (toast.isConnected) {
                 toast.classList.add('opacity-0', 'translate-y-2');
@@ -66,11 +63,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 4000);
     };
 
-    // Global helper
     window.showGlassToast = showToast;
 
     // -------------------------------------------------------------------------
-    // 3. Global Modal Controller (Search & Dialogs)
+    // 3. Global Modal Controller (Search, Installments & Dialogs)
     // -------------------------------------------------------------------------
     const openModal = (modalId) => {
         const modal = document.getElementById(modalId);
@@ -133,14 +129,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // -------------------------------------------------------------------------
-    // 4. Instant Live Search inside Modal
+    // 4. Instant Live Search inside Modal (Daylight Styled)
     // -------------------------------------------------------------------------
     const searchModal = document.getElementById('search-modal');
     if (searchModal) {
         const searchInput = searchModal.querySelector('input[name="q"]');
         let searchResultsContainer = document.getElementById('search-modal-live-results');
         
-        if (!searchResultsContainer) {
+        if (!searchResultsContainer && searchInput) {
             searchResultsContainer = document.createElement('div');
             searchResultsContainer.id = 'search-modal-live-results';
             searchResultsContainer.className = 'mt-4 space-y-2 max-h-64 overflow-y-auto hidden';
@@ -168,26 +164,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         if (data.length === 0) {
                             searchResultsContainer.innerHTML = `
-                                <div class="p-3 text-center text-xs text-[#8E8E93] glass-card rounded-xl">
+                                <div class="p-3 text-center text-xs text-[#6E6E73] bg-[#F5F5F7] rounded-xl border border-[#E5E5EA]">
                                     Tidak ada hasil untuk "${query}"
                                 </div>
                             `;
                             searchResultsContainer.classList.remove('hidden');
                         } else {
                             searchResultsContainer.innerHTML = data.map(item => `
-                                <a href="${item.url}" class="flex items-center justify-between p-3 rounded-xl glass-card hover:border-[#0071E3] transition-all group">
+                                <a href="${item.url}" class="flex items-center justify-between p-3 rounded-xl bg-[#F5F5F7] border border-[#E5E5EA] hover:border-[#0066CC] hover:bg-white transition-all group">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                                            <i data-lucide="smartphone" class="w-4 h-4 text-white"></i>
+                                        <div class="w-8 h-8 rounded-lg bg-white border border-[#E5E5EA] flex items-center justify-center shrink-0">
+                                            <i data-lucide="smartphone" class="w-4 h-4 text-[#1D1D1F]"></i>
                                         </div>
                                         <div>
-                                            <p class="text-xs font-bold text-white group-hover:text-[#5AC8FA] transition-colors">${item.name}</p>
-                                            <p class="text-[10px] text-[#8E8E93]">${item.series} · ${item.condition === 'second' ? 'Second Like New' : 'Garansi Resmi'}</p>
+                                            <p class="text-xs font-bold text-[#1D1D1F] group-hover:text-[#0066CC] transition-colors">${item.name}</p>
+                                            <p class="text-[10px] text-[#6E6E73]">${item.series} &bull; ${item.condition === 'second' ? 'Second Like New' : 'Garansi Resmi'}</p>
                                         </div>
                                     </div>
                                     <div class="text-right">
-                                        <span class="text-xs font-bold text-white">${item.formatted_price}</span>
-                                        <span class="block text-[9px] text-[#34C759]">Ready Stock</span>
+                                        <span class="text-xs font-bold text-[#1D1D1F]">${item.formatted_price}</span>
+                                        <span class="block text-[9px] font-semibold text-[#008040]">Ready Stock</span>
                                     </div>
                                 </a>
                             `).join('');
@@ -254,8 +250,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     const cartBadge = document.getElementById('cart-badge-count');
                     if (cartBadge) {
                         cartBadge.textContent = data.cart_count;
-                        cartBadge.classList.add('scale-125', 'bg-[#34C759]');
-                        setTimeout(() => cartBadge.classList.remove('scale-125', 'bg-[#34C759]'), 500);
+                        cartBadge.classList.add('scale-125', 'bg-[#008040]');
+                        setTimeout(() => cartBadge.classList.remove('scale-125', 'bg-[#008040]'), 500);
                     }
                 } else {
                     showToast(data.message || 'Gagal menambahkan unit.', 'error');
@@ -270,7 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // -------------------------------------------------------------------------
-    // 6. Product Detail Page (PDP) Interactive Configurator
+    // 6. Product Detail Page (PDP) Interactive Configurator, Trade-In Slasher & Sticky Bar
     // -------------------------------------------------------------------------
     const pdpContainer = document.getElementById('pdp-interactive-container');
     if (pdpContainer && window.RAP_VARIANTS_DATA) {
@@ -280,6 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
             || variants[0]?.color_name;
         let currentStorage = document.querySelector('.pdp-storage-btn.active')?.getAttribute('data-storage') 
             || variants[0]?.storage_capacity;
+        let currentSellingPrice = variants[0]?.selling_price || 0;
 
         const variantIdInput = document.getElementById('selected-variant-id');
         const priceDisplay = document.getElementById('pdp-live-price');
@@ -293,12 +290,58 @@ document.addEventListener('DOMContentLoaded', () => {
         const addCartBtn = document.getElementById('pdp-add-cart-btn');
         const buyNowBtn = document.getElementById('pdp-buy-now-btn');
 
-        // Function to find the matching variant and update state
+        // Trade-In Slasher & Sticky Bar Elements
+        const tradeInSelect = document.getElementById('pdp-tradein-select');
+        const tradeInResultBox = document.getElementById('pdp-tradein-result-box');
+        const tradeInCreditText = document.getElementById('pdp-tradein-credit');
+        const tradeInNetPriceText = document.getElementById('pdp-net-price');
+        const netPriceBadge = document.getElementById('pdp-net-price-badge');
+
+        const stickyBar = document.getElementById('pdp-sticky-buy-bar');
+        const stickyVariantLabel = document.getElementById('sticky-variant-label');
+        const stickyLivePrice = document.getElementById('sticky-live-price');
+        const stickyBuyNowBtn = document.getElementById('sticky-buy-now-btn');
+
+        // Installment Modal Elements
+        const simModalBasePrice = document.getElementById('sim-modal-base-price');
+        const sim3m = document.getElementById('sim-3m');
+        const sim6m = document.getElementById('sim-6m');
+        const sim12m = document.getElementById('sim-12m');
+        const sim24m = document.getElementById('sim-24m');
+
+        const formatIdr = (num) => 'Rp ' + new Intl.NumberFormat('id-ID').format(Math.max(0, Math.round(num)));
+
+        const updateTradeInAndInstallments = (basePrice) => {
+            const credit = tradeInSelect ? (parseFloat(tradeInSelect.value) || 0) : 0;
+            const netPayable = Math.max(0, basePrice - credit);
+
+            if (tradeInResultBox && tradeInCreditText && tradeInNetPriceText) {
+                if (credit > 0) {
+                    tradeInResultBox.classList.remove('hidden');
+                    tradeInCreditText.textContent = '- ' + formatIdr(credit);
+                    tradeInNetPriceText.textContent = formatIdr(netPayable);
+                    if (netPriceBadge) netPriceBadge.classList.remove('hidden');
+                } else {
+                    tradeInResultBox.classList.add('hidden');
+                    if (netPriceBadge) netPriceBadge.classList.add('hidden');
+                }
+            }
+
+            if (stickyLivePrice) {
+                stickyLivePrice.textContent = credit > 0 ? formatIdr(netPayable) : formatIdr(basePrice);
+            }
+
+            // Update Installment Modal
+            if (simModalBasePrice) simModalBasePrice.textContent = formatIdr(basePrice);
+            if (sim3m) sim3m.textContent = formatIdr(basePrice / 3) + '/bln';
+            if (sim6m) sim6m.textContent = formatIdr(basePrice / 6) + '/bln';
+            if (sim12m) sim12m.textContent = formatIdr(basePrice / 12) + '/bln';
+            if (sim24m) sim24m.textContent = formatIdr(basePrice / 24) + '/bln';
+        };
+
         const updatePdpState = () => {
-            // Find variant with matching color and storage
             let matchedVariant = variants.find(v => v.color_name === currentColor && v.storage_capacity === currentStorage);
             
-            // If combination not found, fall back to first variant with matching storage or color
             if (!matchedVariant) {
                 matchedVariant = variants.find(v => v.storage_capacity === currentStorage) || variants[0];
                 if (matchedVariant) {
@@ -307,6 +350,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (!matchedVariant) return;
+
+            currentSellingPrice = matchedVariant.selling_price;
 
             // 1. Update Hidden Variant ID Input
             if (variantIdInput) {
@@ -318,10 +363,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 priceDisplay.textContent = matchedVariant.selling_price_formatted;
             }
 
-            // 3. Installment Simulation Update (24 months)
+            // 3. Installment Simulation Subtext (24 months)
             if (installmentDisplay) {
                 const perMonth = Math.round(matchedVariant.selling_price / 24);
-                installmentDisplay.innerHTML = `Cicilan 0% mulai dari <strong class="text-[#5AC8FA]">Rp ${new Intl.NumberFormat('id-ID').format(perMonth)}/bln</strong> dengan kartu kredit mitra.`;
+                installmentDisplay.innerHTML = `Atau cicilan 0% mulai dari <strong class="text-[#1D1D1F]">Rp ${new Intl.NumberFormat('id-ID').format(perMonth)}/bln</strong> selama 24 bulan.`;
             }
 
             // 4. Color Labels & Glow Aura
@@ -331,16 +376,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 glowAura.style.backgroundColor = matchedVariant.color_hex;
             }
 
-            // 5. Stock Status & Quantity Controls
+            // 5. Sticky Bar Label
+            if (stickyVariantLabel) {
+                stickyVariantLabel.textContent = `${matchedVariant.color_name} • ${matchedVariant.storage_capacity}`;
+            }
+
+            // 6. Stock Status & Quantity Controls
             if (stockStatusDisplay) {
                 if (matchedVariant.stock > 0) {
                     stockStatusDisplay.textContent = `Tersedia (${matchedVariant.stock} Unit Siap Kirim)`;
-                    stockStatusDisplay.className = 'text-xs font-bold text-[#34C759]';
+                    stockStatusDisplay.className = 'text-xs font-bold text-[#008040]';
                     if (addCartBtn) addCartBtn.disabled = false;
                     if (buyNowBtn) buyNowBtn.disabled = false;
                 } else {
                     stockStatusDisplay.textContent = 'Stok Habis (Pre-Order Segera)';
-                    stockStatusDisplay.className = 'text-xs font-bold text-[#FF453A]';
+                    stockStatusDisplay.className = 'text-xs font-bold text-[#D70015]';
                     if (addCartBtn) addCartBtn.disabled = true;
                     if (buyNowBtn) buyNowBtn.disabled = true;
                 }
@@ -353,11 +403,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // 6. Battery Health (for Pre-Owned / Second)
+            // 7. Battery Health (for Pre-Owned / Second)
             if (bhPercentage && matchedVariant.battery_health) {
-                bhPercentage.textContent = `${matchedVariant.battery_health}%`;
+                bhPercentage.textContent = `${matchedVariant.battery_health}% (Prima)`;
             }
+
+            // 8. Recalculate Trade-In & Installments
+            updateTradeInAndInstallments(currentSellingPrice);
         };
+
+        if (tradeInSelect) {
+            tradeInSelect.addEventListener('change', () => {
+                updateTradeInAndInstallments(currentSellingPrice);
+            });
+        }
 
         // Color Dot Clicks
         document.querySelectorAll('.pdp-color-dot').forEach(dot => {
@@ -407,8 +466,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Thumbnails Gallery Switcher
         document.querySelectorAll('.pdp-thumb-btn').forEach(thumb => {
             thumb.addEventListener('click', function() {
-                document.querySelectorAll('.pdp-thumb-btn').forEach(t => t.classList.remove('active', 'border-[#0071E3]'));
-                this.classList.add('active', 'border-[#0071E3]');
+                document.querySelectorAll('.pdp-thumb-btn').forEach(t => t.classList.remove('active', 'border-[#0066CC]'));
+                this.classList.add('active', 'border-[#0066CC]');
                 const imgSrc = this.getAttribute('data-image-src');
                 const activeImg = document.getElementById('pdp-active-image');
                 if (imgSrc && activeImg) {
@@ -420,9 +479,22 @@ document.addEventListener('DOMContentLoaded', () => {
         // Initial trigger
         updatePdpState();
 
-        // ---------------------------------------------------------------------
+        // Sticky Bottom Purchase Bar Observer
+        const mainCtaGroup = document.getElementById('pdp-main-cta-group');
+        if (stickyBar && mainCtaGroup && 'IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) {
+                        stickyBar.classList.remove('translate-y-full');
+                    } else {
+                        stickyBar.classList.add('translate-y-full');
+                    }
+                });
+            }, { threshold: 0.1 });
+            observer.observe(mainCtaGroup);
+        }
+
         // Add to Cart AJAX Form Submission
-        // ---------------------------------------------------------------------
         const pdpForm = document.getElementById('pdp-buy-form');
         if (pdpForm) {
             pdpForm.addEventListener('submit', async (e) => {
@@ -439,7 +511,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const originalBtnText = addCartBtn.innerHTML;
                 addCartBtn.disabled = true;
                 addCartBtn.innerHTML = `
-                    <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <div class="w-4 h-4 border-2 border-[#1D1D1F]/30 border-t-[#1D1D1F] rounded-full animate-spin"></div>
                     <span>Menambahkan...</span>
                 `;
 
@@ -463,16 +535,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (response.ok && result.success) {
                         showToast(result.message, 'success');
                         
-                        // Bounce & Update Cart Badge
                         const cartBadge = document.getElementById('cart-badge-count');
                         if (cartBadge) {
                             cartBadge.textContent = result.cart_count;
-                            cartBadge.classList.remove('animate-pulse');
-                            void cartBadge.offsetWidth; // trigger reflow
-                            cartBadge.classList.add('scale-125', 'bg-[#34C759]');
+                            cartBadge.classList.add('scale-125', 'bg-[#008040]');
                             setTimeout(() => {
-                                cartBadge.classList.remove('scale-125', 'bg-[#34C759]');
-                                cartBadge.classList.add('animate-pulse');
+                                cartBadge.classList.remove('scale-125', 'bg-[#008040]');
                             }, 500);
                         }
                     } else {
@@ -489,37 +557,37 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // ---------------------------------------------------------------------
-        // Buy Now Button (Direct Checkout Flow)
-        // ---------------------------------------------------------------------
-        if (buyNowBtn && window.RAP_BUY_NOW_URL) {
-            buyNowBtn.addEventListener('click', () => {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = window.RAP_BUY_NOW_URL;
+        // Buy Now Flow (Main Button & Sticky Bar Button)
+        const triggerBuyNow = () => {
+            if (!window.RAP_BUY_NOW_URL) return;
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = window.RAP_BUY_NOW_URL;
 
-                const csrfInput = document.createElement('input');
-                csrfInput.type = 'hidden';
-                csrfInput.name = '_token';
-                csrfInput.value = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-                form.appendChild(csrfInput);
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            form.appendChild(csrfInput);
 
-                const variantInput = document.createElement('input');
-                variantInput.type = 'hidden';
-                variantInput.name = 'product_variant_id';
-                variantInput.value = variantIdInput.value;
-                form.appendChild(variantInput);
+            const variantInput = document.createElement('input');
+            variantInput.type = 'hidden';
+            variantInput.name = 'product_variant_id';
+            variantInput.value = variantIdInput.value;
+            form.appendChild(variantInput);
 
-                const qtyInput = document.createElement('input');
-                qtyInput.type = 'hidden';
-                qtyInput.name = 'quantity';
-                qtyInput.value = quantityInput ? quantityInput.value : 1;
-                form.appendChild(qtyInput);
+            const qtyInput = document.createElement('input');
+            qtyInput.type = 'hidden';
+            qtyInput.name = 'quantity';
+            qtyInput.value = quantityInput ? quantityInput.value : 1;
+            form.appendChild(qtyInput);
 
-                document.body.appendChild(form);
-                form.submit();
-            });
-        }
+            document.body.appendChild(form);
+            form.submit();
+        };
+
+        if (buyNowBtn) buyNowBtn.addEventListener('click', triggerBuyNow);
+        if (stickyBuyNowBtn) stickyBuyNowBtn.addEventListener('click', triggerBuyNow);
     }
 
     // -------------------------------------------------------------------------
@@ -529,7 +597,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (cartWrapper) {
         const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-        // Handle Quantity Buttons
         cartWrapper.querySelectorAll('.cart-qty-btn').forEach(btn => {
             btn.addEventListener('click', async function() {
                 const isInc = this.classList.contains('cart-qty-inc');
@@ -541,7 +608,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 let nextVal = isInc ? currentVal + 1 : currentVal - 1;
                 if (nextVal < 1) return;
 
-                // Disable during update
                 row.querySelectorAll('.cart-qty-btn').forEach(b => b.disabled = true);
 
                 try {
@@ -560,11 +626,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (response.ok && data.success) {
                         display.textContent = data.quantity;
                         
-                        // Update Subtotal in row
                         const subtotalEl = row.querySelector('.cart-item-subtotal');
                         if (subtotalEl) subtotalEl.textContent = data.item_subtotal_formatted;
 
-                        // Update Cart Summary
                         const summarySubtotal = document.getElementById('cart-summary-subtotal');
                         const summaryGrandTotal = document.getElementById('cart-summary-grand-total');
                         const summaryTotalQty = document.getElementById('cart-summary-total-qty');
@@ -588,7 +652,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Handle AJAX Cart Removal with smooth row fadeout
         cartWrapper.querySelectorAll('.cart-remove-form').forEach(form => {
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
