@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\ProductVariant;
 use App\Services\MidtransService;
+use App\Services\NotificationOrchestrator;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,10 +16,14 @@ use Illuminate\Support\Facades\Log;
 class MidtransCallbackController extends Controller
 {
     protected MidtransService $midtransService;
+    protected NotificationOrchestrator $notificationOrchestrator;
 
-    public function __construct(MidtransService $midtransService)
-    {
+    public function __construct(
+        MidtransService $midtransService,
+        NotificationOrchestrator $notificationOrchestrator
+    ) {
         $this->midtransService = $midtransService;
+        $this->notificationOrchestrator = $notificationOrchestrator;
     }
 
     /**
@@ -87,6 +92,8 @@ class MidtransCallbackController extends Controller
         }
 
         // 5. Database Transaction: Atomic state update and stock decrement
+        $transitionedToPaid = false;
+
         DB::transaction(function () use (
             $order,
             $targetStatus,
@@ -94,7 +101,8 @@ class MidtransCallbackController extends Controller
             $transactionId,
             $paymentType,
             $transactionTime,
-            $payload
+            $payload,
+            &$transitionedToPaid
         ) {
             // Update or create payment record
             $parsedPaymentTime = $transactionTime ? Carbon::parse($transactionTime) : now();
@@ -113,6 +121,7 @@ class MidtransCallbackController extends Controller
             // If transaction successfully paid
             if ($targetStatus === 'paid' && $order->status !== 'paid') {
                 $order->update(['status' => 'paid']);
+                $transitionedToPaid = true;
 
                 // Decrement inventory stock safely for each variant item
                 foreach ($order->items as $item) {
@@ -128,6 +137,12 @@ class MidtransCallbackController extends Controller
                 Log::info("Midtrans Webhook: Order {$order->order_number} marked as CANCELLED.");
             }
         });
+
+        // 6. Trigger simultaneous WhatsApp & Email (+ PDF Invoice attachment) when newly paid
+        if ($transitionedToPaid) {
+            $order->refresh()->load(['user', 'items.variant.product', 'payment']);
+            $this->notificationOrchestrator->notifyPaymentSuccess($order);
+        }
 
         return response()->json([
             'status' => 'success',

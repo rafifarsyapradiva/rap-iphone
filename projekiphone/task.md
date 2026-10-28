@@ -113,15 +113,15 @@
 ---
 
 ### Phase 8: Otomasi Notifikasi WhatsApp (Fonnte) & Email (SMTP)
-- [ ] **8.1. Layanan Notifikasi WhatsApp (`FonnteService`)**
-  - [ ] Klien HTTP untuk pengiriman pesan ke API Fonnte.
-  - [ ] Template pesan: Tagihan Baru, Pembayaran Lunas Terverifikasi, Nomor Resi Pengiriman, Status Trade-In.
-- [ ] **8.2. Layanan Email SMTP (Laravel Mailables)**
-  - [ ] Template email HTML responsif bergaya Apple.
-  - [ ] Otomatisasi lampiran Nota Faktur PDF pada email konfirmasi pembayaran.
-- [ ] **8.3. Orkestrator Notifikasi & Logging**
-  - [ ] `NotificationOrchestrator`: Mengirim notifikasi WhatsApp dan Email secara simultan saat terjadi event status pesanan.
-  - [ ] Pencatatan log ke tabel `notifications_log`.
+- [x] **8.1. Layanan Notifikasi WhatsApp (`FonnteService`)**
+  - [x] Klien HTTP untuk pengiriman pesan ke API Fonnte.
+  - [x] Template pesan: Tagihan Baru, Pembayaran Lunas Terverifikasi, Nomor Resi Pengiriman, Status Trade-In.
+- [x] **8.2. Layanan Email SMTP (Laravel Mailables)**
+  - [x] Template email HTML responsif bergaya Apple.
+  - [x] Otomatisasi lampiran Nota Faktur PDF pada email konfirmasi pembayaran.
+- [x] **8.3. Orkestrator Notifikasi & Logging**
+  - [x] `NotificationOrchestrator`: Mengirim notifikasi WhatsApp dan Email secara simultan saat terjadi event status pesanan.
+  - [x] Pencatatan log ke tabel `notifications_log`.
 
 ---
 

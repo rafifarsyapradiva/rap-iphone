@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\TradeIn;
+use App\Services\NotificationOrchestrator;
 use App\Services\TradeInCalculatorService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -12,10 +13,14 @@ use Illuminate\View\View;
 class TradeInVerificationController extends Controller
 {
     protected TradeInCalculatorService $calculatorService;
+    protected NotificationOrchestrator $notificationOrchestrator;
 
-    public function __construct(TradeInCalculatorService $calculatorService)
-    {
+    public function __construct(
+        TradeInCalculatorService $calculatorService,
+        NotificationOrchestrator $notificationOrchestrator
+    ) {
         $this->calculatorService = $calculatorService;
+        $this->notificationOrchestrator = $notificationOrchestrator;
     }
 
     /**
@@ -133,6 +138,9 @@ class TradeInVerificationController extends Controller
             'admin_notes' => $validated['admin_notes'] ?? $tradeIn->admin_notes,
         ]);
 
+        // Notify customer about inspection update via WhatsApp & Email (Phase 8)
+        $this->notificationOrchestrator->notifyTradeInStatus($tradeIn->refresh());
+
         return redirect()
             ->route('admin.trade-ins.show', $tradeIn->trade_in_code)
             ->with('success', "Hasil inspeksi teknisi untuk unit {$tradeIn->trade_in_code} berhasil disimpan (Harga Penawaran: Rp " . number_format((float) $tradeIn->final_price, 0, ',', '.') . ').');
@@ -163,6 +171,9 @@ class TradeInVerificationController extends Controller
             'final_price' => $finalPrice,
             'admin_notes' => $validated['admin_notes'] ?? $tradeIn->admin_notes,
         ]);
+
+        // Notify customer about decision via WhatsApp & Email (Phase 8)
+        $this->notificationOrchestrator->notifyTradeInStatus($tradeIn->refresh());
 
         $statusMessages = [
             'unit_received' => "Status pengajuan {$tradeIn->trade_in_code} diperbarui menjadi: Unit Diterima di Toko.",

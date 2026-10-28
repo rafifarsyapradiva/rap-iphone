@@ -8,6 +8,7 @@ use App\Models\OrderItem;
 use App\Models\Payment;
 use App\Models\ProductVariant;
 use App\Services\MidtransService;
+use App\Services\NotificationOrchestrator;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -19,10 +20,14 @@ use Illuminate\View\View;
 class CheckoutController extends Controller
 {
     protected MidtransService $midtransService;
+    protected NotificationOrchestrator $notificationOrchestrator;
 
-    public function __construct(MidtransService $midtransService)
-    {
+    public function __construct(
+        MidtransService $midtransService,
+        NotificationOrchestrator $notificationOrchestrator
+    ) {
         $this->midtransService = $midtransService;
+        $this->notificationOrchestrator = $notificationOrchestrator;
     }
 
     /**
@@ -192,7 +197,10 @@ class CheckoutController extends Controller
                 return $order;
             });
 
-            $order->load(['payment', 'items']);
+            $order->load(['payment', 'items', 'user']);
+
+            // Trigger simultaneous WhatsApp & Email invoice notification (Phase 8)
+            $this->notificationOrchestrator->notifyOrderCreated($order);
 
             $snapToken = $order->payment->snap_token;
             $redirectUrl = route('checkout.success', $order->order_number);

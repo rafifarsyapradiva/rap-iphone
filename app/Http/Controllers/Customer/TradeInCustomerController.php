@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Models\TradeIn;
+use App\Services\NotificationOrchestrator;
 use App\Services\TradeInCalculatorService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -14,10 +15,14 @@ use Illuminate\View\View;
 class TradeInCustomerController extends Controller
 {
     protected TradeInCalculatorService $calculatorService;
+    protected NotificationOrchestrator $notificationOrchestrator;
 
-    public function __construct(TradeInCalculatorService $calculatorService)
-    {
+    public function __construct(
+        TradeInCalculatorService $calculatorService,
+        NotificationOrchestrator $notificationOrchestrator
+    ) {
         $this->calculatorService = $calculatorService;
+        $this->notificationOrchestrator = $notificationOrchestrator;
     }
 
     /**
@@ -138,6 +143,9 @@ class TradeInCustomerController extends Controller
             'customer_account_number' => $accountNumber,
             'customer_account_holder' => $accountHolder,
         ]);
+
+        // Trigger simultaneous WhatsApp & Email Trade-In status notification (Phase 8)
+        $this->notificationOrchestrator->notifyTradeInStatus($tradeIn);
 
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json([
