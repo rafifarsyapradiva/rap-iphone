@@ -409,6 +409,11 @@ document.addEventListener('DOMContentLoaded', () => {
             thumb.addEventListener('click', function() {
                 document.querySelectorAll('.pdp-thumb-btn').forEach(t => t.classList.remove('active', 'border-[#0071E3]'));
                 this.classList.add('active', 'border-[#0071E3]');
+                const imgSrc = this.getAttribute('data-image-src');
+                const activeImg = document.getElementById('pdp-active-image');
+                if (imgSrc && activeImg) {
+                    activeImg.src = imgSrc;
+                }
             });
         });
 
@@ -635,14 +640,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // -------------------------------------------------------------------------
-    // 8. Admin Sidebar Toggle
+    // 8. Admin Sidebar Toggle & Customer Mobile Navigation Drawer
     // -------------------------------------------------------------------------
     const sidebarToggleBtn = document.getElementById('admin-sidebar-toggle');
     const adminSidebar = document.getElementById('admin-sidebar');
+    const adminBackdrop = document.getElementById('admin-sidebar-backdrop');
+
     if (sidebarToggleBtn && adminSidebar) {
-        sidebarToggleBtn.addEventListener('click', () => {
-            adminSidebar.classList.toggle('translate-x-0');
-            adminSidebar.classList.toggle('-translate-x-full');
+        const toggleAdminSidebar = () => {
+            const isOpening = adminSidebar.classList.contains('-translate-x-full');
+            adminSidebar.classList.toggle('translate-x-0', isOpening);
+            adminSidebar.classList.toggle('-translate-x-full', !isOpening);
+            if (adminBackdrop) {
+                adminBackdrop.classList.toggle('hidden', !isOpening);
+            }
+        };
+
+        sidebarToggleBtn.addEventListener('click', toggleAdminSidebar);
+        if (adminBackdrop) {
+            adminBackdrop.addEventListener('click', toggleAdminSidebar);
+        }
+    }
+
+    const mobileNavToggle = document.getElementById('mobile-nav-toggle');
+    const mobileNavDrawer = document.getElementById('mobile-nav-drawer');
+    if (mobileNavToggle && mobileNavDrawer) {
+        mobileNavToggle.addEventListener('click', () => {
+            const isHidden = mobileNavDrawer.classList.toggle('hidden');
+            mobileNavToggle.setAttribute('aria-expanded', (!isHidden).toString());
         });
     }
 });

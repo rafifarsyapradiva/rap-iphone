@@ -4,27 +4,44 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\BulkPrintRequest;
+use App\Models\NotificationLog;
 use App\Models\Order;
 use App\Services\InvoicePdfService;
+use App\Services\NotificationOrchestrator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
 
 class OrderManagementController extends Controller
 {
     /**
-     * Status yang tersedia sebagai tab filter.
+     * Status yang tersedia sebagai tab filter dan state machine pesanan.
      */
     public const STATUSES = ['pending', 'paid', 'processing', 'shipped', 'completed', 'cancelled'];
 
-    public function __construct(protected InvoicePdfService $invoicePdfService)
-    {
+    /**
+     * Pilihan kurir ekspedisi resmi Rap-iPhone.
+     *
+     * @var array<string, string>
+     */
+    public const COURIERS = [
+        'JNE Express' => 'JNE Express (Reguler / YES)',
+        'SiCepat Ekspres' => 'SiCepat Ekspres (BEST)',
+        'J&T Express' => 'J&T Express Super',
+        'Pick-up Store' => 'Ambil Sendiri di Store Resmi Rap-iPhone',
+    ];
+
+    public function __construct(
+        protected InvoicePdfService $invoicePdfService,
+        protected NotificationOrchestrator $notificationOrchestrator
+    ) {
     }
 
     /**
-     * Daftar pesanan dengan filter status, pencarian, dan aksi cetak massal.
-     * (Phase 10.2 akan menambahkan input resi & pembaruan status di controller ini.)
+     * Daftar pesanan dengan filter status, pencarian, modal input resi, dan aksi cetak massal.
      */
     public function index(Request $request): View
     {
@@ -67,9 +84,146 @@ class OrderManagementController extends Controller
             'counts' => $counts,
             'statusFilter' => $statusFilter,
             'search' => $search,
+            'couriers' => self::COURIERS,
             'bulkMax' => (int) config('invoice.bulk_max', 50),
             'labelStatuses' => config('invoice.label_statuses', []),
         ]);
+    }
+
+    /**
+     * Tampilkan halaman detail operasional pesanan, alokasi IMEI, status, dan logistik pengiriman.
+     */
+    public function show(Order $order): View
+    {
+        $order->load(['user', 'items.variant.product', 'payment', 'tradeIn']);
+
+        $notificationLogs = NotificationLog::query()
+            ->where(function ($q) use ($order) {
+                $q->where('response_payload->order_number', $order->order_number);
+                if ($order->user?->email) {
+                    $q->orWhere('recipient', $order->user->email);
+                }
+            })
+            ->latest('created_at')
+            ->take(10)
+            ->get();
+
+        return view('admin.orders.show', [
+            'order' => $order,
+            'couriers' => self::COURIERS,
+            'statuses' => self::STATUSES,
+            'notificationLogs' => $notificationLogs,
+        ]);
+    }
+
+    /**
+     * Perbarui status pesanan dan alokasi nomor IMEI unit pada item pesanan.
+     */
+    public function updateStatus(Request $request, Order $order): RedirectResponse
+    {
+        $validated = $request->validate([
+            'status' => ['required', Rule::in(self::STATUSES)],
+            'allocated_imei' => ['nullable', 'array'],
+            'allocated_imei.*' => ['nullable', 'string', 'max:50'],
+            'shipping_courier' => ['nullable', 'string', 'max:50'],
+            'shipping_tracking_number' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $previousStatus = $order->status;
+        $newStatus = $validated['status'];
+
+        DB::transaction(function () use ($order, $validated, $newStatus) {
+            if (!empty($validated['allocated_imei']) && is_array($validated['allocated_imei'])) {
+                foreach ($order->items as $item) {
+                    if (array_key_exists($item->id, $validated['allocated_imei'])) {
+                        $imeiValue = trim((string) $validated['allocated_imei'][$item->id]);
+                        $item->update([
+                            'allocated_imei' => $imeiValue !== '' ? $imeiValue : null,
+                        ]);
+                    }
+                }
+            }
+
+            $updateData = ['status' => $newStatus];
+
+            if (!empty($validated['shipping_courier'])) {
+                $updateData['shipping_courier'] = trim($validated['shipping_courier']);
+            }
+
+            if (array_key_exists('shipping_tracking_number', $validated) && $validated['shipping_tracking_number'] !== null) {
+                $tracking = strtoupper(trim((string) $validated['shipping_tracking_number']));
+                if ($tracking !== '') {
+                    $updateData['shipping_tracking_number'] = $tracking;
+                }
+            }
+
+            $order->update($updateData);
+        });
+
+        $order->refresh();
+
+        $notifNote = '';
+        if ($newStatus === 'shipped' && $previousStatus !== 'shipped' && !empty($order->shipping_tracking_number)) {
+            $this->notificationOrchestrator->notifyOrderShipped($order);
+            $notifNote = ' Notifikasi WhatsApp & Email resi pengiriman telah dikirim ke pelanggan.';
+        }
+
+        return back()->with(
+            'success',
+            "Status pesanan #{$order->order_number} berhasil diperbarui menjadi \"" . strtoupper($newStatus) . "\".{$notifNote}"
+        );
+    }
+
+    /**
+     * Input nomor resi pengiriman kurir (JNE / SiCepat / J&T) yang otomatis memicu notifikasi WA & Email ke customer.
+     */
+    public function updateShipping(Request $request, Order $order): RedirectResponse
+    {
+        $validated = $request->validate([
+            'shipping_courier' => ['required', 'string', 'max:50'],
+            'shipping_tracking_number' => ['required', 'string', 'max:100'],
+            'allocated_imei' => ['nullable', 'array'],
+            'allocated_imei.*' => ['nullable', 'string', 'max:50'],
+        ], [
+            'shipping_courier.required' => 'Pilih atau isi nama kurir ekspedisi pengiriman.',
+            'shipping_tracking_number.required' => 'Nomor resi pengiriman wajib diisi.',
+        ]);
+
+        $trackingNumber = strtoupper(trim($validated['shipping_tracking_number']));
+        $courier = trim($validated['shipping_courier']);
+
+        DB::transaction(function () use ($order, $validated, $courier, $trackingNumber) {
+            if (!empty($validated['allocated_imei']) && is_array($validated['allocated_imei'])) {
+                foreach ($order->items as $item) {
+                    if (array_key_exists($item->id, $validated['allocated_imei'])) {
+                        $imeiValue = trim((string) $validated['allocated_imei'][$item->id]);
+                        if ($imeiValue !== '') {
+                            $item->update(['allocated_imei' => $imeiValue]);
+                        }
+                    }
+                }
+            }
+
+            $nextStatus = in_array($order->status, ['completed', 'cancelled'], true)
+                ? $order->status
+                : 'shipped';
+
+            $order->update([
+                'shipping_courier' => $courier,
+                'shipping_tracking_number' => $trackingNumber,
+                'status' => $nextStatus,
+            ]);
+        });
+
+        $order->refresh();
+
+        // Otomatis picu pengiriman notifikasi WhatsApp (Fonnte) & Email (OrderShippedMail)
+        $this->notificationOrchestrator->notifyOrderShipped($order);
+
+        return back()->with(
+            'success',
+            "Nomor resi {$trackingNumber} ({$courier}) untuk pesanan #{$order->order_number} berhasil disimpan. Status otomatis diperbarui ke DIKIRIM dan notifikasi WhatsApp & Email telah dikirim ke pelanggan."
+        );
     }
 
     /**
@@ -125,4 +279,3 @@ class OrderManagementController extends Controller
             ->get();
     }
 }
-

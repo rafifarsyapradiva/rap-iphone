@@ -9,12 +9,12 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0071E3]/15 border border-[#0071E3]/30 text-xs font-semibold text-[#5AC8FA] mb-2">
-                <i data-lucide="printer" class="w-3.5 h-3.5"></i>
-                <span>Nota Faktur &amp; Label Pengiriman</span>
+                <i data-lucide="truck" class="w-3.5 h-3.5"></i>
+                <span>Manajemen Pesanan, Resi Kurir &amp; Nota Faktur</span>
             </div>
             <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Pesanan &amp; Logistik</h1>
             <p class="text-xs sm:text-sm text-[#8E8E93] mt-0.5">
-                Pantau pesanan masuk, cetak nota faktur resmi, dan label pengiriman thermal 100&times;150 mm secara massal.
+                Filter pesanan berdasarkan status, alokasikan IMEI unit, input nomor resi kurir (otomatis notifikasi WA &amp; Email), serta cetak nota &amp; label thermal 100&times;150 mm.
             </p>
         </div>
     </div>
@@ -136,7 +136,7 @@
                             <th class="py-3.5 px-3">Kurir &amp; Resi</th>
                             <th class="py-3.5 px-3 text-right">Total</th>
                             <th class="py-3.5 px-3">Status</th>
-                            <th class="py-3.5 px-5 text-right">Nota</th>
+                            <th class="py-3.5 px-5 text-right">Aksi Operasional</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-white/10 text-xs">
@@ -147,7 +147,9 @@
                                            class="w-4 h-4 rounded accent-[#0071E3] cursor-pointer" aria-label="Pilih {{ $order->order_number }}">
                                 </td>
                                 <td class="py-4 px-3">
-                                    <span class="font-mono font-bold text-[#5AC8FA] block">{{ $order->order_number }}</span>
+                                    <a href="{{ route('admin.orders.show', $order->order_number) }}" class="font-mono font-bold text-[#5AC8FA] hover:underline block">
+                                        {{ $order->order_number }}
+                                    </a>
                                     <span class="text-[11px] text-[#8E8E93]">{{ $order->created_at->format('d M Y, H:i') }}</span>
                                 </td>
                                 <td class="py-4 px-3">
@@ -158,13 +160,18 @@
                                 <td class="py-4 px-3 max-w-[220px]">
                                     @foreach($order->items as $item)
                                         <p class="text-white truncate">{{ $item->quantity }}x {{ $item->product_name }}</p>
-                                        <p class="text-[11px] text-[#8E8E93] truncate">{{ $item->variant_details }}</p>
+                                        <p class="text-[11px] text-[#8E8E93] truncate">
+                                            {{ $item->variant_details }}
+                                            @if($item->allocated_imei)
+                                                &middot; <span class="font-mono text-[#5AC8FA]">IMEI: {{ $item->allocated_imei }}</span>
+                                            @endif
+                                        </p>
                                     @endforeach
                                 </td>
                                 <td class="py-4 px-3">
-                                    <p class="text-white">{{ $order->shipping_courier ?: '-' }}</p>
+                                    <p class="text-white font-medium">{{ $order->shipping_courier ?: '-' }}</p>
                                     @if($order->shipping_tracking_number)
-                                        <p class="text-[11px] font-mono text-[#34C759]">{{ $order->shipping_tracking_number }}</p>
+                                        <p class="text-[11px] font-mono font-bold text-[#34C759]">{{ $order->shipping_tracking_number }}</p>
                                     @else
                                         <p class="text-[11px] text-[#8E8E93]">Resi belum diinput</p>
                                     @endif
@@ -175,12 +182,35 @@
                                 <td class="py-4 px-3">
                                     <x-order-badge :status="$order->status" />
                                 </td>
-                                <td class="py-4 px-5 text-right">
-                                    <a href="{{ route('admin.orders.invoice', $order->order_number) }}" target="_blank"
-                                       class="glass-btn glass-btn-secondary glass-btn-sm text-xs inline-flex items-center gap-1.5" title="Lihat & cetak nota">
-                                        <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
-                                        <span>Nota</span>
-                                    </a>
+                                <td class="py-4 px-5 text-right whitespace-nowrap">
+                                    <div class="inline-flex items-center gap-1.5">
+                                        @if($order->status !== 'cancelled')
+                                            <button type="button"
+                                                    class="glass-btn glass-btn-primary glass-btn-sm text-xs inline-flex items-center gap-1.5 btn-open-resi-modal"
+                                                    data-order-number="{{ $order->order_number }}"
+                                                    data-action-url="{{ route('admin.orders.shipping', $order->order_number) }}"
+                                                    data-recipient="{{ $order->recipient_name }}"
+                                                    data-courier="{{ $order->shipping_courier }}"
+                                                    data-tracking="{{ $order->shipping_tracking_number ?? '' }}"
+                                                    title="Input Nomor Resi & Kirim Notifikasi WA/Email">
+                                                <i data-lucide="truck" class="w-3.5 h-3.5"></i>
+                                                <span>{{ $order->shipping_tracking_number ? 'Edit Resi' : 'Input Resi' }}</span>
+                                            </button>
+                                        @endif
+
+                                        <a href="{{ route('admin.orders.show', $order->order_number) }}"
+                                           class="glass-btn glass-btn-secondary glass-btn-sm text-xs inline-flex items-center gap-1.5"
+                                           title="Kelola Status, Alokasi IMEI & Detail Pesanan">
+                                            <i data-lucide="sliders" class="w-3.5 h-3.5 text-[#5AC8FA]"></i>
+                                            <span>Kelola</span>
+                                        </a>
+
+                                        <a href="{{ route('admin.orders.invoice', $order->order_number) }}" target="_blank"
+                                           class="glass-btn glass-btn-secondary glass-btn-sm text-xs inline-flex items-center gap-1.5" title="Lihat & cetak nota">
+                                            <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                                            <span>Nota</span>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
@@ -203,6 +233,64 @@
             @endif
         </div>
     </form>
+</div>
+
+{{-- Modal Input Nomor Resi Pengiriman Cepat --}}
+<div id="resi-quick-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-md p-4">
+    <div class="glass-card-elevated rounded-3xl border border-white/15 max-w-md w-full p-6 space-y-5 shadow-2xl">
+        <div class="flex items-center justify-between pb-3 border-b border-white/10">
+            <div>
+                <span class="text-[10px] font-bold text-[#5AC8FA] uppercase tracking-wider">Logistik &amp; Otomasi Notifikasi</span>
+                <h3 class="text-base font-bold text-white mt-0.5">
+                    Input Resi Pengiriman <span id="modal-order-number" class="font-mono text-[#5AC8FA]"></span>
+                </h3>
+            </div>
+            <button type="button" id="btn-close-resi-modal" class="text-[#8E8E93] hover:text-white p-1">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+
+        <form id="resi-quick-form" method="POST" action="" class="space-y-4">
+            @csrf
+            @method('PATCH')
+
+            <div class="p-3 rounded-xl bg-white/5 border border-white/10 text-xs flex items-center justify-between">
+                <span class="text-[#8E8E93]">Penerima Paket:</span>
+                <span id="modal-recipient-name" class="font-bold text-white"></span>
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="text-xs font-semibold text-white block">Kurir Ekspedisi <span class="text-[#FF453A]">*</span></label>
+                <select name="shipping_courier" id="modal-shipping-courier" required class="glass-input text-xs w-full bg-[#161B22]">
+                    @foreach($couriers ?? [] as $courierKey => $courierLabel)
+                        <option value="{{ $courierKey }}">{{ $courierLabel }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="text-xs font-semibold text-white block">Nomor Resi Pengiriman (AWB) <span class="text-[#FF453A]">*</span></label>
+                <input type="text" name="shipping_tracking_number" id="modal-tracking-number" required
+                       placeholder="Contoh: JNE-8899001122 / SICEPAT-001122"
+                       class="glass-input text-xs font-mono font-bold text-[#34C759] w-full uppercase">
+            </div>
+
+            <div class="p-3 rounded-xl bg-[#34C759]/10 border border-[#34C759]/30 text-[11px] text-[#E5E5EA] flex items-start gap-2.5">
+                <i data-lucide="send" class="w-4 h-4 text-[#34C759] shrink-0 mt-0.5"></i>
+                <span>
+                    Menyimpan nomor resi akan otomatis mengubah status pesanan menjadi <strong>DIKIRIM (Shipped)</strong> dan memicu pengiriman notifikasi <strong>WhatsApp (Fonnte)</strong> &amp; <strong>Email</strong> ke pelanggan.
+                </span>
+            </div>
+
+            <div class="flex items-center justify-end gap-2 pt-2">
+                <button type="button" id="btn-cancel-resi-modal" class="glass-btn glass-btn-secondary glass-btn-sm text-xs">Batal</button>
+                <button type="submit" class="glass-btn glass-btn-primary glass-btn-sm text-xs font-bold flex items-center gap-1.5">
+                    <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                    <span>Simpan Resi &amp; Kirim Notifikasi</span>
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 @endsection
 
@@ -231,7 +319,56 @@
         });
         checkboxes.forEach(cb => cb.addEventListener('change', refresh));
         refresh();
+
+        // Modal Input Resi Cepat
+        const modal = document.getElementById('resi-quick-modal');
+        const form = document.getElementById('resi-quick-form');
+        const lblOrderNo = document.getElementById('modal-order-number');
+        const lblRecipient = document.getElementById('modal-recipient-name');
+        const selCourier = document.getElementById('modal-shipping-courier');
+        const inpTracking = document.getElementById('modal-tracking-number');
+
+        function closeResiModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        document.querySelectorAll('.btn-open-resi-modal').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const orderNo = this.getAttribute('data-order-number');
+                const actionUrl = this.getAttribute('data-action-url');
+                const recipient = this.getAttribute('data-recipient');
+                const courier = this.getAttribute('data-courier') || 'JNE Express';
+                const tracking = this.getAttribute('data-tracking') || '';
+
+                form.action = actionUrl;
+                lblOrderNo.textContent = '#' + orderNo;
+                lblRecipient.textContent = recipient;
+                inpTracking.value = tracking;
+
+                let matched = false;
+                Array.from(selCourier.options).forEach(opt => {
+                    if (courier.toLowerCase().includes(opt.value.toLowerCase())) {
+                        opt.selected = true;
+                        matched = true;
+                    }
+                });
+                if (!matched && courier) {
+                    const customOpt = new Option(courier, courier, true, true);
+                    selCourier.add(customOpt);
+                }
+
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                setTimeout(() => inpTracking.focus(), 50);
+            });
+        });
+
+        document.getElementById('btn-close-resi-modal')?.addEventListener('click', closeResiModal);
+        document.getElementById('btn-cancel-resi-modal')?.addEventListener('click', closeResiModal);
+        modal?.addEventListener('click', function (e) {
+            if (e.target === modal) closeResiModal();
+        });
     });
 </script>
 @endpush
-

@@ -82,7 +82,7 @@
                             <!-- Visual Avatar / Image -->
                             <div class="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center p-2 shrink-0 relative overflow-hidden">
                                 @if(!empty($item['image']) && file_exists(public_path($item['image'])))
-                                    <img src="{{ asset($item['image']) }}" alt="{{ $item['product_name'] }}" class="max-h-full max-w-full object-contain">
+                                    <img src="{{ asset($item['image']) }}" alt="{{ $item['product_name'] }}" width="80" height="80" loading="lazy" decoding="async" class="max-h-full max-w-full object-contain">
                                 @else
                                     <div class="w-10 h-14 rounded-xl bg-gradient-to-tr from-[#161B22] to-[#21262D] border border-white/10 flex flex-col items-center justify-between p-1">
                                         <div class="w-4 h-1 bg-black rounded-full"></div>

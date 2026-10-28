@@ -136,7 +136,38 @@
                         </a>
                     @endauth
 
+                    <!-- Mobile Navigation Hamburger Toggle -->
+                    <button type="button" id="mobile-nav-toggle" class="md:hidden p-2 rounded-xl bg-white/5 border border-white/10 text-[#E5E5EA] hover:text-white hover:bg-white/10 transition-colors" aria-label="Buka Menu Navigasi" aria-expanded="false">
+                        <i data-lucide="menu" class="w-5 h-5"></i>
+                    </button>
+
                 </div>
+            </div>
+
+            <!-- Responsive Frosted Glass Mobile Navigation Drawer -->
+            <div id="mobile-nav-drawer" class="hidden md:hidden pb-4 pt-2 border-t border-white/10 space-y-1.5">
+                <a href="{{ url('/katalog') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold {{ request()->is('katalog*') ? 'bg-[#0071E3]/20 text-white border border-[#0071E3]/40' : 'text-[#E5E5EA] hover:bg-white/5' }}">
+                    <span>Katalog iPhone</span>
+                    <i data-lucide="smartphone" class="w-4 h-4 text-[#5AC8FA]"></i>
+                </a>
+                <a href="{{ url('/trade-in') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold {{ request()->is('trade-in*') ? 'bg-[#34C759]/20 text-white border border-[#34C759]/40' : 'text-[#E5E5EA] hover:bg-white/5' }}">
+                    <span>Tukar Tambah (Trade-In 15 Menit)</span>
+                    <span class="w-2 h-2 rounded-full bg-[#34C759]"></span>
+                </a>
+                <a href="{{ url('/cek-garansi') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold {{ request()->is('cek-garansi*') ? 'bg-white/10 text-white' : 'text-[#8E8E93] hover:text-white hover:bg-white/5' }}">
+                    <span>Cek IMEI & Garansi</span>
+                    <i data-lucide="shield-check" class="w-4 h-4"></i>
+                </a>
+                <a href="{{ url('/lacak-pesanan') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold {{ request()->is('lacak-pesanan*') ? 'bg-white/10 text-white' : 'text-[#8E8E93] hover:text-white hover:bg-white/5' }}">
+                    <span>Lacak Pesanan</span>
+                    <i data-lucide="truck" class="w-4 h-4"></i>
+                </a>
+                @auth
+                    <a href="{{ url('/customer/orders') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-[#5AC8FA] hover:bg-white/5">
+                        <span>Pesanan & Akun Saya</span>
+                        <i data-lucide="package" class="w-4 h-4"></i>
+                    </a>
+                @endauth
             </div>
         </div>
     </header>

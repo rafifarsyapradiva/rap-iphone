@@ -22,7 +22,11 @@
                 </p>
             </div>
             
-            <div class="flex items-center gap-3 shrink-0">
+            <div class="flex flex-wrap items-center gap-3 shrink-0">
+                <a href="{{ route('admin.products.index') }}" class="glass-btn glass-btn-secondary glass-btn-sm flex items-center gap-2">
+                    <i data-lucide="smartphone" class="w-3.5 h-3.5 text-[#5AC8FA]"></i>
+                    <span>Kelola Katalog &amp; Stok</span>
+                </a>
                 <a href="{{ route('admin.orders.index') }}" class="glass-btn glass-btn-secondary glass-btn-sm flex items-center gap-2">
                     <i data-lucide="printer" class="w-3.5 h-3.5"></i>
                     <span>Kelola &amp; Cetak Pesanan</span>

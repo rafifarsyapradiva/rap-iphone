@@ -48,7 +48,7 @@
                     @endphp
 
                     @if($primaryImg && file_exists(public_path($primaryImg)))
-                        <img id="pdp-active-image" src="{{ asset($primaryImg) }}" alt="{{ $product->name }}" class="max-h-[380px] w-auto object-contain transition-transform duration-500 hover:scale-105">
+                        <img id="pdp-active-image" src="{{ asset($primaryImg) }}" alt="{{ $product->name }}" width="480" height="480" fetchpriority="high" decoding="async" class="max-h-[380px] w-auto object-contain transition-transform duration-500 hover:scale-105">
                     @else
                         <!-- Apple Vector Stylized iPhone 3D Mockup -->
                         <div id="pdp-vector-device" class="w-56 h-80 sm:w-64 sm:h-96 rounded-[44px] bg-gradient-to-tr from-[#161B22] via-[#21262D] to-[#30363D] border-[5px] border-[#8E8E93]/40 shadow-2xl relative flex flex-col items-center justify-between p-3.5 transition-all duration-500 hover:scale-105">
@@ -92,19 +92,34 @@
             </div>
 
             <!-- Multi-Angle Thumbnails Gallery -->
+            @php
+                $existingImages = $product->images->filter(fn ($img) => !empty($img->image_path) && file_exists(public_path($img->image_path)))->values();
+            @endphp
             <div class="flex items-center gap-3 overflow-x-auto pb-2">
-                <button type="button" class="pdp-thumb-btn active glass-card p-2 rounded-xl border border-[#0071E3] shrink-0 w-16 h-16 flex items-center justify-center" data-angle="front" title="Tampak Depan">
-                    <i data-lucide="smartphone" class="w-7 h-7 text-white"></i>
-                </button>
-                <button type="button" class="pdp-thumb-btn glass-card p-2 rounded-xl border border-white/10 shrink-0 w-16 h-16 flex items-center justify-center hover:border-white/30" data-angle="back" title="Modul Kamera">
-                    <i data-lucide="camera" class="w-7 h-7 text-[#8E8E93]"></i>
-                </button>
-                <button type="button" class="pdp-thumb-btn glass-card p-2 rounded-xl border border-white/10 shrink-0 w-16 h-16 flex items-center justify-center hover:border-white/30" data-angle="side" title="Rangka Titanium">
-                    <i data-lucide="layers" class="w-7 h-7 text-[#8E8E93]"></i>
-                </button>
-                <button type="button" class="pdp-thumb-btn glass-card p-2 rounded-xl border border-white/10 shrink-0 w-16 h-16 flex items-center justify-center hover:border-white/30" data-angle="box" title="Kelengkapan Box">
-                    <i data-lucide="package" class="w-7 h-7 text-[#8E8E93]"></i>
-                </button>
+                @if($existingImages->isNotEmpty())
+                    @foreach($existingImages as $idx => $img)
+                        <button type="button"
+                                class="pdp-thumb-btn {{ $idx === 0 ? 'active border-[#0071E3]' : 'border-white/10 hover:border-white/30' }} glass-card p-1.5 rounded-xl border shrink-0 w-16 h-16 flex items-center justify-center overflow-hidden"
+                                data-image-src="{{ asset($img->image_path) }}"
+                                data-angle="angle-{{ $img->order_index }}"
+                                title="Sudut #{{ $img->order_index }}">
+                            <img src="{{ asset($img->image_path) }}" alt="{{ $product->name }} Angle {{ $idx + 1 }}" width="64" height="64" loading="lazy" decoding="async" class="max-h-full max-w-full object-contain">
+                        </button>
+                    @endforeach
+                @else
+                    <button type="button" class="pdp-thumb-btn active glass-card p-2 rounded-xl border border-[#0071E3] shrink-0 w-16 h-16 flex items-center justify-center" data-angle="front" title="Tampak Depan">
+                        <i data-lucide="smartphone" class="w-7 h-7 text-white"></i>
+                    </button>
+                    <button type="button" class="pdp-thumb-btn glass-card p-2 rounded-xl border border-white/10 shrink-0 w-16 h-16 flex items-center justify-center hover:border-white/30" data-angle="back" title="Modul Kamera">
+                        <i data-lucide="camera" class="w-7 h-7 text-[#8E8E93]"></i>
+                    </button>
+                    <button type="button" class="pdp-thumb-btn glass-card p-2 rounded-xl border border-white/10 shrink-0 w-16 h-16 flex items-center justify-center hover:border-white/30" data-angle="side" title="Rangka Titanium">
+                        <i data-lucide="layers" class="w-7 h-7 text-[#8E8E93]"></i>
+                    </button>
+                    <button type="button" class="pdp-thumb-btn glass-card p-2 rounded-xl border border-white/10 shrink-0 w-16 h-16 flex items-center justify-center hover:border-white/30" data-angle="box" title="Kelengkapan Box">
+                        <i data-lucide="package" class="w-7 h-7 text-[#8E8E93]"></i>
+                    </button>
+                @endif
             </div>
         </div>
 

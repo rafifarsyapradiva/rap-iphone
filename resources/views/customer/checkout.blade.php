@@ -256,7 +256,7 @@
                                 <!-- Thumbnail -->
                                 <div class="w-14 h-14 rounded-xl bg-black/40 border border-white/10 flex items-center justify-center p-1 shrink-0 overflow-hidden">
                                     @if(!empty($item['image']))
-                                        <img src="{{ $item['image'] }}" alt="{{ $item['product_name'] }}" class="w-full h-full object-contain">
+                                        <img src="{{ asset($item['image']) }}" alt="{{ $item['product_name'] }}" width="56" height="56" loading="lazy" decoding="async" class="w-full h-full object-contain">
                                     @else
                                         <i data-lucide="smartphone" class="w-6 h-6 text-[#8E8E93]"></i>
                                     @endif

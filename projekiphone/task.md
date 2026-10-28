@@ -137,35 +137,35 @@
 ---
 
 ### Phase 10: Panel Operasional Admin
-- [ ] **10.1. Manajemen Inventaris Produk**
-  - [ ] CRUD Produk & Varian (Warna, Kapasitas, Stok, HPP, Harga Jual, IMEI).
-  - [ ] Manajemen foto produk multi-angle.
-- [ ] **10.2. Manajemen Pesanan & Logistik**
-  - [ ] Filter pesanan berdasarkan status (`pending`, `paid`, `processing`, `shipped`, `completed`).
-  - [ ] Input nomor resi pengiriman kurir (JNE / SiCepat / J&T) yang otomatis memicu notifikasi WA & Email ke customer.
+- [x] **10.1. Manajemen Inventaris Produk**
+  - [x] CRUD Produk & Varian (Warna, Kapasitas, Stok, HPP, Harga Jual, IMEI).
+  - [x] Manajemen foto produk multi-angle.
+- [x] **10.2. Manajemen Pesanan & Logistik**
+  - [x] Filter pesanan berdasarkan status (`pending`, `paid`, `processing`, `shipped`, `completed`).
+  - [x] Input nomor resi pengiriman kurir (JNE / SiCepat / J&T) yang otomatis memicu notifikasi WA & Email ke customer.
 
 ---
 
 ### Phase 11: Dashboard Finansial & Analitik Pemilik Usaha (Owner)
-- [ ] **11.1. Metrik Keuangan Eksekutif**
-  - [ ] Total Omzet Penjualan (Harian, Mingguan, Bulanan).
-  - [ ] Kalkulasi Laba Bersih Otomatis (Omzet - HPP Produk Terjual).
-  - [ ] Ringkasan arus kas Trade-In masuk vs Penjualan keluar.
-- [ ] **11.2. Grafik Performa Bisnis**
-  - [ ] Grafik tren transaksi penjualan 30 hari terakhir.
-  - [ ] Analisis produk terlaris (*Top Selling iPhone models*).
-- [ ] **11.3. Laporan & Ekspor Data**
-  - [ ] Ekspor laporan penjualan dan laba rugi ke format Excel/CSV dan PDF.
-  - [ ] Manajemen akun staf dan admin toko.
+- [x] **11.1. Metrik Keuangan Eksekutif**
+  - [x] Total Omzet Penjualan (Harian, Mingguan, Bulanan).
+  - [x] Kalkulasi Laba Bersih Otomatis (Omzet - HPP Produk Terjual).
+  - [x] Ringkasan arus kas Trade-In masuk vs Penjualan keluar.
+- [x] **11.2. Grafik Performa Bisnis**
+  - [x] Grafik tren transaksi penjualan 30 hari terakhir.
+  - [x] Analisis produk terlaris (*Top Selling iPhone models*).
+- [x] **11.3. Laporan & Ekspor Data**
+  - [x] Ekspor laporan penjualan dan laba rugi ke format Excel/CSV dan PDF.
+  - [x] Manajemen akun staf dan admin toko.
 
 ---
 
 ### Phase 12: Pengujian, Keamanan, & Finalisasi
-- [ ] **12.1. Pengujian Integrasi End-to-End**
-  - [ ] Simulasi checkout dengan Sandbox Midtrans (QRIS & Virtual Account).
-  - [ ] Pengujian penerimaan webhook Midtrans dan perubahan status pesanan otomatis.
-  - [ ] Pengujian pengiriman pesan WhatsApp via Fonnte & Email SMTP.
-  - [ ] Pengujian flow tukar tambah dari submit hingga persetujuan admin.
-- [ ] **12.2. Validasi UI/UX & Responsivitas**
-  - [ ] Verifikasi tampilan Glassmorphism pada berbagai resolusi layar (Mobile, Tablet, Desktop).
-  - [ ] Pengecekan kecepatan halaman dan pemuatan gambar WebP.
+- [x] **12.1. Pengujian Integrasi End-to-End**
+  - [x] Simulasi checkout dengan Sandbox Midtrans (QRIS & Virtual Account).
+  - [x] Pengujian penerimaan webhook Midtrans dan perubahan status pesanan otomatis.
+  - [x] Pengujian pengiriman pesan WhatsApp via Fonnte & Email SMTP.
+  - [x] Pengujian flow tukar tambah dari submit hingga persetujuan admin.
+- [x] **12.2. Validasi UI/UX & Responsivitas**
+  - [x] Verifikasi tampilan Glassmorphism pada berbagai resolusi layar (Mobile, Tablet, Desktop).
+  - [x] Pengecekan kecepatan halaman dan pemuatan gambar WebP.

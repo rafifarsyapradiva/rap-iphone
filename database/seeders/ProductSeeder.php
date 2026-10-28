@@ -72,7 +72,7 @@ class ProductSeeder extends Seeder
                 ProductImage::updateOrCreate(
                     ['product_id' => $p1->id, 'variant_id' => $variant->id],
                     [
-                        'image_path' => 'images/products/iphone-16-pro-max.png',
+                        'image_path' => 'images/products/iphone-16-pro-max.webp',
                         'is_primary' => ($color['name'] === 'Desert Titanium' && $storage['cap'] === '256GB'),
                         'order_index' => 1,
                     ]
@@ -123,7 +123,7 @@ class ProductSeeder extends Seeder
                 ProductImage::updateOrCreate(
                     ['product_id' => $p2->id, 'variant_id' => $variant->id],
                     [
-                        'image_path' => 'images/products/iphone-16-pro.png',
+                        'image_path' => 'images/products/iphone-16-pro.webp',
                         'is_primary' => ($color['name'] === 'Natural Titanium' && $storage['cap'] === '128GB'),
                         'order_index' => 1,
                     ]
@@ -181,7 +181,7 @@ class ProductSeeder extends Seeder
                 ProductImage::updateOrCreate(
                     ['product_id' => $p3->id, 'variant_id' => $variant->id],
                     [
-                        'image_path' => 'images/products/iphone-16.png',
+                        'image_path' => 'images/products/iphone-16.webp',
                         'is_primary' => ($color['name'] === 'Ultramarine' && $storage['cap'] === '128GB'),
                         'order_index' => 1,
                     ]
@@ -249,7 +249,7 @@ class ProductSeeder extends Seeder
             ProductImage::updateOrCreate(
                 ['product_id' => $p4->id, 'variant_id' => $variant->id],
                 [
-                    'image_path' => 'images/products/iphone-15-pro.png',
+                    'image_path' => 'images/products/iphone-15-pro.webp',
                     'is_primary' => ($varData['color_name'] === 'Natural Titanium'),
                     'order_index' => 1,
                 ]
@@ -298,7 +298,7 @@ class ProductSeeder extends Seeder
             ProductImage::updateOrCreate(
                 ['product_id' => $p5->id, 'variant_id' => $variant->id],
                 [
-                    'image_path' => 'images/products/iphone-14.png',
+                    'image_path' => 'images/products/iphone-14.webp',
                     'is_primary' => ($color['name'] === 'Midnight'),
                     'order_index' => 1,
                 ]
@@ -365,7 +365,7 @@ class ProductSeeder extends Seeder
             ProductImage::updateOrCreate(
                 ['product_id' => $p6->id, 'variant_id' => $variant->id],
                 [
-                    'image_path' => 'images/products/iphone-13.png',
+                    'image_path' => 'images/products/iphone-13.webp',
                     'is_primary' => ($varData['color_name'] === 'Midnight'),
                     'order_index' => 1,
                 ]

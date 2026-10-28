@@ -27,6 +27,9 @@
         <div class="ambient-orb ambient-orb-purple" style="bottom: 10%; right: 10%; width: 400px; height: 400px;"></div>
     </div>
 
+    <!-- Mobile Sidebar Frosted Backdrop -->
+    <div id="admin-sidebar-backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 hidden lg:hidden"></div>
+
     <!-- Responsive Collapsible Glass Sidebar -->
     <aside id="admin-sidebar" class="glass-sidebar w-64 min-h-screen shrink-0 fixed inset-y-0 left-0 z-40 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col justify-between border-r border-white/10">
         
@@ -50,9 +53,9 @@
                 <p class="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider px-3 mb-2">Menu Utama</p>
 
                 <!-- Dashboard -->
-                <a href="{{ url('/admin/dashboard') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ request()->is('admin/dashboard*') || request()->is('owner/dashboard*') ? 'bg-[#0071E3] text-white shadow-lg shadow-[#0071E3]/30 font-semibold' : 'text-[#8E8E93] hover:text-white hover:bg-white/5' }}">
+                <a href="{{ url('/admin/dashboard') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ request()->is('admin/dashboard*') ? 'bg-[#0071E3] text-white shadow-lg shadow-[#0071E3]/30 font-semibold' : 'text-[#8E8E93] hover:text-white hover:bg-white/5' }}">
                     <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-                    <span>Dashboard Metrik</span>
+                    <span>Dashboard Operasional</span>
                 </a>
 
                 <!-- Products & Variants -->
@@ -78,12 +81,23 @@
                     <span>Antrean Tukar Tambah</span>
                 </a>
 
-                <!-- Financial Reports (Owner Only) -->
+                <!-- Financial & Executive Portal (Owner Only) -->
                 @if(Auth::check() && Auth::user()->role === 'owner')
-                    <p class="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider px-3 mt-6 mb-2">Finansial & Laba</p>
-                    <a href="{{ url('/owner/financial-reports') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ request()->is('owner/financial-reports*') ? 'bg-[#0071E3] text-white shadow-lg shadow-[#0071E3]/30 font-semibold' : 'text-[#8E8E93] hover:text-white hover:bg-white/5' }}">
-                        <i data-lucide="trending-up" class="w-4 h-4 text-[#FF9F0A]"></i>
-                        <span>Laba Bersih & Arus Kas</span>
+                    <p class="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider px-3 mt-6 mb-2">Finansial & Owner</p>
+
+                    <a href="{{ route('owner.dashboard') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ request()->is('owner/dashboard*') ? 'bg-[#0071E3] text-white shadow-lg shadow-[#0071E3]/30 font-semibold' : 'text-[#8E8E93] hover:text-white hover:bg-white/5' }}">
+                        <i data-lucide="crown" class="w-4 h-4 text-[#FF9F0A]"></i>
+                        <span>Analitik & Arus Kas</span>
+                    </a>
+
+                    <a href="{{ route('owner.financial.report') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ request()->is('owner/financial-report*') ? 'bg-[#0071E3] text-white shadow-lg shadow-[#0071E3]/30 font-semibold' : 'text-[#8E8E93] hover:text-white hover:bg-white/5' }}">
+                        <i data-lucide="file-spreadsheet" class="w-4 h-4 text-[#34C759]"></i>
+                        <span>Laporan & Ekspor Data</span>
+                    </a>
+
+                    <a href="{{ route('owner.staff.index') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all {{ request()->is('owner/staff*') ? 'bg-[#0071E3] text-white shadow-lg shadow-[#0071E3]/30 font-semibold' : 'text-[#8E8E93] hover:text-white hover:bg-white/5' }}">
+                        <i data-lucide="users" class="w-4 h-4 text-[#5AC8FA]"></i>
+                        <span>Manajemen Staf & Admin</span>
                     </a>
                 @endif
 

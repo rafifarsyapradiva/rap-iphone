@@ -52,7 +52,7 @@
         <div class="absolute inset-0 bg-radial from-[#0071E3]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
 
         @if($primaryImage && file_exists(public_path($primaryImage)))
-            <img src="{{ asset($primaryImage) }}" alt="{{ $product->name }}" class="max-h-full max-w-full object-contain transform group-hover:scale-105 transition-transform duration-500 ease-out z-10">
+            <img src="{{ asset($primaryImage) }}" alt="{{ $product->name }}" width="320" height="320" loading="lazy" decoding="async" class="max-h-full max-w-full object-contain transform group-hover:scale-105 transition-transform duration-500 ease-out z-10">
         @else
             <!-- Apple Stylized iPhone Vector Rendering Fallback -->
             <div class="w-36 h-48 rounded-[36px] bg-gradient-to-tr from-[#161B22] via-[#21262D] to-[#30363D] border-[4px] border-[#8E8E93]/40 shadow-2xl relative flex flex-col items-center justify-between p-2.5 group-hover:scale-105 transition-transform duration-500 z-10">

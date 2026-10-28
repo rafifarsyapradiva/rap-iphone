@@ -123,11 +123,17 @@ class MidtransCallbackController extends Controller
                 $order->update(['status' => 'paid']);
                 $transitionedToPaid = true;
 
-                // Decrement inventory stock safely for each variant item
+                // Decrement inventory stock safely with row lock to prevent race conditions / negative stock
                 foreach ($order->items as $item) {
                     if ($item->product_variant_id) {
-                        ProductVariant::where('id', $item->product_variant_id)
-                            ->decrement('stock', $item->quantity);
+                        $variant = ProductVariant::where('id', $item->product_variant_id)
+                            ->lockForUpdate()
+                            ->first();
+
+                        if ($variant) {
+                            $newStock = max(0, (int) $variant->stock - (int) $item->quantity);
+                            $variant->update(['stock' => $newStock]);
+                        }
                     }
                 }
 

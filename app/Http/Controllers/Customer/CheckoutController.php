@@ -247,5 +247,113 @@ class CheckoutController extends Controller
 
         return view('customer.checkout-success', compact('order', 'clientKey', 'isProduction'));
     }
+
+    /**
+     * Simulate Midtrans Sandbox Payment (QRIS & Virtual Account) by dispatching a signed webhook payload.
+     */
+    public function simulateSandboxPayment(Request $request, Order $order): JsonResponse|RedirectResponse
+    {
+        abort_unless(
+            $order->user_id === auth()->id() || (auth()->check() && auth()->user()->hasRole('admin', 'owner')),
+            403,
+            'Anda tidak memiliki akses ke pesanan ini.'
+        );
+
+        abort_if(
+            $this->midtransService->isProduction(),
+            403,
+            'Simulasi pembayaran hanya dapat dijalankan pada mode Sandbox Midtrans.'
+        );
+
+        $validated = $request->validate([
+            'payment_method' => 'required|in:qris,bca_va,mandiri_va,bni_va,bri_va',
+            'simulation_status' => 'nullable|in:settlement,pending,expire,cancel',
+        ]);
+
+        $method = $validated['payment_method'];
+        $transactionStatus = $validated['simulation_status'] ?? 'settlement';
+
+        $statusCode = match ($transactionStatus) {
+            'settlement' => '200',
+            'pending' => '201',
+            default => '202',
+        };
+
+        $grossAmount = number_format((float) $order->grand_total, 2, '.', '');
+        $serverKey = $this->midtransService->getServerKey();
+        $signatureKey = hash('sha512', $order->order_number . $statusCode . $grossAmount . $serverKey);
+
+        $isQris = $method === 'qris';
+        $paymentType = $isQris ? 'qris' : 'bank_transfer';
+        $bankCode = $isQris ? null : str_replace('_va', '', $method);
+
+        $webhookPayload = [
+            'order_id' => $order->order_number,
+            'status_code' => $statusCode,
+            'gross_amount' => $grossAmount,
+            'signature_key' => $signatureKey,
+            'transaction_status' => $transactionStatus,
+            'fraud_status' => 'accept',
+            'transaction_id' => 'mid-sandbox-' . $method . '-' . strtolower(Str::random(8)),
+            'payment_type' => $paymentType,
+            'transaction_time' => now()->format('Y-m-d H:i:s'),
+            'sandbox_simulated' => true,
+            'selected_channel' => strtoupper($method),
+        ];
+
+        if ($isQris) {
+            $webhookPayload['issuer'] = 'gopay';
+            $webhookPayload['acquirer'] = 'gopay';
+        } else {
+            $vaPrefix = match ($bankCode) {
+                'bca' => '80777',
+                'mandiri' => '88908',
+                'bni' => '88100',
+                'bri' => '88888',
+                default => '80000',
+            };
+            $webhookPayload['va_numbers'] = [
+                [
+                    'bank' => $bankCode,
+                    'va_number' => $vaPrefix . preg_replace('/\D+/', '', $order->recipient_phone ?: '081234567890'),
+                ],
+            ];
+        }
+
+        $callbackResponse = app(\App\Http\Controllers\Api\MidtransCallbackController::class)
+            ->handle(new Request($webhookPayload));
+
+        $order->refresh();
+
+        $channelLabel = match ($method) {
+            'qris' => 'QRIS Midtrans (GoPay / ShopeePay / Mobile Banking)',
+            'bca_va' => 'BCA Virtual Account',
+            'mandiri_va' => 'Mandiri Bill / Virtual Account',
+            'bni_va' => 'BNI Virtual Account',
+            'bri_va' => 'BRI Virtual Account',
+            default => strtoupper($method),
+        };
+
+        $message = match ($order->status) {
+            'paid' => "Simulasi pembayaran Sandbox via {$channelLabel} BERHASIL! Status pesanan #{$order->order_number} otomatis diperbarui menjadi LUNAS (PAID).",
+            'cancelled' => "Simulasi pembatalan/kadaluarsa Sandbox selesai. Pesanan #{$order->order_number} berstatus DIBATALKAN.",
+            default => "Simulasi instruksi pembayaran {$channelLabel} dicatat (Status: MENUNGGU PEMBAYARAN).",
+        };
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => $callbackResponse->getStatusCode() === 200,
+                'order_number' => $order->order_number,
+                'order_status' => $order->status,
+                'payment_type' => $paymentType,
+                'selected_channel' => $channelLabel,
+                'message' => $message,
+            ], $callbackResponse->getStatusCode());
+        }
+
+        return redirect()
+            ->route('checkout.success', $order->order_number)
+            ->with('success', $message);
+    }
 }
 

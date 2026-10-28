@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\OrderManagementController;
+use App\Http\Controllers\Admin\ProductManagementController;
 use App\Http\Controllers\Admin\TradeInVerificationController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\GoogleAuthController;
@@ -8,9 +9,13 @@ use App\Http\Controllers\Customer\CartController;
 use App\Http\Controllers\Customer\CatalogController;
 use App\Http\Controllers\Customer\CheckoutController;
 use App\Http\Controllers\Customer\HomeController;
+use App\Http\Controllers\Customer\StorefrontUtilityController;
 use App\Http\Controllers\Customer\TradeInCustomerController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\InvoiceVerificationController;
+use App\Http\Controllers\Owner\ExecutiveDashboardController;
+use App\Http\Controllers\Owner\FinancialReportController;
+use App\Http\Controllers\Owner\StaffManagementController;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\TradeIn;
@@ -23,11 +28,14 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-// Customer Storefront Routes (Phase 5)
+// Customer Storefront Routes (Phase 5 & Phase 12 Utilities)
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/katalog', [CatalogController::class, 'index'])->name('catalog.index');
 Route::get('/katalog/{slug}', [CatalogController::class, 'show'])->name('catalog.show');
 Route::get('/api/products/search', [CatalogController::class, 'liveSearch'])->name('catalog.search');
+Route::get('/cek-garansi', [StorefrontUtilityController::class, 'warrantyCheck'])->name('warranty.check');
+Route::get('/lacak-pesanan', [StorefrontUtilityController::class, 'trackOrder'])->name('orders.track');
+Route::get('/syarat-garansi', [StorefrontUtilityController::class, 'warrantyTerms'])->name('warranty.terms');
 
 // Shopping Cart Module
 Route::prefix('cart')->name('cart.')->group(function () {
@@ -39,11 +47,12 @@ Route::prefix('cart')->name('cart.')->group(function () {
     Route::post('/clear', [CartController::class, 'clear'])->name('clear');
 });
 
-// Unified Checkout Module (Phase 6)
+// Unified Checkout Module (Phase 6 & Phase 12 Sandbox Simulator)
 Route::middleware('auth')->prefix('checkout')->name('checkout.')->group(function () {
     Route::get('/', [CheckoutController::class, 'index'])->name('index');
     Route::post('/process', [CheckoutController::class, 'process'])->name('process');
     Route::get('/success/{order:order_number}', [CheckoutController::class, 'success'])->name('success');
+    Route::post('/{order:order_number}/simulate-sandbox', [CheckoutController::class, 'simulateSandboxPayment'])->name('simulate');
 });
 
 // Trade-In & Buyback Program Module (Phase 7)
@@ -139,12 +148,36 @@ Route::middleware(['auth', 'role:admin,owner'])->prefix('admin')->name('admin.')
         return view('admin.dashboard', compact('totalProducts', 'totalOrders', 'pendingTradeIns', 'recentOrders'));
     })->name('dashboard');
 
-    // Admin Order Management & Bulk Invoice / Shipping Label Printing (Phase 9.2)
+    // Admin Product & Inventory Management (Phase 10.1)
+    Route::prefix('products')->name('products.')->group(function () {
+        Route::get('/', [ProductManagementController::class, 'index'])->name('index');
+        Route::get('/create', [ProductManagementController::class, 'create'])->name('create');
+        Route::post('/', [ProductManagementController::class, 'store'])->name('store');
+        Route::get('/{product}/edit', [ProductManagementController::class, 'edit'])->name('edit');
+        Route::put('/{product}', [ProductManagementController::class, 'update'])->name('update');
+        Route::delete('/{product}', [ProductManagementController::class, 'destroy'])->name('destroy');
+
+        // Variants CRUD (Color, Capacity, Stock, HPP, Selling Price, BH, IMEI)
+        Route::post('/{product}/variants', [ProductManagementController::class, 'storeVariant'])->name('variants.store');
+        Route::put('/{product}/variants/{variant}', [ProductManagementController::class, 'updateVariant'])->name('variants.update');
+        Route::delete('/{product}/variants/{variant}', [ProductManagementController::class, 'destroyVariant'])->name('variants.destroy');
+
+        // Multi-Angle Product Photos Management
+        Route::post('/{product}/images', [ProductManagementController::class, 'storeImages'])->name('images.store');
+        Route::patch('/{product}/images/{image}/primary', [ProductManagementController::class, 'setPrimaryImage'])->name('images.primary');
+        Route::patch('/{product}/images/{image}/order', [ProductManagementController::class, 'updateImageOrder'])->name('images.order');
+        Route::delete('/{product}/images/{image}', [ProductManagementController::class, 'destroyImage'])->name('images.destroy');
+    });
+
+    // Admin Order Management, Logistics & Bulk Invoice / Shipping Label Printing (Phase 9.2 & 10.2)
     Route::prefix('orders')->name('orders.')->group(function () {
         Route::get('/', [OrderManagementController::class, 'index'])->name('index');
         Route::post('/bulk/invoices', [OrderManagementController::class, 'bulkInvoices'])->name('bulk.invoices');
         Route::post('/bulk/labels', [OrderManagementController::class, 'bulkLabels'])->name('bulk.labels');
         Route::get('/{order:order_number}/invoice', [OrderManagementController::class, 'invoice'])->name('invoice');
+        Route::get('/{order:order_number}', [OrderManagementController::class, 'show'])->name('show');
+        Route::patch('/{order:order_number}/status', [OrderManagementController::class, 'updateStatus'])->name('status');
+        Route::patch('/{order:order_number}/shipping', [OrderManagementController::class, 'updateShipping'])->name('shipping');
     });
 
     // Admin Trade-In Verification & Inspection Panel (Phase 7.2)
@@ -154,24 +187,31 @@ Route::middleware(['auth', 'role:admin,owner'])->prefix('admin')->name('admin.')
         Route::put('/{tradeIn:trade_in_code}/inspect', [TradeInVerificationController::class, 'updateInspection'])->name('inspect');
         Route::patch('/{tradeIn:trade_in_code}/decision', [TradeInVerificationController::class, 'updateDecision'])->name('decision');
     });
+
+    // System & Third-Party API Configuration Status (Phase 12)
+    Route::get('/settings', [StorefrontUtilityController::class, 'adminSettings'])->name('settings');
 });
 
 /*
 |--------------------------------------------------------------------------
-| Owner Exclusive Workspace (Role: owner)
+| Owner Exclusive Workspace (Role: owner) — Phase 11
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->group(function () {
-    Route::get('/dashboard', function () {
-        $totalRevenue = Order::where('status', 'paid')->sum('grand_total');
-        $totalAdmins = User::where('role', 'admin')->count();
-        $totalCustomers = User::where('role', 'customer')->count();
+    // 11.1 & 11.2: Executive Financial Metrics & Business Performance Dashboard
+    Route::get('/dashboard', [ExecutiveDashboardController::class, 'index'])->name('dashboard');
 
-        return view('owner.dashboard', compact('totalRevenue', 'totalAdmins', 'totalCustomers'));
-    })->name('dashboard');
+    // 11.3: Financial Reports, Profit & Loss Statement, and Data Export (CSV/Excel & PDF)
+    Route::get('/financial-report', [FinancialReportController::class, 'index'])->name('financial.report');
+    Route::get('/financial-reports', [FinancialReportController::class, 'index'])->name('financial.reports');
+    Route::get('/financial-report/export/csv', [FinancialReportController::class, 'exportCsv'])->name('financial.export.csv');
+    Route::get('/financial-report/export/pdf', [FinancialReportController::class, 'exportPdf'])->name('financial.export.pdf');
 
-    Route::get('/financial-report', function () {
-        $totalRevenue = Order::where('status', 'paid')->sum('grand_total');
-        return view('owner.dashboard', compact('totalRevenue'));
-    })->name('financial.report');
+    // 11.3: Store Staff & Admin Account Management
+    Route::prefix('staff')->name('staff.')->group(function () {
+        Route::get('/', [StaffManagementController::class, 'index'])->name('index');
+        Route::post('/', [StaffManagementController::class, 'store'])->name('store');
+        Route::put('/{user}', [StaffManagementController::class, 'update'])->name('update');
+        Route::delete('/{user}', [StaffManagementController::class, 'destroy'])->name('destroy');
+    });
 });
