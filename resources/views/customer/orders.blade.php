@@ -1,0 +1,119 @@
+@extends('layouts.customer')
+
+@section('title', 'Pesanan Saya - Rap-iPhone')
+
+@section('content')
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <!-- Header Section -->
+    <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs text-[#E5E5EA] mb-2">
+                <i data-lucide="user" class="w-3.5 h-3.5 text-[#0071E3]"></i>
+                <span>Customer Portal</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Pesanan & Akun Saya</h1>
+            <p class="text-xs sm:text-sm text-[#8E8E93] mt-1">
+                Lacak status pengiriman paket unit iPhone dan unduh faktur resmi bergaransi Anda.
+            </p>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <a href="{{ url('/') }}" class="glass-btn glass-btn-primary glass-btn-sm flex items-center gap-2">
+                <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+                <span>Belanja iPhone Baru</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- User Profile Summary Pill -->
+    <div class="glass-card-elevated rounded-2xl p-5 mb-8 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#0071E3] to-[#34C759] flex items-center justify-center font-bold text-xl text-white shadow-lg overflow-hidden shrink-0">
+                @if(Auth::user()->avatar)
+                    <img src="{{ Auth::user()->avatar }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover">
+                @else
+                    {{ substr(Auth::user()->name, 0, 1) }}
+                @endif
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <h2 class="text-base font-bold text-white">{{ Auth::user()->name }}</h2>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#34C759]/20 text-[#34C759] border border-[#34C759]/30">
+                        {{ strtoupper(Auth::user()->role) }}
+                    </span>
+                    @if(Auth::user()->google_id)
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white/10 text-white/80 border border-white/20 flex items-center gap-1">
+                            <i data-lucide="check" class="w-3 h-3 text-[#5AC8FA]"></i>
+                            Google Connected
+                        </span>
+                    @endif
+                </div>
+                <p class="text-xs text-[#8E8E93] mt-0.5">{{ Auth::user()->email }} &bull; {{ Auth::user()->phone_number ?? 'Nomor WhatsApp belum diisi' }}</p>
+            </div>
+        </div>
+
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="glass-btn glass-btn-secondary glass-btn-sm text-[#FF453A] border-[#FF453A]/30 hover:bg-[#FF453A]/10 flex items-center gap-1.5">
+                <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                <span>Keluar Akun</span>
+            </button>
+        </form>
+    </div>
+
+    <!-- Orders Section -->
+    <div class="space-y-4">
+        <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="package" class="w-4 h-4 text-[#0071E3]"></i>
+            <span>Daftar Transaksi Pembelian</span>
+        </h2>
+
+        @if(isset($orders) && count($orders) > 0)
+            <div class="grid grid-cols-1 gap-4">
+                @foreach($orders as $order)
+                    <div class="glass-card rounded-2xl p-5 border border-white/10 hover:border-white/20 transition-all">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+                            <div>
+                                <span class="text-xs text-[#8E8E93]">No. Nota:</span>
+                                <span class="font-mono text-sm font-bold text-white ml-1">{{ $order->order_number }}</span>
+                                <span class="text-xs text-[#8E8E93] ml-3">{{ $order->created_at->format('d M Y, H:i') }}</span>
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[#34C759]/20 text-[#34C759] border border-[#34C759]/30">
+                                {{ strtoupper($order->status) }}
+                            </span>
+                        </div>
+                        <div class="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div class="text-xs text-[#8E8E93]">
+                                <p class="text-white font-medium">{{ $order->recipient_name }}</p>
+                                <p>{{ $order->shipping_courier }} - {{ $order->shipping_address }}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs text-[#8E8E93] block">Total Pembayaran</span>
+                                <span class="text-base font-bold text-white">Rp {{ number_format($order->grand_total, 0, ',', '.') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <!-- Empty State -->
+            <div class="glass-card rounded-3xl p-12 text-center border border-white/10">
+                <div class="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4 text-[#8E8E93]">
+                    <i data-lucide="shopping-bag" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white">Belum Ada Riwayat Pesanan</h3>
+                <p class="text-xs text-[#8E8E93] mt-1 max-w-md mx-auto">
+                    Anda belum melakukan pemesanan unit iPhone. Jelajahi katalog resmi kami untuk menemukan iPhone impian Anda dengan garansi terpercaya.
+                </p>
+                <div class="mt-6">
+                    <a href="{{ url('/') }}" class="glass-btn glass-btn-primary glass-btn-sm">
+                        <span>Mulai Belanja</span>
+                    </a>
+                </div>
+            </div>
+        @endif
+    </div>
+
+</div>
+@endsection

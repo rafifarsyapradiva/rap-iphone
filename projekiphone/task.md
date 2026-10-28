@@ -54,14 +54,14 @@
 ---
 
 ### Phase 4: Autentikasi, Google OAuth & Role Middleware
-- [ ] **4.1. Autentikasi Konvensional & Register**
-  - [ ] Controller login, register, logout, serta hashing password aman Bcrypt.
-- [ ] **4.2. Integrasi Google Console Login (Socialite)**
-  - [ ] `GoogleAuthController`: Redirect ke Google OAuth & Callback handler.
-  - [ ] Logika sinkronisasi akun baru / existing user otomatis dengan role `customer`.
-- [ ] **4.3. Middleware Hak Akses (Role Guards)**
-  - [ ] Implementasi `RoleMiddleware` (`role:admin`, `role:owner`, `role:customer`).
-  - [ ] Pengalihan rute otomatis sesuai hak akses setelah login.
+- [x] **4.1. Autentikasi Konvensional & Register**
+  - [x] Controller login, register, logout, serta hashing password aman Bcrypt.
+- [x] **4.2. Integrasi Google Console Login (Socialite)**
+  - [x] `GoogleAuthController`: Redirect ke Google OAuth & Callback handler.
+  - [x] Logika sinkronisasi akun baru / existing user otomatis dengan role `customer`.
+- [x] **4.3. Middleware Hak Akses (Role Guards)**
+  - [x] Implementasi `RoleMiddleware` (`role:admin`, `role:owner`, `role:customer`).
+  - [x] Pengalihan rute otomatis sesuai hak akses setelah login.
 
 ---
 
