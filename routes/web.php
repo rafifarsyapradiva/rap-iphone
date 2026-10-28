@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\OrderManagementController;
 use App\Http\Controllers\Admin\TradeInVerificationController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\GoogleAuthController;
@@ -8,6 +9,8 @@ use App\Http\Controllers\Customer\CatalogController;
 use App\Http\Controllers\Customer\CheckoutController;
 use App\Http\Controllers\Customer\HomeController;
 use App\Http\Controllers\Customer\TradeInCustomerController;
+use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\InvoiceVerificationController;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\TradeIn;
@@ -51,6 +54,18 @@ Route::prefix('trade-in')->name('trade-in.')->group(function () {
         Route::post('/', [TradeInCustomerController::class, 'store'])->name('store');
         Route::get('/{tradeIn:trade_in_code}', [TradeInCustomerController::class, 'show'])->name('show');
     });
+});
+
+// Official Invoice PDF (Phase 9)
+// Public authenticity verification page (QR Code target on the PDF invoice)
+Route::get('/verifikasi-nota/{orderNumber}/{code}', [InvoiceVerificationController::class, 'show'])
+    ->middleware('throttle:30,1')
+    ->name('invoice.verify');
+
+// Invoice download & print preview (authorized via OrderPolicy@downloadInvoice)
+Route::middleware('auth')->prefix('orders/{order:order_number}/invoice')->name('orders.invoice.')->group(function () {
+    Route::get('/', [InvoiceController::class, 'download'])->name('download');
+    Route::get('/preview', [InvoiceController::class, 'preview'])->name('preview');
 });
 
 // Dedicated Design System Showcase (Preserved for Reference & Testing)
@@ -123,6 +138,14 @@ Route::middleware(['auth', 'role:admin,owner'])->prefix('admin')->name('admin.')
 
         return view('admin.dashboard', compact('totalProducts', 'totalOrders', 'pendingTradeIns', 'recentOrders'));
     })->name('dashboard');
+
+    // Admin Order Management & Bulk Invoice / Shipping Label Printing (Phase 9.2)
+    Route::prefix('orders')->name('orders.')->group(function () {
+        Route::get('/', [OrderManagementController::class, 'index'])->name('index');
+        Route::post('/bulk/invoices', [OrderManagementController::class, 'bulkInvoices'])->name('bulk.invoices');
+        Route::post('/bulk/labels', [OrderManagementController::class, 'bulkLabels'])->name('bulk.labels');
+        Route::get('/{order:order_number}/invoice', [OrderManagementController::class, 'invoice'])->name('invoice');
+    });
 
     // Admin Trade-In Verification & Inspection Panel (Phase 7.2)
     Route::prefix('trade-ins')->name('trade-ins.')->group(function () {

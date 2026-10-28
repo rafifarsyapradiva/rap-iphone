@@ -23,6 +23,10 @@
             </div>
             
             <div class="flex items-center gap-3 shrink-0">
+                <a href="{{ route('admin.orders.index') }}" class="glass-btn glass-btn-secondary glass-btn-sm flex items-center gap-2">
+                    <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                    <span>Kelola &amp; Cetak Pesanan</span>
+                </a>
                 <a href="{{ url('/') }}" target="_blank" class="glass-btn glass-btn-secondary glass-btn-sm flex items-center gap-2">
                     <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
                     <span>Lihat Toko</span>

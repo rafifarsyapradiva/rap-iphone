@@ -126,13 +126,13 @@
 ---
 
 ### Phase 9: Generator Nota & Faktur PDF Resmi
-- [ ] **9.1. Template Desain Nota PDF (DomPDF)**
-  - [ ] Format A4 elegan bergaya Apple Authorized Partner.
-  - [ ] Rincian lengkap produk, varian warna/kapasitas, nomor IMEI unit, masa garansi, dan harga.
-  - [ ] QR Code keaslian nota dan syarat ketentuan klaim garansi.
-- [ ] **9.2. Fitur Download & Print Faktur**
-  - [ ] Tombol unduh invoice pada dashboard pesanan customer.
-  - [ ] Tombol cetak massal invoice dan label pengiriman pada panel admin.
+- [x] **9.1. Template Desain Nota PDF (DomPDF)**
+  - [x] Format A4 elegan bergaya Apple Authorized Partner.
+  - [x] Rincian lengkap produk, varian warna/kapasitas, nomor IMEI unit, masa garansi, dan harga.
+  - [x] QR Code keaslian nota dan syarat ketentuan klaim garansi.
+- [x] **9.2. Fitur Download & Print Faktur**
+  - [x] Tombol unduh invoice pada dashboard pesanan customer.
+  - [x] Tombol cetak massal invoice dan label pengiriman pada panel admin.
 
 ---
 

@@ -93,8 +93,15 @@
                                         DIBATALKAN
                                     </span>
                                 @else
+                                    @php
+                                        $statusLabels = [
+                                            'processing' => 'LUNAS · DIPROSES',
+                                            'shipped' => 'DIKIRIM KURIR',
+                                            'completed' => 'PESANAN SELESAI',
+                                        ];
+                                    @endphp
                                     <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[#0071E3]/20 text-[#0071E3] border border-[#0071E3]/30">
-                                        {{ strtoupper($order->status) }}
+                                        {{ $statusLabels[$order->status] ?? strtoupper($order->status) }}
                                     </span>
                                 @endif
                             </div>
@@ -112,7 +119,7 @@
                                     <span class="text-xs text-[#8E8E93] block">Total Pembayaran</span>
                                     <span class="text-base font-bold text-white">Rp {{ number_format($order->grand_total, 0, ',', '.') }}</span>
                                 </div>
-                                <div class="flex items-center gap-2">
+                                <div class="flex flex-wrap items-center sm:justify-end gap-2">
                                     <a href="{{ route('checkout.success', $order->order_number) }}" class="glass-btn glass-btn-secondary glass-btn-sm text-xs">
                                         Lihat Rincian
                                     </a>
@@ -121,6 +128,16 @@
                                             Bayar Sekarang
                                         </a>
                                     @endif
+                                    @can('downloadInvoice', $order)
+                                        <a href="{{ route('orders.invoice.preview', $order->order_number) }}" target="_blank" class="glass-btn glass-btn-secondary glass-btn-sm text-xs inline-flex items-center gap-1.5" title="Buka nota untuk dicetak">
+                                            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                                            <span>Cetak</span>
+                                        </a>
+                                        <a href="{{ route('orders.invoice.download', $order->order_number) }}" class="glass-btn glass-btn-primary glass-btn-sm text-xs font-bold inline-flex items-center gap-1.5" data-testid="download-invoice">
+                                            <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
+                                            <span>Unduh Nota PDF</span>
+                                        </a>
+                                    @endcan
                                 </div>
                             </div>
                         </div>

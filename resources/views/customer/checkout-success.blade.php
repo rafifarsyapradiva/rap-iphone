@@ -181,6 +181,19 @@
 
             <!-- Action CTAs -->
             <div class="space-y-2.5">
+                @can('downloadInvoice', $order)
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <a href="{{ route('orders.invoice.download', $order->order_number) }}" class="glass-btn glass-btn-primary glass-btn-md w-full flex items-center justify-center gap-2 text-xs font-bold" data-testid="download-invoice">
+                            <i data-lucide="file-down" class="w-4 h-4"></i>
+                            <span>Unduh Nota PDF</span>
+                        </a>
+                        <a href="{{ route('orders.invoice.preview', $order->order_number) }}" target="_blank" class="glass-btn glass-btn-secondary glass-btn-md w-full flex items-center justify-center gap-2 text-xs font-bold">
+                            <i data-lucide="printer" class="w-4 h-4"></i>
+                            <span>Cetak Nota</span>
+                        </a>
+                    </div>
+                @endcan
+
                 <a href="{{ route('customer.orders') }}" class="glass-btn glass-btn-secondary glass-btn-md w-full flex items-center justify-center gap-2 text-xs font-bold">
                     <i data-lucide="clock" class="w-4 h-4"></i>
                     <span>Lihat Riwayat Pesanan Saya</span>
