@@ -4,20 +4,20 @@
 ---
 
 ### Phase 1: Inisialisasi Proyek & Konfigurasi Environment
-- [ ] **1.1. Setup Project Laravel 12 & Database**
-  - [ ] Inisialisasi proyek Laravel 12 di direktori kerja (`rap-iphone`).
-  - [ ] Konfigurasi file `.env` untuk koneksi MySQL phpMyAdmin (`DB_DATABASE=rap_iphone`, `DB_USERNAME=root`, `DB_PASSWORD=`).
-  - [ ] Konfigurasi Git / struktur repositori dan ignores.
-- [ ] **1.2. Instalasi Paket Dependensi Kunci**
-  - [ ] `composer require laravel/socialite` (Autentikasi Google Console).
-  - [ ] `composer require midtrans/midtrans-php` (Payment Gateway Midtrans).
-  - [ ] `composer require barryvdh/laravel-dompdf` (Generator Nota PDF).
-  - [ ] `composer require guzzlehttp/guzzle` (Klien HTTP untuk API WhatsApp Fonnte).
-- [ ] **1.3. Konfigurasi Variabel Lingkungan Pihak Ketiga**
-  - [ ] Setup kredensial Google OAuth (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`).
-  - [ ] Setup kredensial Midtrans (`MIDTRANS_SERVER_KEY`, `MIDTRANS_CLIENT_KEY`, `MIDTRANS_IS_PRODUCTION=false`).
-  - [ ] Setup kredensial Fonnte WhatsApp (`FONNTE_TOKEN`).
-  - [ ] Setup konfigurasi SMTP Email (`MAIL_MAILER=smtp`, `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, dll).
+- [x] **1.1. Setup Project Laravel 12 & Database**
+  - [x] Inisialisasi proyek Laravel 12 di direktori kerja (`rap-iphone`).
+  - [x] Konfigurasi file `.env` untuk koneksi MySQL phpMyAdmin (`DB_DATABASE=rap_iphone`, `DB_USERNAME=root`, `DB_PASSWORD=`).
+  - [x] Konfigurasi Git / struktur repositori dan ignores.
+- [x] **1.2. Instalasi Paket Dependensi Kunci**
+  - [x] `composer require laravel/socialite` (Autentikasi Google Console).
+  - [x] `composer require midtrans/midtrans-php` (Payment Gateway Midtrans).
+  - [x] `composer require barryvdh/laravel-dompdf` (Generator Nota PDF).
+  - [x] `composer require guzzlehttp/guzzle` (Klien HTTP untuk API WhatsApp Fonnte).
+- [x] **1.3. Konfigurasi Variabel Lingkungan Pihak Ketiga**
+  - [x] Setup kredensial Google OAuth (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`).
+  - [x] Setup kredensial Midtrans (`MIDTRANS_SERVER_KEY`, `MIDTRANS_CLIENT_KEY`, `MIDTRANS_IS_PRODUCTION=false`).
+  - [x] Setup kredensial Fonnte WhatsApp (`FONNTE_TOKEN`).
+  - [x] Setup konfigurasi SMTP Email (`MAIL_MAILER=smtp`, `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, dll).
 
 ---
 
