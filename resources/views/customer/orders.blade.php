@@ -146,5 +146,54 @@
         @endif
     </div>
 
+    <!-- Trade-In Submissions Section -->
+    <div class="space-y-4 mt-10 pt-8 border-t border-white/10">
+        <div class="flex items-center justify-between">
+            <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                <i data-lucide="refresh-cw" class="w-4 h-4 text-[#34C759]"></i>
+                <span>Riwayat Pengajuan Tukar Tambah (Trade-In)</span>
+            </h2>
+            <a href="{{ route('trade-in.index') }}" class="text-xs font-semibold text-[#5AC8FA] hover:text-white flex items-center gap-1">
+                <span>+ Ajukan Trade-In Baru</span>
+            </a>
+        </div>
+
+        @if(isset($tradeIns) && count($tradeIns) > 0)
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                @foreach($tradeIns as $ti)
+                    <div class="glass-card rounded-2xl p-5 border border-white/10 hover:border-white/20 transition-all flex flex-col justify-between gap-3">
+                        <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                            <div>
+                                <span class="font-mono text-xs font-bold text-[#5AC8FA]">{{ $ti->trade_in_code }}</span>
+                                <span class="text-[11px] text-[#8E8E93] ml-2">{{ $ti->created_at->format('d M Y, H:i') }}</span>
+                            </div>
+                            <span class="glass-badge {{ $ti->status_badge_class }}">
+                                <span class="glass-badge-dot"></span>
+                                <span>{{ $ti->status_label }}</span>
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="text-xs space-y-1">
+                                <p class="font-bold text-white">{{ $ti->phone_model }} ({{ $ti->storage_capacity }})</p>
+                                <p class="text-[#8E8E93]">{{ $ti->physical_condition }} &bull; BH {{ $ti->battery_health }}%</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-[10px] text-[#8E8E93] block">{{ $ti->final_price ? 'Harga Final' : 'Estimasi' }}</span>
+                                <span class="text-sm font-black text-[#34C759] block">Rp {{ number_format($ti->effective_price, 0, ',', '.') }}</span>
+                                <a href="{{ route('trade-in.show', $ti->trade_in_code) }}" class="text-[11px] text-[#5AC8FA] hover:underline font-semibold">
+                                    Lihat Detail &rarr;
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <div class="glass-card rounded-2xl p-6 text-center border border-white/10 text-xs text-[#8E8E93]">
+                Belum ada pengajuan tukar tambah iPhone. <a href="{{ route('trade-in.index') }}" class="text-[#5AC8FA] font-semibold hover:underline">Cek estimasi nilai iPhone lama Anda di sini</a>.
+            </div>
+        @endif
+    </div>
+
 </div>
 @endsection

@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\Admin\TradeInVerificationController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Customer\CartController;
 use App\Http\Controllers\Customer\CatalogController;
 use App\Http\Controllers\Customer\CheckoutController;
 use App\Http\Controllers\Customer\HomeController;
+use App\Http\Controllers\Customer\TradeInCustomerController;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\TradeIn;
@@ -39,6 +41,16 @@ Route::middleware('auth')->prefix('checkout')->name('checkout.')->group(function
     Route::get('/', [CheckoutController::class, 'index'])->name('index');
     Route::post('/process', [CheckoutController::class, 'process'])->name('process');
     Route::get('/success/{order:order_number}', [CheckoutController::class, 'success'])->name('success');
+});
+
+// Trade-In & Buyback Program Module (Phase 7)
+Route::prefix('trade-in')->name('trade-in.')->group(function () {
+    Route::get('/', [TradeInCustomerController::class, 'index'])->name('index');
+    Route::post('/calculate', [TradeInCustomerController::class, 'calculate'])->name('calculate');
+    Route::middleware('auth')->group(function () {
+        Route::post('/', [TradeInCustomerController::class, 'store'])->name('store');
+        Route::get('/{tradeIn:trade_in_code}', [TradeInCustomerController::class, 'show'])->name('show');
+    });
 });
 
 // Dedicated Design System Showcase (Preserved for Reference & Testing)
@@ -87,11 +99,13 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer.')->group(function () {
     Route::get('/orders', function () {
         $orders = Order::where('user_id', auth()->id())->with(['items', 'payment'])->latest()->get();
-        return view('customer.orders', compact('orders'));
+        $tradeIns = TradeIn::where('user_id', auth()->id())->latest()->get();
+        return view('customer.orders', compact('orders', 'tradeIns'));
     })->name('orders');
 
     Route::get('/profile', function () {
-        return view('customer.orders', ['orders' => collect([])]);
+        $tradeIns = TradeIn::where('user_id', auth()->id())->latest()->get();
+        return view('customer.orders', ['orders' => collect([]), 'tradeIns' => $tradeIns]);
     })->name('profile');
 });
 
@@ -109,6 +123,14 @@ Route::middleware(['auth', 'role:admin,owner'])->prefix('admin')->name('admin.')
 
         return view('admin.dashboard', compact('totalProducts', 'totalOrders', 'pendingTradeIns', 'recentOrders'));
     })->name('dashboard');
+
+    // Admin Trade-In Verification & Inspection Panel (Phase 7.2)
+    Route::prefix('trade-ins')->name('trade-ins.')->group(function () {
+        Route::get('/', [TradeInVerificationController::class, 'index'])->name('index');
+        Route::get('/{tradeIn:trade_in_code}', [TradeInVerificationController::class, 'show'])->name('show');
+        Route::put('/{tradeIn:trade_in_code}/inspect', [TradeInVerificationController::class, 'updateInspection'])->name('inspect');
+        Route::patch('/{tradeIn:trade_in_code}/decision', [TradeInVerificationController::class, 'updateDecision'])->name('decision');
+    });
 });
 
 /*

@@ -101,14 +101,14 @@
 ---
 
 ### Phase 7: Modul Jual & Tukar Tambah iPhone (Trade-In Program)
-- [ ] **7.1. Wizard Interaktif Pelanggan (Trade-In Wizard)**
-  - [ ] Form 4 langkah: Pilih Model -> Kapasitas -> Kondisi Fisik & Fungsi -> Estimasi Nilai.
-  - [ ] Kalkulator penaksir nilai otomatis berbasis parameter kondisi unit.
-  - [ ] Pilihan pencairan dana: Transfer bank rekening customer atau kupon potongan belanja.
-- [ ] **7.2. Panel Verifikasi & Inspeksi Admin**
-  - [ ] Antrean pengajuan trade-in customer.
-  - [ ] Form inspeksi teknisi toko saat unit diterima.
-  - [ ] Fitur penyesuaian penawaran harga final dan tombol persetujuan (*Approve / Reject*).
+- [x] **7.1. Wizard Interaktif Pelanggan (Trade-In Wizard)**
+  - [x] Form 4 langkah: Pilih Model -> Kapasitas -> Kondisi Fisik & Fungsi -> Estimasi Nilai.
+  - [x] Kalkulator penaksir nilai otomatis berbasis parameter kondisi unit.
+  - [x] Pilihan pencairan dana: Transfer bank rekening customer atau kupon potongan belanja.
+- [x] **7.2. Panel Verifikasi & Inspeksi Admin**
+  - [x] Antrean pengajuan trade-in customer.
+  - [x] Form inspeksi teknisi toko saat unit diterima.
+  - [x] Fitur penyesuaian penawaran harga final dan tombol persetujuan (*Approve / Reject*).
 
 ---
 

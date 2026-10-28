@@ -10,6 +10,8 @@ class TradeIn extends Model
 {
     use HasFactory;
 
+    public const VOUCHER_BANK_MARKER = 'Kupon Potongan Belanja';
+
     protected $fillable = [
         'trade_in_code',
         'user_id',
@@ -53,5 +55,52 @@ class TradeIn extends Model
     public function targetOrder(): BelongsTo
     {
         return $this->belongsTo(Order::class, 'target_order_id');
+    }
+
+    /**
+     * Check if the customer selected Store Discount Voucher as payout method.
+     */
+    public function isVoucherPayout(): bool
+    {
+        return $this->customer_bank_name === self::VOUCHER_BANK_MARKER
+            || str_starts_with((string) $this->customer_account_number, 'VCH-');
+    }
+
+    /**
+     * Get human-readable Indonesian label for current status.
+     */
+    public function getStatusLabelAttribute(): string
+    {
+        return match ($this->status) {
+            'submitted' => 'Menunggu Penyerahan Unit',
+            'unit_received' => 'Unit Diterima di Toko',
+            'inspected' => 'Selesai Diinspeksi Teknisi',
+            'approved' => 'Penawaran Disetujui',
+            'rejected' => 'Pengajuan Ditolak',
+            'paid_out' => $this->isVoucherPayout() ? 'Kupon Potongan Aktif' : 'Dana Telah Ditransfer',
+            default => strtoupper((string) $this->status),
+        };
+    }
+
+    /**
+     * Get CSS badge class for current status.
+     */
+    public function getStatusBadgeClassAttribute(): string
+    {
+        return match ($this->status) {
+            'submitted' => 'badge-pending',
+            'unit_received', 'inspected' => 'badge-processing',
+            'approved', 'paid_out' => 'badge-paid',
+            'rejected' => 'badge-cancelled',
+            default => 'badge-pending',
+        };
+    }
+
+    /**
+     * Get the effective deal price (final_price if set, otherwise estimated_price).
+     */
+    public function getEffectivePriceAttribute(): float
+    {
+        return (float) ($this->final_price ?? $this->estimated_price);
     }
 }
