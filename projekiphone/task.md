@@ -41,14 +41,15 @@
 ---
 
 ### Phase 3: Desain Sistem & Template Blade Glassmorphism
-- [ ] **3.1. Pembuatan Core CSS Glassmorphism**
-  - [ ] Desain token CSS (variabel warna titanium, blur filter, border kaca, glow gradient).
-  - [ ] Utilitas kartu kaca frosted (`.glass-card`, `.glass-navbar`, `.glass-modal`, `.glass-button`).
-- [ ] **3.2. Layout Induk (Master Blade Layouts)**
-  - [ ] Layout Customer (`layouts.customer`): Navbar frosted glass sticky, search modal, badge keranjang, footer profesional.
-  - [ ] Layout Admin / Owner (`layouts.admin`): Sidebar kaca responsif, header profil, breadcrumbs.
-- [ ] **3.3. Komponen UI Blade Reusable**
-  - [ ] Komponen tombol kaca (`<x-glass-button>`), kartu produk (`<x-product-card>`), badge status pesanan (`<x-order-badge>`), indikator kesehatan baterai (`<x-battery-meter>`).
+- [x] **3.1. Pembuatan Core CSS Glassmorphism**
+  - [x] Desain token CSS (variabel warna titanium, blur filter, border kaca, glow gradient).
+  - [x] Utilitas kartu kaca frosted (`.glass-card`, `.glass-navbar`, `.glass-modal`, `.glass-button`).
+- [x] **3.2. Layout Induk (Master Blade Layouts)**
+  - [x] Layout Customer (`layouts.customer`): Navbar frosted glass sticky, search modal, badge keranjang, footer profesional.
+  - [x] Layout Admin / Owner (`layouts.admin`): Sidebar kaca responsif, header profil, breadcrumbs.
+- [x] **3.3. Komponen UI Blade Reusable**
+  - [x] Komponen tombol kaca (`<x-glass-button>`), kartu produk (`<x-product-card>`), badge status pesanan (`<x-order-badge>`), indikator kesehatan baterai (`<x-battery-meter>`).
+
 
 ---
 

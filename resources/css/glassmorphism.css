@@ -1,0 +1,574 @@
+/**
+ * Rap-iPhone Glassmorphism Design System
+ * Apple Retail (iBox / Digimap) Inspired UI Architecture
+ */
+
+:root {
+  /* Canvas & Glass Surfaces */
+  --canvas-bg: #0B0C10;
+  --glass-surface: rgba(22, 27, 34, 0.65);
+  --glass-surface-elevated: rgba(33, 38, 45, 0.85);
+  --glass-surface-subtle: rgba(255, 255, 255, 0.04);
+  --glass-surface-hover: rgba(45, 52, 64, 0.75);
+
+  /* Glass Borders */
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-border-hover: rgba(255, 255, 255, 0.28);
+  --glass-border-subtle: rgba(255, 255, 255, 0.06);
+
+  /* Accent & Brand Colors */
+  --apple-blue: #0071E3;
+  --apple-blue-hover: #0077ED;
+  --apple-blue-glow: rgba(0, 113, 227, 0.35);
+  --apple-blue-subtle: rgba(0, 113, 227, 0.12);
+
+  /* Typography Colors */
+  --text-primary: #F5F5F7;
+  --text-titanium: #E5E5EA;
+  --text-secondary: #8E8E93;
+  --text-muted: #636366;
+
+  /* Status Colors */
+  --status-emerald: #34C759;
+  --status-emerald-glow: rgba(52, 199, 89, 0.3);
+  --status-emerald-bg: rgba(52, 199, 89, 0.12);
+
+  --status-amber: #FF9F0A;
+  --status-amber-glow: rgba(255, 159, 10, 0.3);
+  --status-amber-bg: rgba(255, 159, 10, 0.12);
+
+  --status-crimson: #FF453A;
+  --status-crimson-glow: rgba(255, 69, 58, 0.3);
+  --status-crimson-bg: rgba(255, 69, 58, 0.12);
+
+  --status-purple: #AF52DE;
+  --status-purple-glow: rgba(175, 82, 222, 0.3);
+  --status-purple-bg: rgba(175, 82, 222, 0.12);
+
+  --status-cyan: #32ADE6;
+  --status-cyan-glow: rgba(50, 173, 230, 0.3);
+  --status-cyan-bg: rgba(50, 173, 230, 0.12);
+
+  /* Apple Official iPhone Finish Color Tokens */
+  --dot-natural-titanium: #9A958E;
+  --dot-desert-titanium: #C5B49F;
+  --dot-white-titanium: #F2F1EC;
+  --dot-black-titanium: #2D2F33;
+  --dot-ultramarine: #496495;
+  --dot-teal: #799896;
+  --dot-pink: #E8C4C6;
+  --dot-blue: #215E7C;
+  --dot-green: #3B4D3C;
+  --dot-yellow: #FFE681;
+  --dot-midnight: #191F26;
+  --dot-starlight: #E5DCC5;
+
+  /* Blur Filters */
+  --blur-sm: blur(12px);
+  --blur-md: blur(20px);
+  --blur-lg: blur(30px);
+
+  /* Shadows */
+  --shadow-glass: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(255, 255, 255, 0.05);
+  --shadow-glass-elevated: 0 20px 50px -10px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(255, 255, 255, 0.08);
+  --shadow-glow-blue: 0 0 25px rgba(0, 113, 227, 0.45);
+}
+
+/* ==========================================================================
+   Base & Global Atmosphere
+   ========================================================================== */
+body {
+  background-color: var(--canvas-bg);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--canvas-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ==========================================================================
+   Ambient Glow Effects (Atmospheric Space)
+   ========================================================================== */
+.ambient-glow-wrapper {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ambient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.4;
+  animation: orbFloat 20s ease-in-out infinite alternate;
+}
+
+.ambient-orb-blue {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(0, 113, 227, 0.5) 0%, rgba(0, 113, 227, 0) 70%);
+  top: -150px;
+  left: 20%;
+}
+
+.ambient-orb-purple {
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(142, 68, 173, 0.35) 0%, rgba(142, 68, 173, 0) 70%);
+  top: 30%;
+  right: -100px;
+  animation-duration: 25s;
+}
+
+.ambient-orb-cyan {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(50, 173, 230, 0.3) 0%, rgba(50, 173, 230, 0) 70%);
+  bottom: 5%;
+  left: 10%;
+  animation-duration: 18s;
+}
+
+@keyframes orbFloat {
+  0% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(30px) translateX(20px) scale(1.05); }
+  100% { transform: translateY(-20px) translateX(-20px) scale(0.95); }
+}
+
+/* ==========================================================================
+   Frosted Glass Components
+   ========================================================================== */
+
+/* Glass Cards */
+.glass-card {
+  background: var(--glass-surface);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  box-shadow: var(--shadow-glass);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.3s ease, 
+              box-shadow 0.3s ease, 
+              background 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-card-interactive:hover {
+  transform: translateY(-5px);
+  border-color: var(--glass-border-hover);
+  box-shadow: var(--shadow-glass-elevated);
+  background: var(--glass-surface-hover);
+}
+
+.glass-card-elevated {
+  background: var(--glass-surface-elevated);
+  backdrop-filter: var(--blur-lg);
+  -webkit-backdrop-filter: var(--blur-lg);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 24px;
+  box-shadow: var(--shadow-glass-elevated);
+}
+
+/* Subtle Shimmer Highlight for Cards */
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  pointer-events: none;
+}
+
+/* Frosted Glass Navbar */
+.glass-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(11, 12, 16, 0.78);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border-bottom: 1px solid var(--glass-border-subtle);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+/* Frosted Glass Sidebar (Admin / Owner) */
+.glass-sidebar {
+  background: rgba(15, 18, 24, 0.88);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border-right: 1px solid var(--glass-border-subtle);
+  position: relative;
+  z-index: 40;
+}
+
+/* Glass Modal & Dialogs */
+.glass-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.glass-modal-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.glass-modal {
+  background: rgba(22, 27, 34, 0.94);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 24px;
+  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(255, 255, 255, 0.1);
+  transform: scale(0.95) translateY(10px);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+  width: 100%;
+  max-width: 600px;
+  overflow: hidden;
+}
+
+.glass-modal-backdrop.active .glass-modal {
+  transform: scale(1) translateY(0);
+}
+
+/* ==========================================================================
+   Glass Buttons
+   ========================================================================== */
+.glass-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  outline: none;
+  user-select: none;
+}
+
+.glass-btn:active {
+  transform: scale(0.97);
+}
+
+/* Sizes */
+.glass-btn-sm {
+  font-size: 0.8125rem;
+  padding: 0.4rem 0.9rem;
+}
+.glass-btn-md {
+  font-size: 0.9375rem;
+  padding: 0.65rem 1.4rem;
+}
+.glass-btn-lg {
+  font-size: 1.0625rem;
+  padding: 0.85rem 1.9rem;
+}
+
+/* Variants */
+.glass-btn-primary {
+  background: linear-gradient(135deg, #0071E3 0%, #0056b3 100%);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 18px rgba(0, 113, 227, 0.4);
+}
+.glass-btn-primary:hover {
+  background: linear-gradient(135deg, #0077ED 0%, #0064d2 100%);
+  box-shadow: 0 6px 24px rgba(0, 113, 227, 0.6);
+  color: #FFFFFF;
+}
+
+.glass-btn-secondary {
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--text-primary);
+  border: 1px solid var(--glass-border);
+}
+.glass-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: var(--glass-border-hover);
+  color: #FFFFFF;
+}
+
+.glass-btn-danger {
+  background: var(--status-crimson-bg);
+  color: var(--status-crimson);
+  border: 1px solid rgba(255, 69, 58, 0.3);
+}
+.glass-btn-danger:hover {
+  background: rgba(255, 69, 58, 0.25);
+  box-shadow: 0 4px 15px var(--status-crimson-glow);
+}
+
+.glass-btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+}
+.glass-btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+}
+
+/* ==========================================================================
+   Form Controls (Glass Inputs)
+   ========================================================================== */
+.glass-input {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  color: var(--text-primary);
+  padding: 0.65rem 1.1rem;
+  font-size: 0.9375rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  width: 100%;
+}
+
+.glass-input::placeholder {
+  color: var(--text-muted);
+}
+
+.glass-input:focus {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--apple-blue);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.25);
+}
+
+/* ==========================================================================
+   Status Badges (Pills)
+   ========================================================================== */
+.glass-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid transparent;
+}
+
+.glass-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+/* Badges Themes */
+.badge-pending {
+  background: var(--status-amber-bg);
+  color: var(--status-amber);
+  border-color: rgba(255, 159, 10, 0.25);
+}
+.badge-pending .glass-badge-dot {
+  background: var(--status-amber);
+  box-shadow: 0 0 6px var(--status-amber);
+}
+
+.badge-paid, .badge-completed {
+  background: var(--status-emerald-bg);
+  color: var(--status-emerald);
+  border-color: rgba(52, 199, 89, 0.25);
+}
+.badge-paid .glass-badge-dot, .badge-completed .glass-badge-dot {
+  background: var(--status-emerald);
+  box-shadow: 0 0 6px var(--status-emerald);
+}
+
+.badge-processing {
+  background: var(--apple-blue-subtle);
+  color: #38A6FF;
+  border-color: rgba(0, 113, 227, 0.25);
+}
+.badge-processing .glass-badge-dot {
+  background: #38A6FF;
+  box-shadow: 0 0 6px rgba(0, 113, 227, 0.8);
+}
+
+.badge-shipped {
+  background: var(--status-purple-bg);
+  color: #D39CFF;
+  border-color: rgba(175, 82, 222, 0.25);
+}
+.badge-shipped .glass-badge-dot {
+  background: #D39CFF;
+  box-shadow: 0 0 6px #D39CFF;
+}
+
+.badge-cancelled {
+  background: var(--status-crimson-bg);
+  color: var(--status-crimson);
+  border-color: rgba(255, 69, 58, 0.25);
+}
+.badge-cancelled .glass-badge-dot {
+  background: var(--status-crimson);
+  box-shadow: 0 0 6px var(--status-crimson);
+}
+
+/* Warranty & Condition Badges */
+.badge-warranty-ibox {
+  background: rgba(0, 113, 227, 0.15);
+  color: #5AC8FA;
+  border-color: rgba(90, 200, 250, 0.3);
+}
+
+.badge-second-grade {
+  background: rgba(52, 199, 89, 0.15);
+  color: #34C759;
+  border-color: rgba(52, 199, 89, 0.3);
+}
+
+/* ==========================================================================
+   Color Dots (Apple Official Finish Dots)
+   ========================================================================== */
+.color-dot-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.color-dot-btn {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  outline: none;
+}
+
+.color-dot-btn:hover {
+  transform: scale(1.25);
+}
+
+.color-dot-btn.active {
+  transform: scale(1.2);
+  border-color: #FFFFFF;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+/* Storage Capacity Chips */
+.storage-chip {
+  padding: 0.25rem 0.6rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.storage-chip:hover, .storage-chip.active {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: var(--text-primary);
+}
+
+/* ==========================================================================
+   Battery Health Meter
+   ========================================================================== */
+.battery-meter-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border-subtle);
+  font-size: 0.8125rem;
+}
+
+.battery-icon-shell {
+  width: 22px;
+  height: 12px;
+  border: 1.5px solid var(--text-secondary);
+  border-radius: 3px;
+  padding: 1.5px;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.battery-icon-shell::after {
+  content: '';
+  position: absolute;
+  right: -3.5px;
+  top: 2.5px;
+  width: 2px;
+  height: 4px;
+  background: var(--text-secondary);
+  border-radius: 0 1.5px 1.5px 0;
+}
+
+.battery-fill-bar {
+  height: 100%;
+  border-radius: 1px;
+  transition: width 0.4s ease;
+}
+
+.battery-optimal .battery-fill-bar {
+  background: var(--status-emerald);
+}
+.battery-optimal .battery-text {
+  color: var(--status-emerald);
+}
+
+.battery-normal .battery-fill-bar {
+  background: var(--status-amber);
+}
+.battery-normal .battery-text {
+  color: var(--status-amber);
+}
+
+.battery-service .battery-fill-bar {
+  background: var(--status-crimson);
+}
+.battery-service .battery-text {
+  color: var(--status-crimson);
+}
