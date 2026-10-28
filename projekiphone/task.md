@@ -22,21 +22,21 @@
 ---
 
 ### Phase 2: Skema Basis Data, Migrasi, & Seeder
-- [ ] **2.1. Pembuatan File Migrasi Tabel**
-  - [ ] `create_users_table`: Kolom `role` ('customer','admin','owner'), `google_id`, `phone_number`, `address`, `city`.
-  - [ ] `create_categories_table` & `create_products_table`: Seri iPhone, kondisi (new/second), garansi, grade, deskripsi.
-  - [ ] `create_product_variants_table`: Kapasitas penyimpanan, nama & heksadesimal warna, harga pokok (HPP), harga jual, stok, nomor IMEI, persentase baterai.
-  - [ ] `create_product_images_table`: Gambar resolusi tinggi per varian warna.
-  - [ ] `create_orders_table` & `create_order_items_table`: Nomor nota pesanan, status pesanan, rincian produk, kurir, nomor resi.
-  - [ ] `create_payments_table`: Snap token, transaction status Midtrans, payment type, raw payload webhook.
-  - [ ] `create_trade_ins_table`: Form data jual/tukar tambah, kondisi fisik & fungsional, estimasi harga, harga deal, status.
-  - [ ] `create_notifications_log_table`: Riwayat log pengiriman WhatsApp Fonnte dan Email SMTP.
-- [ ] **2.2. Pembuatan Model Eloquent & Relasi**
-  - [ ] Model `User`, `Category`, `Product`, `ProductVariant`, `ProductImage`, `Order`, `OrderItem`, `Payment`, `TradeIn`.
-  - [ ] Relasi: `Product hasMany ProductVariant`, `Order hasMany OrderItem`, `Order hasOne Payment`, `User hasMany Order`.
-- [ ] **2.3. Seeder Data Awal Realistis (Standar iBox)**
-  - [ ] User Seeder: Akun Owner (`owner@rap-iphone.com`), Admin (`admin@rap-iphone.com`), Customer demo.
-  - [ ] Product & Variant Seeder: Seri iPhone 16 Pro, iPhone 16, iPhone 15 Pro, iPhone 14, dan iPhone 13 (Lengkap varian warna resmi Apple & kapasitas 128GB - 1TB).
+- [x] **2.1. Pembuatan File Migrasi Tabel**
+  - [x] `create_users_table`: Kolom `role` ('customer','admin','owner'), `google_id`, `phone_number`, `address`, `city`.
+  - [x] `create_categories_table` & `create_products_table`: Seri iPhone, kondisi (new/second), garansi, grade, deskripsi.
+  - [x] `create_product_variants_table`: Kapasitas penyimpanan, nama & heksadesimal warna, harga pokok (HPP), harga jual, stok, nomor IMEI, persentase baterai.
+  - [x] `create_product_images_table`: Gambar resolusi tinggi per varian warna.
+  - [x] `create_orders_table` & `create_order_items_table`: Nomor nota pesanan, status pesanan, rincian produk, kurir, nomor resi.
+  - [x] `create_payments_table`: Snap token, transaction status Midtrans, payment type, raw payload webhook.
+  - [x] `create_trade_ins_table`: Form data jual/tukar tambah, kondisi fisik & fungsional, estimasi harga, harga deal, status.
+  - [x] `create_notifications_log_table`: Riwayat log pengiriman WhatsApp Fonnte dan Email SMTP.
+- [x] **2.2. Pembuatan Model Eloquent & Relasi**
+  - [x] Model `User`, `Category`, `Product`, `ProductVariant`, `ProductImage`, `Order`, `OrderItem`, `Payment`, `TradeIn`.
+  - [x] Relasi: `Product hasMany ProductVariant`, `Order hasMany OrderItem`, `Order hasOne Payment`, `User hasMany Order`.
+- [x] **2.3. Seeder Data Awal Realistis (Standar iBox)**
+  - [x] User Seeder: Akun Owner (`owner@rap-iphone.com`), Admin (`admin@rap-iphone.com`), Customer demo.
+  - [x] Product & Variant Seeder: Seri iPhone 16 Pro, iPhone 16, iPhone 15 Pro, iPhone 14, dan iPhone 13 (Lengkap varian warna resmi Apple & kapasitas 128GB - 1TB).
 
 ---
 
