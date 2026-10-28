@@ -572,3 +572,64 @@ body {
 .battery-service .battery-text {
   color: var(--status-crimson);
 }
+
+/* ==========================================================================
+   Product Detail Page (PDP) Interactive Controls
+   ========================================================================== */
+.pdp-color-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.25s ease;
+  position: relative;
+  outline: none;
+}
+
+.pdp-color-dot:hover {
+  transform: scale(1.15);
+}
+
+.pdp-color-dot.active {
+  transform: scale(1.2);
+  border-color: #FFFFFF;
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.5), 0 0 0 2px rgba(0, 113, 227, 0.4);
+}
+
+.pdp-storage-btn {
+  padding: 0.75rem 0.5rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  text-align: center;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  outline: none;
+}
+
+.pdp-storage-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--glass-border-hover);
+  transform: translateY(-2px);
+}
+
+.pdp-storage-btn.active {
+  background: rgba(0, 113, 227, 0.15);
+  border-color: var(--apple-blue);
+  box-shadow: 0 0 15px rgba(0, 113, 227, 0.3);
+  color: #FFFFFF;
+}
+
+.pdp-thumb-btn {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pdp-thumb-btn.active {
+  border-color: var(--apple-blue) !important;
+  background: rgba(0, 113, 227, 0.12);
+}
+

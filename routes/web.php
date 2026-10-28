@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\Customer\CartController;
+use App\Http\Controllers\Customer\CatalogController;
+use App\Http\Controllers\Customer\HomeController;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\TradeIn;
@@ -14,13 +17,23 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-// Home / Design System Showroom
-Route::get('/', function () {
-    $products = Product::with(['variants', 'images', 'category'])->where('is_active', true)->get();
-    return view('design-system', compact('products'));
-})->name('home');
+// Customer Storefront Routes (Phase 5)
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/katalog', [CatalogController::class, 'index'])->name('catalog.index');
+Route::get('/katalog/{slug}', [CatalogController::class, 'show'])->name('catalog.show');
+Route::get('/api/products/search', [CatalogController::class, 'liveSearch'])->name('catalog.search');
 
-// Dedicated Design System Showcase
+// Shopping Cart Module
+Route::prefix('cart')->name('cart.')->group(function () {
+    Route::get('/', [CartController::class, 'index'])->name('index');
+    Route::post('/add', [CartController::class, 'add'])->name('add');
+    Route::post('/buy-now', [CartController::class, 'buyNow'])->name('buyNow');
+    Route::patch('/update/{variantId}', [CartController::class, 'update'])->name('update');
+    Route::delete('/remove/{variantId}', [CartController::class, 'remove'])->name('remove');
+    Route::post('/clear', [CartController::class, 'clear'])->name('clear');
+});
+
+// Dedicated Design System Showcase (Preserved for Reference & Testing)
 Route::get('/design-system', function () {
     $products = Product::with(['variants', 'images', 'category'])->where('is_active', true)->get();
     return view('design-system', compact('products'));

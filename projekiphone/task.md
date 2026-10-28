@@ -66,19 +66,19 @@
 ---
 
 ### Phase 5: Katalog Produk & Pengalaman Belanja Customer
-- [ ] **5.1. Beranda Interaktif (Home Page)**
-  - [ ] Hero showcase Apple flagship dengan efek floating unit dan ambient glow.
-  - [ ] Kategori seri iPhone (iPhone 16 Series, iPhone 15 Series, dll).
-  - [ ] Bagian Unit Baru Garansi Resmi vs Second Like New Teruji.
-- [ ] **5.2. Halaman Rincian Produk (Product Detail Page - PDP)**
-  - [ ] Galeri gambar interaktif.
-  - [ ] Selector warna dinamis (Color dots Apple) yang mengubah gambar aktif.
-  - [ ] Selector kapasitas penyimpanan (128GB, 256GB, 512GB, 1TB) dengan pembaruan harga instan (*live price update*).
-  - [ ] Widget informasi kesehatan baterai (*Battery Health*) dan IMEI transparan untuk unit second.
-  - [ ] Tombol aksi cepat: *"Beli Sekarang"* & *"Tambah ke Keranjang"*.
-- [ ] **5.3. Modul Keranjang Belanja (Cart System)**
-  - [ ] Tambah unit ke keranjang dengan varian spesifik.
-  - [ ] Update kuantitas dan hapus item dengan feedback visual halus.
+- [x] **5.1. Beranda Interaktif (Home Page)**
+  - [x] Hero showcase Apple flagship dengan efek floating unit dan ambient glow.
+  - [x] Kategori seri iPhone (iPhone 16 Series, iPhone 15 Series, dll).
+  - [x] Bagian Unit Baru Garansi Resmi vs Second Like New Teruji.
+- [x] **5.2. Halaman Rincian Produk (Product Detail Page - PDP)**
+  - [x] Galeri gambar interaktif.
+  - [x] Selector warna dinamis (Color dots Apple) yang mengubah gambar aktif.
+  - [x] Selector kapasitas penyimpanan (128GB, 256GB, 512GB, 1TB) dengan pembaruan harga instan (*live price update*).
+  - [x] Widget informasi kesehatan baterai (*Battery Health*) dan IMEI transparan untuk unit second.
+  - [x] Tombol aksi cepat: *"Beli Sekarang"* & *"Tambah ke Keranjang"*.
+- [x] **5.3. Modul Keranjang Belanja (Cart System)**
+  - [x] Tambah unit ke keranjang dengan varian spesifik.
+  - [x] Update kuantitas dan hapus item dengan feedback visual halus.
 
 ---
 

@@ -130,9 +130,16 @@
                 <span>Detail</span>
                 <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
             </a>
-            <button type="button" class="glass-btn glass-btn-secondary glass-btn-sm !p-2" title="Tambah ke Keranjang" aria-label="Tambah ke Keranjang">
-                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-            </button>
+            @if($variants->isNotEmpty())
+                <form action="{{ route('cart.add') }}" method="POST" class="quick-add-cart-form inline-block">
+                    @csrf
+                    <input type="hidden" name="product_variant_id" value="{{ $variants->first()->id }}">
+                    <input type="hidden" name="quantity" value="1">
+                    <button type="submit" class="glass-btn glass-btn-secondary glass-btn-sm !p-2" title="Tambah ke Keranjang" aria-label="Tambah ke Keranjang">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                    </button>
+                </form>
+            @endif
         </div>
     </div>
 </div>
