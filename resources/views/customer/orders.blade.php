@@ -79,18 +79,49 @@
                                 <span class="font-mono text-sm font-bold text-white ml-1">{{ $order->order_number }}</span>
                                 <span class="text-xs text-[#8E8E93] ml-3">{{ $order->created_at->format('d M Y, H:i') }}</span>
                             </div>
-                            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[#34C759]/20 text-[#34C759] border border-[#34C759]/30">
-                                {{ strtoupper($order->status) }}
-                            </span>
+                            <div>
+                                @if($order->status === 'paid')
+                                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[#34C759]/20 text-[#34C759] border border-[#34C759]/30">
+                                        LUNAS (PAID)
+                                    </span>
+                                @elseif($order->status === 'pending')
+                                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[#FF9F0A]/20 text-[#FF9F0A] border border-[#FF9F0A]/30">
+                                        MENUNGGU PEMBAYARAN
+                                    </span>
+                                @elseif($order->status === 'cancelled')
+                                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[#FF453A]/20 text-[#FF453A] border border-[#FF453A]/30">
+                                        DIBATALKAN
+                                    </span>
+                                @else
+                                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-[#0071E3]/20 text-[#0071E3] border border-[#0071E3]/30">
+                                        {{ strtoupper($order->status) }}
+                                    </span>
+                                @endif
+                            </div>
                         </div>
                         <div class="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                            <div class="text-xs text-[#8E8E93]">
-                                <p class="text-white font-medium">{{ $order->recipient_name }}</p>
+                            <div class="text-xs text-[#8E8E93] space-y-1">
+                                <p class="text-white font-medium">{{ $order->recipient_name }} ({{ $order->recipient_phone }})</p>
                                 <p>{{ $order->shipping_courier }} - {{ $order->shipping_address }}</p>
+                                <p class="text-[11px] text-[#8E8E93]">
+                                    Unit: {{ $order->items->pluck('product_name')->implode(', ') }}
+                                </p>
                             </div>
-                            <div class="text-right">
-                                <span class="text-xs text-[#8E8E93] block">Total Pembayaran</span>
-                                <span class="text-base font-bold text-white">Rp {{ number_format($order->grand_total, 0, ',', '.') }}</span>
+                            <div class="text-right flex flex-col sm:items-end gap-2">
+                                <div>
+                                    <span class="text-xs text-[#8E8E93] block">Total Pembayaran</span>
+                                    <span class="text-base font-bold text-white">Rp {{ number_format($order->grand_total, 0, ',', '.') }}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <a href="{{ route('checkout.success', $order->order_number) }}" class="glass-btn glass-btn-secondary glass-btn-sm text-xs">
+                                        Lihat Rincian
+                                    </a>
+                                    @if($order->status === 'pending')
+                                        <a href="{{ route('checkout.success', $order->order_number) }}" class="glass-btn glass-btn-primary glass-btn-sm text-xs font-bold">
+                                            Bayar Sekarang
+                                        </a>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>

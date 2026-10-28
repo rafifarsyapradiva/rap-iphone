@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Customer\CartController;
 use App\Http\Controllers\Customer\CatalogController;
+use App\Http\Controllers\Customer\CheckoutController;
 use App\Http\Controllers\Customer\HomeController;
 use App\Models\Order;
 use App\Models\Product;
@@ -31,6 +32,13 @@ Route::prefix('cart')->name('cart.')->group(function () {
     Route::patch('/update/{variantId}', [CartController::class, 'update'])->name('update');
     Route::delete('/remove/{variantId}', [CartController::class, 'remove'])->name('remove');
     Route::post('/clear', [CartController::class, 'clear'])->name('clear');
+});
+
+// Unified Checkout Module (Phase 6)
+Route::middleware('auth')->prefix('checkout')->name('checkout.')->group(function () {
+    Route::get('/', [CheckoutController::class, 'index'])->name('index');
+    Route::post('/process', [CheckoutController::class, 'process'])->name('process');
+    Route::get('/success/{order:order_number}', [CheckoutController::class, 'success'])->name('success');
 });
 
 // Dedicated Design System Showcase (Preserved for Reference & Testing)
@@ -78,7 +86,7 @@ Route::middleware('auth')->group(function () {
 */
 Route::middleware(['auth', 'role:customer'])->prefix('customer')->name('customer.')->group(function () {
     Route::get('/orders', function () {
-        $orders = Order::where('user_id', auth()->id())->with('items')->latest()->get();
+        $orders = Order::where('user_id', auth()->id())->with(['items', 'payment'])->latest()->get();
         return view('customer.orders', compact('orders'));
     })->name('orders');
 

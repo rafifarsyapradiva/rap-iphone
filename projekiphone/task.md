@@ -83,20 +83,20 @@
 ---
 
 ### Phase 6: Checkout Terpadu & Integrasi Midtrans Snap
-- [ ] **6.1. Halaman Checkout Ringkas (Distraction-Free)**
-  - [ ] Form alamat penerima dan nomor WhatsApp aktif.
-  - [ ] Ringkasan rincian pesanan dan total tagihan.
-- [ ] **6.2. Layanan Pembayaran Midtrans (`MidtransService`)**
-  - [ ] Konfigurasi SDK Midtrans Snap dengan server key.
-  - [ ] Generate Snap Token berdasarkan data order unik.
-- [ ] **6.3. Integrasi Frontend Midtrans Snap Popup**
-  - [ ] Trigger modal popup pembayaran Midtrans saat checkout disubmit.
-  - [ ] Penanganan respon frontend (`onSuccess`, `onPending`, `onError`, `onClose`).
-- [ ] **6.4. Midtrans Webhook Callback Handler (`/api/midtrans/callback`)**
-  - [ ] Verifikasi keamanan SHA512 signature hash.
-  - [ ] Pembaruan status pesanan (`settlement` -> `paid`, `cancel` -> `cancelled`).
-  - [ ] Database transaction: Pengurangan kuantitas stok varian saat status `paid`.
-  - [ ] Idempotency: Menghindari pemrosesan duplikat untuk webhook yang sama.
+- [x] **6.1. Halaman Checkout Ringkas (Distraction-Free)**
+  - [x] Form alamat penerima dan nomor WhatsApp aktif.
+  - [x] Ringkasan rincian pesanan dan total tagihan.
+- [x] **6.2. Layanan Pembayaran Midtrans (`MidtransService`)**
+  - [x] Konfigurasi SDK Midtrans Snap dengan server key.
+  - [x] Generate Snap Token berdasarkan data order unik.
+- [x] **6.3. Integrasi Frontend Midtrans Snap Popup**
+  - [x] Trigger modal popup pembayaran Midtrans saat checkout disubmit.
+  - [x] Penanganan respon frontend (`onSuccess`, `onPending`, `onError`, `onClose`).
+- [x] **6.4. Midtrans Webhook Callback Handler (`/api/midtrans/callback`)**
+  - [x] Verifikasi keamanan SHA512 signature hash.
+  - [x] Pembaruan status pesanan (`settlement` -> `paid`, `cancel` -> `cancelled`).
+  - [x] Database transaction: Pengurangan kuantitas stok varian saat status `paid`.
+  - [x] Idempotency: Menghindari pemrosesan duplikat untuk webhook yang sama.
 
 ---
 
