@@ -169,3 +169,30 @@
 - [x] **12.2. Validasi UI/UX & Responsivitas**
   - [x] Verifikasi tampilan Glassmorphism pada berbagai resolusi layar (Mobile, Tablet, Desktop).
   - [x] Pengecekan kecepatan halaman dan pemuatan gambar WebP.
+
+---
+
+### Phase 13: Redesign UI/UX v2.0 — Mode Amati Tiru Modifikasi (ATM) Digimap (`https://www.digimap.co.id/`)
+- [x] **13.1. Perencanaan & Spesifikasi Dokumen Redesign (`projekiphone/`)**
+  - [x] Penyusunan dokumen `projekiphone/redesign.md` dengan analisis ATM (Amati, Tiru, Modifikasi) dari situs resmi Digimap Indonesia (`digimap.co.id`).
+  - [x] Penyelarasan spesifikasi bisnis dan fitur baru pada `projekiphone/prd.md`.
+  - [x] Pembaruan arsitektur frontend dan sistem desain pada `projekiphone/blueprint.md`.
+  - [x] Pembaruan roadmap kerja pada `projekiphone/task.md`.
+- [ ] **13.2. Transformasi Core CSS ke Digimap Daylight & Frosted White Theme**
+  - [ ] Pembaruan token warna di `resources/css/glassmorphism.css` & `resources/css/app.css` dari Dark Canvas (`#0B0C10`) ke Digimap Clean White & Warm Gray (`#FFFFFF`, `#F5F5F7`, `#1D1D1F`, `#0066CC`).
+  - [ ] Penyesuaian class utilitas `.glass-card`, `.glass-navbar`, `.glass-button`, `.glass-input`, dan `.glass-modal` ke gaya *Daylight Frosted Glass* (`rgba(255,255,255,0.84)` + `blur(20px)` + border `#E5E5EA`).
+- [ ] **13.3. Redesign Master Layout & Navigasi Pelanggan (`layouts/customer.blade.php`)**
+  - [ ] Implementasi **Top Promo Announcement Bar** (info cicilan, gratis ongkir berasuransi, promo trade-in).
+  - [ ] Implementasi **Sticky Daylight Header** bersih dengan wordmark tegas, menu seri/kondisi, *Search Pill* (`⌘K`), indikator lokasi gerai (*Click & Collect*), dan badge keranjang.
+  - [ ] Perombakan Footer bergaya Apple Authorized Partner / Digimap.
+- [ ] **13.4. Redesign Beranda & Katalog Produk (`home.blade.php`, `catalog.blade.php`, `product-card.blade.php`)**
+  - [ ] Implementasi **Visual Series Icon Ribbon** untuk navigasi cepat antar seri iPhone.
+  - [ ] Pembuatan **Hero Promo Banner** bersih bergaya kampanye peluncuran Digimap & **Bento Service Grid**.
+  - [ ] Pembaruan komponen `<x-product-card>` dengan permukaan `#F5F5F7`, badge kondisi (`Baru • Resmi` vs `Second • Grade A+`), *color swatches*, *storage pills*, harga utama, serta teks simulasi cicilan/tukar tambah.
+- [ ] **13.5. Redesign Halaman Detail Produk (`pdp.blade.php`) & Alur Transaksi**
+  - [ ] Layout 2 kolom dengan **Sticky Studio Gallery** (`#F5F5F7`) di kiri dan **Step-by-Step Configurator** di kanan.
+  - [ ] Integrasi **Inline Trade-In Price Slasher** (kalkulator potongan tukar tambah langsung di PDP) dan modal **Simulasi Cicilan**.
+  - [ ] Penambahan indikator stok **Click & Collect (Ambil di Toko)** & kurir ekspedisi, serta **Sticky Bottom Purchase Bar**.
+  - [ ] Penyelarasan visual halaman Keranjang (`cart.blade.php`), Checkout Midtrans (`checkout.blade.php`), Wizard Tukar Tambah (`trade-in.blade.php`), Cek IMEI/Garansi (`utilities.blade.php`), dan Autentikasi (`login`/`register`).
+- [ ] **13.6. Penyelarasan Panel Admin & Owner ke Digimap Enterprise Light UI**
+  - [ ] Pembaruan `layouts/admin.blade.php` serta halaman Dashboard Admin & Owner ke tema putih terang bersih (`#FFFFFF` & `#F5F5F7`) untuk kenyamanan operasional harian.

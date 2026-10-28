@@ -7,11 +7,11 @@
 
 ```
 +-----------------------------------------------------------------------------------+
-|                                  CLIENT LAYER                                     |
+|                    CLIENT LAYER (DIGIMAP DAYLIGHT UI v2.0)                        |
 |  +---------------------------+  +--------------------------+  +-----------------+  |
 |  | Customer Portal           |  | Admin Operations         |  | Owner Dashboard |  |
-|  | (Responsive Blade UI      |  | (Katalog, Pesanan,       |  | (Analitik Laba, |  |
-|  |  + Glassmorphism CSS)     |  |  Trade-in, Resi Kurir)   |  |  Omzet, Rekap)  |  |
+|  | (Digimap Clean White &    |  | (Enterprise Light UI:    |  | (Analitik Laba, |  |
+|  |  Daylight Frosted Blade)  |  |  Katalog, Order, Resi)   |  |  Omzet, Rekap)  |  |
 |  +---------------------------+  +--------------------------+  +-----------------+  |
 +----------------------------------------+------------------------------------------+
                                          | HTTP / HTTPS Requests
@@ -300,3 +300,48 @@ app/
      - `/admin/*` hanya dapat diakses oleh user ber-role `admin` dan `owner`.
      - `/owner/*` (laporan keuangan, laba rugi, kontrol admin) khusus user ber-role `owner`.
      - `/customer/*` dan transaksi umum diperuntukkan bagi customer.
+
+---
+
+### 6. Arsitektur Frontend & Design System v2.0 (Mode ATM Digimap — `redesign.md`)
+
+Mengacu pada spesifikasi di `projekiphone/redesign.md`, lapisan presentasi (*Presentation Layer*) bertransformasi dari tema gelap ke **Digimap-Inspired Daylight Minimalist & Frosted White UI** (`https://www.digimap.co.id/`):
+
+#### 6.1. Struktur Token CSS & Lapisan Visual (`resources/css/`)
+- **Palet Daylight Retail**:
+  - `--dm-canvas: #FFFFFF` (Latar utama halaman)
+  - `--dm-surface: #F5F5F7` (Permukaan kartu produk, bento promo, input form, & panel spesifikasi)
+  - `--dm-glass-white: rgba(255, 255, 255, 0.84)` dengan `backdrop-filter: blur(20px)` (Sticky Header, Sticky Bottom Buy Bar, & Modal Overlay)
+  - `--dm-text-primary: #1D1D1F`, `--dm-text-secondary: #6E6E73`, `--dm-border: #D2D2D7`, `--dm-blue-cta: #0071E3`
+- **Kompatibilitas Utility Class**:
+  - Class `.glass-card`, `.glass-navbar`, `.glass-button`, dan `.glass-modal` diperbarui secara terpusat agar merender permukaan *Clean White & Warm Gray* dengan *hairline border* halus (`1px solid #E5E5EA`) dan bayangan lembut (`0 4px 20px rgba(0, 0, 0, 0.04)`).
+
+#### 6.2. Hierarki Layout & Komponen Blade (`resources/views/`)
+```
+resources/views/
+├── layouts/
+│   ├── customer.blade.php       <-- Top Promo Ticker + Sticky Daylight Header + Digimap Footer
+│   └── admin.blade.php          <-- Digimap Enterprise Clean Light Sidebar & Topbar
+├── components/
+│   ├── product-card.blade.php   <-- Kartu #F5F5F7, Badge Kondisi/BH, Color Dots, Info Cicilan/Trade-In
+│   ├── glass-card.blade.php     <-- Kontainer permukaan putih/abu terang bersih
+│   ├── glass-button.blade.php   <-- Pill/Rounded CTA (#0071E3 & #1D1D1F)
+│   ├── order-badge.blade.php    <-- Semantic badges kontras tinggi di atas latar putih
+│   └── battery-meter.blade.php  <-- Indikator Battery Health untuk unit Second Like New
+└── customer/
+    ├── home.blade.php           <-- Visual Series Icon Ribbon + Hero Kampanye + Bento Grid
+    ├── catalog.blade.php        <-- Filter Kondisi (BNIB vs Second) + Grid Katalog 4 Kolom
+    ├── pdp.blade.php            <-- Sticky Studio Gallery + Step Configurator + Inline Trade-In
+    │                                Calculator + Click & Collect Status + Sticky Bottom Bar
+    ├── cart.blade.php           <-- Ringkasan keranjang bersih & estimasi potongan Trade-In
+    ├── checkout.blade.php       <-- Opsi Kurir / Ambil di Toko (Click & Collect) + Midtrans Snap
+    └── trade-in.blade.php       <-- 4-Step Wizard Tukar Tambah bergaya Apple/Digimap Trade-In
+```
+
+#### 6.3. Fitur Interaktif Frontend (JavaScript / Vanilla DOM)
+1. **Dynamic Variant & Price Switcher (PDP & Product Card)**:
+   - Mengubah gambar aktif saat *Color Swatch* diklik dan memperbarui harga utama serta nominal simulasi cicilan per bulan secara instan saat *Storage Pill* (`128GB`–`1TB`) dipilih.
+2. **Inline Trade-In Price Slasher (PDP)**:
+   - Menghitung harga bersih (*Net Payable Price*) di halaman produk ketika pelanggan memilih model iPhone lama mereka sebagai tukar tambah.
+3. **Sticky Bottom Purchase Bar**:
+   - Menggunakan `IntersectionObserver` / scroll listener untuk menampilkan bar ringkasan pembelian di bagian bawah layar saat tombol beli utama di kolom kanan tidak terlihat di *viewport*.

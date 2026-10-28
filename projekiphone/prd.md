@@ -4,7 +4,7 @@
 ---
 
 ### 1. Ringkasan Eksekutif & Visi Produk
-**Rap-iPhone** adalah platform e-commerce web modern dan premium yang dirancang khusus untuk transaksi jual-beli serta tukar tambah (*trade-in / buyback*) produk iPhone. Mengadopsi standar layanan dan *user experience* dari reseller resmi kenamaan seperti **iBox** dan **Digimap**, platform ini memadukan kemudahan alur belanja tanpa ribet, transparansi kondisi unit & garansi, serta estetika visual **Glassmorphism** berkelas tinggi.
+**Rap-iPhone** adalah platform e-commerce web modern dan premium yang dirancang khusus untuk transaksi jual-beli serta tukar tambah (*trade-in / buyback*) produk iPhone. Mengadopsi standar layanan dan *user experience* dari *Apple Premium Partner* resmi **Digimap (`https://www.digimap.co.id/`)** dan **iBox** melalui metode **ATM (Amati, Tiru, Modifikasi)**, platform ini memadukan kemudahan alur belanja tanpa ribet, transparansi kondisi unit & garansi, serta estetika visual **Digimap-Inspired Daylight Minimalist & Frosted White UI** (`#FFFFFF` & `#F5F5F7` canvas, tipografi tajam `#1D1D1F`, dan aksen `#0066CC`/`#0071E3`) sebagaimana dirinci pada dokumen `redesign.md`.
 
 Didukung oleh framework **Laravel 12**, basis data **MySQL**, dan template engine **Laravel Blade**, Rap-iPhone dilengkapi integrasi menyeluruh:
 - **Google Console Login (OAuth 2.0)** untuk kemudahan masuk 1-klik bagi pelanggan.
@@ -52,26 +52,30 @@ Konsep usaha mengadaptasi ekosistem retail iPhone modern (B2C + Program Tukar Ta
 
 ### 4. Fitur Fungsional Utama
 
-#### 4.1. Modul Pelanggan (Customer Experience)
+#### 4.1. Modul Pelanggan (Customer Experience — Redesign ATM Digimap)
 1. **Autentikasi Cepat**:
    - Login konvensional (Email & Password terenkripsi).
    - Login 1-klik dengan Akun Google via Google Console OAuth.
-2. **Katalog & Filter Produk Berstandar iBox**:
-   - Filter menurut Seri iPhone (iPhone 16 Pro, 16, 15 Pro, 15, 14, 13, dll).
-   - Pilihan Warna Interaktif (Visual Dot Warna Apple: *Natural Titanium, Desert Titanium, Midnight, Starlight*, dll).
-   - Pilihan Kapasitas Penyimpanan (128GB, 256GB, 512GB, 1TB) dengan pembaruan harga instan (*dynamic pricing*).
-   - Filter Kondisi: Baru (Garansi Resmi) vs Second Teruji (dengan indikator Battery Health).
-3. **Alur Checkout Mudah & Bebas Ribet**:
+2. **Navigasi & Katalog Berstandar Digimap (`digimap.co.id`)**:
+   - **Top Promo Announcement Bar & Sticky Daylight Header**: Bar informasi promo aktif (cicilan, gratis ongkir, trade-in) di atas header putih bersih dengan fitur pencarian instan (`⌘K`).
+   - **Visual Series Icon Ribbon**: Navigasi ikon seri iPhone horizontal (*iPhone 16 Pro, 16, 15 Pro, 15, 14, 13, Second Like New, Trade-In*) untuk lompatan kategori 1-klik.
+   - **Dual-Condition Filter & Clean Product Cards (`#F5F5F7`)**: Filter menurut kondisi Baru (Garansi Resmi iBox/Digimap) vs Second Teruji (dengan indikator Battery Health & Grade), dilengkapi *Interactive Color Swatches*, *Storage Pills*, dan informasi estimasi cicilan/tukar tambah.
+3. **Halaman Detail Produk (PDP) v2.0 & Simulasi Harga Interaktif**:
+   - **Sticky Studio Gallery & Step-by-Step Configurator**: Pilihan kondisi, warna resmi Apple (*Natural Titanium, Desert Titanium, Midnight, Starlight*, dll), dan kapasitas penyimpanan (128GB–1TB) dengan pembaruan harga instan (*dynamic pricing*).
+   - **Inline Trade-In Estimator & Simulasi Cicilan**: Pelanggan dapat melihat simulasi cicilan per bulan serta menghitung estimasi potongan harga langsung di PDP apabila menukar tambah iPhone lama mereka.
+   - **Transparency Trust Panel (Khusus Unit Second)**: Widget informasi *Battery Health* (`85%–100%`), nomor IMEI terdaftar Kemenperin, dan sertifikasi lulus QC 32 titik.
+   - **Sticky Bottom Purchase Bar**: Bar ringkasan pembelian yang menempel di bawah layar untuk mempercepat konversi belanja.
+4. **Alur Checkout Mudah, Omnichannel, & Bebas Ribet**:
    - Checkout langsung (*Buy Now*) atau melalui keranjang belanja (*Cart*).
-   - Input alamat pengiriman ringkas dengan kalkulasi ongkir.
+   - Pilihan metode pemenuhan pesanan: **Pengiriman Kurir Berasuransi** (JNE, SiCepat, J&T) atau **Click & Collect (Ambil Langsung di Gerai Store Rap-iPhone)**.
    - Integrasi popup **Midtrans Snap**: Pembayaran tanpa meninggalkan halaman dengan pilihan metode lengkap (QRIS, BCA VA, Mandiri VA, BRI VA, BNI VA, GoPay, ShopeePay, Kartu Kredit).
-4. **Modul Jual / Tukar Tambah (*Trade-In Wizard*)**:
-   - Form interaktif bertahap (Model iPhone lama -> Kapasitas -> Kondisi Fisik Layar/Body -> Kelengkapan & BH).
+5. **Modul Jual / Tukar Tambah (*Trade-In Wizard*)**:
+   - Form interaktif bertahap bergaya bersih (Model iPhone lama -> Kapasitas -> Kondisi Fisik Layar/Body -> Kelengkapan & BH).
    - Kalkulasi estimasi harga instan (*instant price quote*).
    - Pilihan: Terima tunai (transfer bank) atau voucher potongan pembelian iPhone baru.
-5. **Invoice & Dokumen Transaksi**:
-   - Unduh langsung Nota PDF berdesain elegan.
-   - Status garansi dan nomor seri/IMEI tertera pada nota.
+6. **Invoice & Dokumen Transaksi**:
+   - Unduh langsung Nota PDF berdesain elegan berstandar *Apple Authorized Partner*.
+   - Status garansi, QR Code validasi, dan nomor seri/IMEI tertera pada nota.
 
 #### 4.2. Modul Notifikasi Terintegrasi
 1. **WhatsApp Notifier (Fonnte API)**:
@@ -117,10 +121,11 @@ Konsep usaha mengadaptasi ekosistem retail iPhone modern (B2C + Program Tukar Ta
    - Sanitasi input dan proteksi terhadap CSRF, XSS, serta SQL Injection (Eloquent ORM).
    - Autentikasi aman password hashing via Bcrypt/Argon2.
    - Verifikasi SHA512 Signature Hash pada Webhook Midtrans untuk mencegah manipulasi status transaksi.
-2. **Performa & Responsivitas**:
+2. **Performa, Desain UI/UX, & Responsivitas**:
    - Waktu muat halaman pertama di bawah 2 detik.
    - Optimasi gambar produk dengan format WebP dan *lazy loading*.
-   - Antarmuka *mobile-first* yang mulus di smartphone, tablet, maupun layar desktop.
+   - Standar visual **Digimap-Inspired Daylight Minimalist & Frosted White UI** (`redesign.md`): menggunakan latar terang ber-kontras tinggi (`#FFFFFF` & `#F5F5F7`), tipografi `#1D1D1F`, dan *sticky purchase bar* untuk kenyamanan baca di bawah kondisi pencahayaan apa pun.
+   - Antarmuka *mobile-first* yang mulus di smartphone, tablet, maupun layar desktop (baik untuk Portal Customer maupun Dashboard Enterprise Admin & Owner).
 3. **Kemudahan Pemeliharaan (Maintainability)**:
    - Arsitektur kode bersih berorientasi layanan (*Service Layer Pattern*) untuk Midtrans, Fonnte, Mailer, dan PDF Generator.
    - Konfigurasi kredensial terisolasi penuh pada file `.env`.
