@@ -133,3 +133,29 @@ Alur 4 langkah mudah tanpa ribet:
   - Kartu Antrean Inspeksi Unit Tukar Tambah.
 - Visualisasi Grafik: Area chart transparan dengan gradien halus menampilkan omzet 30 hari terakhir.
 - Tabel Pesanan Interaktif: Badges status berwarna, tombol cetak resi cepat, tombol kirim update WhatsApp manual (jika diperlukan).
+
+---
+
+### 5. Standar Kualitas Desain Anti-AI-Slop (Hallmark System Integration)
+
+Untuk mencegah tampilan antarmuka terjerumus ke dalam pola desain generik/pasaran bawaan AI (*AI Slop*), seluruh implementasi antarmuka Rap-iPhone mengadopsi standar **Hallmark Design System** (tersimpan di folder [`.agent/skills/hallmark/`](../.agent/skills/hallmark)):
+
+#### 5.1. Aturan Wajib Fondasi (*The Floor Rules*)
+1. **Disiplin Token CSS**: Seluruh warna, font, dan shadow wajib dideklarasikan melalui token variabel `:root` di `glassmorphism.css` atau Tailwind theme. Dilarang menggunakan nilai warna heksadesimal langsung di dalam inline styling halaman.
+2. **Tanpa Animasi Liar**: Dilarang menggunakan `transition: all`. Animasi harus spesifik (`opacity`, `transform`) dan wajib memiliki fallback `prefers-reduced-motion: reduce`.
+3. **Tanpa Data & Metrik Palsu**: Tidak boleh membuat testimoni fiktif, metrik buatan (*"10,000+ Happy Customers"*), atau logo partner palsu. Seluruh bukti sosial harus autentik (status garansi Kemenperin nyata, alokasi IMEI valid, review asli).
+4. **Bebas Klise AI**:
+   - Dilarang memakai gradien ungu-ke-biru neon generik.
+   - Dilarang menempatkan kartu di dalam kartu (*card inside card*).
+   - Dilarang memakai karakter emoji sebagai ikon antarmuka; wajib menggunakan SVG icon terstandar (Lucide / Apple SF Symbols style).
+5. **Aksesibilitas & Layout Responsif**:
+   - Seluruh elemen interaktif wajib memiliki state `:focus-visible` yang jelas.
+   - Kontainer layar diikat dengan `overflow-x: clip`, bukan `overflow-x: hidden` atau `100vw`.
+   - Tata letak hero section harus langsung memuat judul, ringkasan, dan tombol aksi utama tanpa terpotong di resolusi standar desktop (1280 x 800).
+
+#### 5.2. Audit Kualitas Otomatis
+Sebelum komponen tampilan dianggap selesai, kode Blade dan CSS dapat diverifikasi menggunakan linter bawaan:
+```powershell
+node .agent/skills/hallmark/scripts/sloplint.mjs resources/views
+```
+

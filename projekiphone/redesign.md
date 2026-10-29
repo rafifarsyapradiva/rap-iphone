@@ -221,3 +221,39 @@ Untuk merealisasikan desain dalam dokumen `redesign.md` ini ke dalam kode aplika
    - `resources/views/auth/login.blade.php` & `register.blade.php`.
    - Seluruh view di `resources/views/admin/**` dan `resources/views/owner/**`.
 
+---
+
+### 7. Integrasi Hallmark Anti-AI-Slop & Quality Gates (Standar v2.0)
+
+Untuk menjamin hasil redesain v2.0 ini tidak terkesan seperti template generik buatan AI (*AI Slop*), seluruh perombakan tampilan diwajibkan mengikuti kerangka kerja **Hallmark Design System** yang telah dipasang pada [`.agent/skills/hallmark/`](../.agent/skills/hallmark):
+
+#### 7.1. Genre & Arah Estetika Hallmark
+- **Genre Utama**: `modern-minimal` (karakteristik retail digital presisi tinggi, terstruktur, fokus pada produk fisik dan data spesifikasi akurat ala Apple/Digimap).
+- **Genre Sekunder**: `editorial` (untuk storytelling landing page peluncuran seri flagship iPhone 16 Pro dan kampanye trade-in).
+
+#### 7.2. Penerapan Aturan "The Floor" pada Blade Views
+Setiap file view Blade dan CSS wajib memenuhi kriteria kepatuhan berikut:
+1. **100% Token-Bound**: Seluruh warna mengacu pada token CSS `--dm-*` yang telah didefinisikan pada Bagian 3.1. Dilarang menaruh kode warna heksadesimal acak di dalam tag `style` atau class custom.
+2. **Tanpa Klise AI**:
+   - Dilarang menambahkan efek border gradient neon ungu/merah muda khas template AI.
+   - Dilarang menggunakan kartu bersarang (*nested cards inside cards*); gunakan pembagian whitespace dan divider tipis (`#E8E8ED`).
+   - Dilarang menggunakan emoji (seperti 🚀, 🔥, 💎) sebagai indikator fitur/badge; wajib menggunakan icon SVG monokromatik terukur.
+3. **Konten & Bukti Autentik**:
+   - Metrik dan klaim garansi harus riil (Garansi Resmi TAM/iBox/Digimap 1 Tahun, Garansi Toko 7 Hari Ganti Unit, Lulus Inspeksi 32 Titik).
+   - Dilarang membuat metrik fiktif (*"10.000+ Pelanggan Puas"*).
+4. **Disiplin Interaksi & Animasi**:
+   - Dilarang `transition: all`. Transisi hanya pada properti yang dibutuhkan (`transform`, `opacity`, `background-color`) dengan durasi wajar (150ms–200ms).
+   - Setiap elemen interaktif memiliki outline `:focus-visible` untuk aksesibilitas navigasi keyboard.
+   - Wajib menyertakan fallback `@media (prefers-reduced-motion: reduce)`.
+   - Viewport bebas horizontal overflow: wajib menerapkan `overflow-x: clip` pada root container.
+
+#### 7.3. Perintah Kerja & Audit Desain Otomatis
+1. **Audit View yang Sudah Ada**:
+   ```powershell
+   node .agent/skills/hallmark/scripts/sloplint.mjs resources/views --genre modern-minimal
+   ```
+2. **Prosedur Redesign View**:
+   Saat merombak halaman spesifik, panggil instruksi agent:
+   > *"Redesain tampilan `resources/views/customer/catalog.blade.php` dengan hallmark redesign, genre modern-minimal, sesuai token Digimap v2.0."*
+
+
