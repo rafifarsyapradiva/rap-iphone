@@ -90,7 +90,7 @@ class CatalogController extends Controller
      */
     public function show(string $slug): View
     {
-        $product = Product::with(['variants', 'images', 'category'])
+        $product = Product::with(['variants.images', 'images', 'category'])
             ->where('slug', $slug)
             ->where('is_active', true)
             ->firstOrFail();
@@ -102,6 +102,7 @@ class CatalogController extends Controller
 
         // Prepare JSON payload for dynamic client-side state
         $variantsJson = $variants->map(function ($v) {
+            $imgPath = $v->images->first()?->image_path;
             return [
                 'id' => $v->id,
                 'storage_capacity' => $v->storage_capacity,
@@ -114,6 +115,8 @@ class CatalogController extends Controller
                 'sku' => $v->sku,
                 'battery_health' => $v->battery_health,
                 'imei' => $v->imei,
+                'image_path' => $imgPath,
+                'image_url' => $imgPath ? asset($imgPath) : null,
             ];
         })->values()->toJson();
 

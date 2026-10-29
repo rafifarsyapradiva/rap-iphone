@@ -39,10 +39,10 @@ class ProductSeeder extends Seeder
         );
 
         $colorsP1 = [
-            ['name' => 'Desert Titanium', 'hex' => '#C5B49F'],
-            ['name' => 'Natural Titanium', 'hex' => '#9A958E'],
-            ['name' => 'White Titanium', 'hex' => '#F2F1EC'],
-            ['name' => 'Black Titanium', 'hex' => '#2D2F33'],
+            ['name' => 'Desert Titanium', 'hex' => '#C5B49F', 'image' => 'images/products/iphone-16-pro-max.webp'],
+            ['name' => 'Natural Titanium', 'hex' => '#9A958E', 'image' => 'images/products/iphone-16-pro-max-natural-titanium.webp'],
+            ['name' => 'White Titanium', 'hex' => '#F2F1EC', 'image' => 'images/products/iphone-16-pro-max-white-titanium.webp'],
+            ['name' => 'Black Titanium', 'hex' => '#2D2F33', 'image' => 'images/products/iphone-16-pro-max-black-titanium.webp'],
         ];
 
         $storagesP1 = [
@@ -72,7 +72,7 @@ class ProductSeeder extends Seeder
                 ProductImage::updateOrCreate(
                     ['product_id' => $p1->id, 'variant_id' => $variant->id],
                     [
-                        'image_path' => 'images/products/iphone-16-pro-max.webp',
+                        'image_path' => $color['image'],
                         'is_primary' => ($color['name'] === 'Desert Titanium' && $storage['cap'] === '256GB'),
                         'order_index' => 1,
                     ]
@@ -96,13 +96,20 @@ class ProductSeeder extends Seeder
             ]
         );
 
+        $colorsP2 = [
+            ['name' => 'Natural Titanium', 'hex' => '#9A958E', 'image' => 'images/products/iphone-16-pro.webp'],
+            ['name' => 'Desert Titanium', 'hex' => '#C5B49F', 'image' => 'images/products/iphone-16-pro-desert-titanium.webp'],
+            ['name' => 'White Titanium', 'hex' => '#F2F1EC', 'image' => 'images/products/iphone-16-pro-white-titanium.webp'],
+            ['name' => 'Black Titanium', 'hex' => '#2D2F33', 'image' => 'images/products/iphone-16-pro-black-titanium.webp'],
+        ];
+
         $storagesP2 = [
             ['cap' => '128GB', 'cost' => 19300000, 'sell' => 20999000],
             ['cap' => '256GB', 'cost' => 21800000, 'sell' => 23499000],
             ['cap' => '512GB', 'cost' => 24500000, 'sell' => 26499000],
         ];
 
-        foreach ($colorsP1 as $color) {
+        foreach ($colorsP2 as $color) {
             foreach ($storagesP2 as $storage) {
                 $sku = 'IP16P-' . strtoupper(Str::slug($color['name'])) . '-' . $storage['cap'];
                 $variant = ProductVariant::updateOrCreate(
@@ -123,7 +130,7 @@ class ProductSeeder extends Seeder
                 ProductImage::updateOrCreate(
                     ['product_id' => $p2->id, 'variant_id' => $variant->id],
                     [
-                        'image_path' => 'images/products/iphone-16-pro.webp',
+                        'image_path' => $color['image'],
                         'is_primary' => ($color['name'] === 'Natural Titanium' && $storage['cap'] === '128GB'),
                         'order_index' => 1,
                     ]
@@ -148,11 +155,11 @@ class ProductSeeder extends Seeder
         );
 
         $colorsP3 = [
-            ['name' => 'Ultramarine', 'hex' => '#496495'],
-            ['name' => 'Teal', 'hex' => '#799896'],
-            ['name' => 'Pink', 'hex' => '#E8C4C6'],
-            ['name' => 'White', 'hex' => '#F2F1EC'],
-            ['name' => 'Black', 'hex' => '#2D2F33'],
+            ['name' => 'Ultramarine', 'hex' => '#496495', 'image' => 'images/products/iphone-16.webp'],
+            ['name' => 'Teal', 'hex' => '#799896', 'image' => 'images/products/iphone-16-teal.webp'],
+            ['name' => 'Pink', 'hex' => '#E8C4C6', 'image' => 'images/products/iphone-16-pink.webp'],
+            ['name' => 'White', 'hex' => '#F2F1EC', 'image' => 'images/products/iphone-16-white.webp'],
+            ['name' => 'Black', 'hex' => '#2D2F33', 'image' => 'images/products/iphone-16-black.webp'],
         ];
 
         $storagesP3 = [
@@ -181,7 +188,7 @@ class ProductSeeder extends Seeder
                 ProductImage::updateOrCreate(
                     ['product_id' => $p3->id, 'variant_id' => $variant->id],
                     [
-                        'image_path' => 'images/products/iphone-16.webp',
+                        'image_path' => $color['image'],
                         'is_primary' => ($color['name'] === 'Ultramarine' && $storage['cap'] === '128GB'),
                         'order_index' => 1,
                     ]
@@ -216,6 +223,7 @@ class ProductSeeder extends Seeder
                 'bh' => 96,
                 'imei' => '358792110293812',
                 'sku' => 'SEC-IP15P-NT-128GB',
+                'image' => 'images/products/iphone-15-pro.webp',
             ],
             [
                 'color_name' => 'Blue Titanium',
@@ -227,6 +235,7 @@ class ProductSeeder extends Seeder
                 'bh' => 98,
                 'imei' => '358792110482914',
                 'sku' => 'SEC-IP15P-BT-256GB',
+                'image' => 'images/products/iphone-15-pro-blue-titanium.webp',
             ],
         ];
 
@@ -249,7 +258,7 @@ class ProductSeeder extends Seeder
             ProductImage::updateOrCreate(
                 ['product_id' => $p4->id, 'variant_id' => $variant->id],
                 [
-                    'image_path' => 'images/products/iphone-15-pro.webp',
+                    'image_path' => $varData['image'],
                     'is_primary' => ($varData['color_name'] === 'Natural Titanium'),
                     'order_index' => 1,
                 ]
@@ -273,9 +282,9 @@ class ProductSeeder extends Seeder
         );
 
         $colorsP5 = [
-            ['name' => 'Midnight', 'hex' => '#2D2F33'],
-            ['name' => 'Starlight', 'hex' => '#F2F1EC'],
-            ['name' => 'Blue', 'hex' => '#A7C1D9'],
+            ['name' => 'Midnight', 'hex' => '#2D2F33', 'image' => 'images/products/iphone-14.webp'],
+            ['name' => 'Starlight', 'hex' => '#F2F1EC', 'image' => 'images/products/iphone-14-starlight.webp'],
+            ['name' => 'Blue', 'hex' => '#A7C1D9', 'image' => 'images/products/iphone-14-blue.webp'],
         ];
 
         foreach ($colorsP5 as $color) {
@@ -298,7 +307,7 @@ class ProductSeeder extends Seeder
             ProductImage::updateOrCreate(
                 ['product_id' => $p5->id, 'variant_id' => $variant->id],
                 [
-                    'image_path' => 'images/products/iphone-14.webp',
+                    'image_path' => $color['image'],
                     'is_primary' => ($color['name'] === 'Midnight'),
                     'order_index' => 1,
                 ]
@@ -332,6 +341,7 @@ class ProductSeeder extends Seeder
                 'bh' => 89,
                 'imei' => '358792098231291',
                 'sku' => 'SEC-IP13-MD-128GB',
+                'image' => 'images/products/iphone-13.webp',
             ],
             [
                 'color_name' => 'Pink',
@@ -343,6 +353,7 @@ class ProductSeeder extends Seeder
                 'bh' => 91,
                 'imei' => '358792098231455',
                 'sku' => 'SEC-IP13-PK-128GB',
+                'image' => 'images/products/iphone-13-pink.webp',
             ],
         ];
 
@@ -365,7 +376,7 @@ class ProductSeeder extends Seeder
             ProductImage::updateOrCreate(
                 ['product_id' => $p6->id, 'variant_id' => $variant->id],
                 [
-                    'image_path' => 'images/products/iphone-13.webp',
+                    'image_path' => $varData['image'],
                     'is_primary' => ($varData['color_name'] === 'Midnight'),
                     'order_index' => 1,
                 ]

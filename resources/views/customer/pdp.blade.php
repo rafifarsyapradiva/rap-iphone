@@ -106,7 +106,7 @@
 
             <!-- Multi-Angle Thumbnails Row -->
             @php
-                $existingImages = $product->images->filter(fn ($img) => !empty($img->image_path) && file_exists(public_path($img->image_path)))->values();
+                $existingImages = $product->images->filter(fn ($img) => !empty($img->image_path) && file_exists(public_path($img->image_path)))->unique('image_path')->values();
             @endphp
             <div class="flex items-center gap-3 overflow-x-auto pb-1">
                 @if($existingImages->isNotEmpty())

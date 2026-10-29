@@ -410,6 +410,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 8. Recalculate Trade-In & Installments
             updateTradeInAndInstallments(currentSellingPrice);
+
+            // 9. Update Active Studio Image & Highlight Corresponding Thumbnail
+            if (matchedVariant.image_url) {
+                const activeImg = document.getElementById('pdp-active-image');
+                if (activeImg && activeImg.src !== matchedVariant.image_url) {
+                    activeImg.style.opacity = '0.7';
+                    setTimeout(() => {
+                        activeImg.src = matchedVariant.image_url;
+                        activeImg.style.opacity = '1';
+                    }, 80);
+                }
+
+                document.querySelectorAll('.pdp-thumb-btn').forEach(t => {
+                    if (t.getAttribute('data-image-src') === matchedVariant.image_url) {
+                        document.querySelectorAll('.pdp-thumb-btn').forEach(btn => btn.classList.remove('active', 'border-[#0066CC]'));
+                        t.classList.add('active', 'border-[#0066CC]');
+                    }
+                });
+            }
         };
 
         if (tradeInSelect) {
