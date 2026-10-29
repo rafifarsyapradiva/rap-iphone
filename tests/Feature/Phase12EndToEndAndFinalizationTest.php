@@ -516,6 +516,7 @@ class Phase12EndToEndAndFinalizationTest extends TestCase
         $this->get(route('warranty.check'))->assertOk()->assertSee('Cek Status Garansi & IMEI', false);
         $this->get(route('orders.track'))->assertOk()->assertSee('Lacak Status Pesanan Anda', false);
         $this->get(route('warranty.terms'))->assertOk()->assertSee('Syarat & Ketentuan Garansi', false);
+        $this->get(route('brand.assets'))->assertOk()->assertSee('Logo Minimalis', false);
         $this->actingAs($this->admin)
             ->get(route('admin.settings'))
             ->assertOk()

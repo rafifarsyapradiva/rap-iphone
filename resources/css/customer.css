@@ -1,0 +1,444 @@
+/* Hallmark · genre: editorial · tone: luxury/retail · theme: studio/atelier · floor: strict */
+
+:root {
+  /* Limewash alabaster paper & cotton card stock */
+  --cust-paper: oklch(97.2% 0.006 215);
+  --cust-paper-subtle: oklch(95% 0.008 215);
+  --cust-surface: oklch(99.2% 0.003 215);
+  --cust-surface-subtle: oklch(97.5% 0.005 215);
+  --cust-surface-hover: oklch(98% 0.004 215);
+  --cust-glass: oklch(99.2% 0.003 215 / 0.94);
+  --cust-glass-border: oklch(88% 0.008 75 / 0.85);
+
+  /* Obsidian & pencilled slate inks */
+  --cust-ink: oklch(16% 0.032 250);
+  --cust-ink-2: oklch(28% 0.020 248);
+  --cust-ink-muted: oklch(47% 0.014 60);
+  --cust-ink-faint: oklch(65% 0.010 65);
+  --cust-ink-reverse: oklch(99.2% 0.003 215);
+
+  /* Hairlines and double rules */
+  --cust-rule-hair: 1px solid oklch(88% 0.008 75);
+  --cust-rule-border: oklch(88% 0.008 75);
+  --cust-rule-head: 1px solid var(--cust-ink);
+  --cust-rule-double: 3px double var(--cust-ink);
+
+  /* Cool slate titanium accent & Apple retail blue signal */
+  --cust-accent: oklch(41% 0.075 248);
+  --cust-accent-soft: oklch(93% 0.02 248);
+  --cust-signal: #0071E3;
+  --cust-signal-hover: #0066CC;
+  --cust-focus: var(--cust-signal);
+
+  /* Semantic tones (restrained editorial washes) */
+  --cust-tone-official-bg: oklch(94% 0.03 248);
+  --cust-tone-official-ink: oklch(35% 0.08 248);
+  --cust-tone-official-border: oklch(35% 0.08 248 / 0.18);
+
+  --cust-tone-healthy-bg: oklch(94% 0.03 145);
+  --cust-tone-healthy-ink: oklch(35% 0.08 145);
+  --cust-tone-healthy-border: oklch(35% 0.08 145 / 0.18);
+
+  --cust-tone-promo-bg: oklch(94% 0.04 45);
+  --cust-tone-promo-ink: oklch(38% 0.12 45);
+  --cust-tone-promo-border: oklch(38% 0.12 45 / 0.18);
+
+  --cust-tone-alert-bg: oklch(94% 0.04 25);
+  --cust-tone-alert-ink: oklch(38% 0.10 25);
+  --cust-tone-alert-border: oklch(38% 0.10 25 / 0.18);
+
+  --cust-tone-gray-bg: oklch(92% 0.01 78);
+  --cust-tone-gray-ink: var(--cust-ink-muted);
+  --cust-tone-gray-border: oklch(88% 0.008 75);
+
+  /* Swatches & subtle borders */
+  --cust-swatch-border: rgba(20, 20, 19, 0.15);
+  --cust-swatch-shadow: rgba(20, 20, 19, 0.1);
+  --cust-swatch-ring: var(--cust-surface);
+
+  /* Typography */
+  --cust-font-display: "Sentient", "Playfair Display", Georgia, serif;
+  --cust-font-body: "Hanken Grotesk", "Inter", -apple-system, sans-serif;
+  --cust-font-mono: "Geist Mono", ui-monospace, monospace;
+  --cust-display-weight: 300;
+  --cust-tracking-display: -0.020em;
+
+  /* Geometry & shadows */
+  --cust-radius: 4px;
+  --cust-radius-pill: 999px;
+  --cust-shadow-card: 0 1px 3px rgba(20, 20, 19, 0.04);
+  --cust-shadow-elevated: 0 8px 24px -6px rgba(20, 20, 19, 0.08);
+  --cust-shadow-buybar: 0 -4px 16px rgba(20, 20, 19, 0.05);
+
+  /* Motion */
+  --cust-dur: 150ms;
+  --cust-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ==========================================================================
+   The Floor Invariants (Rules 1-16)
+   ========================================================================== */
+html, body {
+  overflow-x: clip;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--cust-focus) !important;
+  outline-offset: 2px !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   Page Shell & Architecture
+   ========================================================================== */
+.cust-shell {
+  background-color: var(--cust-paper);
+  color: var(--cust-ink);
+  font-family: var(--cust-font-body);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.cust-page {
+  max-width: 1440px;
+  margin-inline: auto;
+  width: 100%;
+  padding-inline: 1rem;
+}
+
+@media (min-width: 640px) {
+  .cust-page {
+    padding-inline: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .cust-page {
+    padding-inline: 2rem;
+  }
+}
+
+.cust-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   Header & Navigation
+   ========================================================================== */
+.cust-topbar {
+  background-color: var(--cust-ink);
+  color: var(--cust-ink-reverse);
+  font-size: 0.6875rem;
+  line-height: 1rem;
+  padding-block: 0.5rem;
+  padding-inline: 1rem;
+}
+
+.cust-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background-color: var(--cust-surface);
+  border-bottom: 1px solid var(--cust-rule-border);
+}
+
+.cust-navbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 4rem;
+  gap: 1.25rem;
+}
+
+.cust-nav-link {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--cust-ink-muted);
+  text-decoration: none;
+  transition: color var(--cust-dur) var(--cust-ease);
+}
+
+.cust-nav-link:hover,
+.cust-nav-link.active {
+  color: var(--cust-ink);
+}
+
+/* ==========================================================================
+   Cards (Cotton Stock)
+   ========================================================================== */
+.cust-card {
+  background-color: var(--cust-surface);
+  border: 1px solid var(--cust-rule-border);
+  border-radius: var(--cust-radius);
+  box-shadow: var(--cust-shadow-card);
+  transition: transform var(--cust-dur) var(--cust-ease), box-shadow var(--cust-dur) var(--cust-ease);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.cust-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--cust-shadow-elevated);
+}
+
+.cust-card:active {
+  transform: scale(0.995);
+}
+
+.cust-card-media {
+  background-color: var(--cust-paper-subtle);
+  position: relative;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  overflow: hidden;
+}
+
+.cust-card-body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  gap: 0.625rem;
+}
+
+.cust-card-title {
+  font-family: var(--cust-font-body);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--cust-ink);
+  line-height: 1.35;
+}
+
+.cust-card-price {
+  font-family: var(--cust-font-body);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--cust-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.cust-card-subprice {
+  font-size: 0.75rem;
+  color: var(--cust-ink-muted);
+}
+
+/* ==========================================================================
+   Buttons & Interactive Controls
+   ========================================================================== */
+.cust-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--cust-font-body);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--cust-radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  line-height: 1.2;
+  transition: background-color var(--cust-dur) var(--cust-ease), color var(--cust-dur) var(--cust-ease), border-color var(--cust-dur) var(--cust-ease), transform var(--cust-dur) var(--cust-ease);
+}
+
+.cust-btn:active {
+  transform: scale(0.98);
+}
+
+.cust-btn-primary {
+  background-color: var(--cust-signal);
+  color: var(--cust-ink-reverse);
+}
+
+.cust-btn-primary:hover {
+  background-color: var(--cust-signal-hover);
+}
+
+.cust-btn-secondary {
+  background-color: var(--cust-ink);
+  color: var(--cust-ink-reverse);
+}
+
+.cust-btn-secondary:hover {
+  background-color: var(--cust-ink-2);
+}
+
+.cust-btn-outline {
+  background-color: transparent;
+  border-color: var(--cust-rule-border);
+  color: var(--cust-ink);
+}
+
+.cust-btn-outline:hover {
+  background-color: var(--cust-paper-subtle);
+  border-color: var(--cust-ink-muted);
+}
+
+.cust-btn-pill {
+  border-radius: var(--cust-radius-pill);
+}
+
+/* ==========================================================================
+   Swatches & Capacity Pills
+   ========================================================================== */
+.cust-swatches {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.cust-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  border: 1px solid var(--cust-swatch-border);
+  box-shadow: inset 0 1px 1px var(--cust-swatch-shadow);
+  padding: 0;
+  cursor: pointer;
+  background-clip: padding-box;
+  transition: transform var(--cust-dur) var(--cust-ease), box-shadow var(--cust-dur) var(--cust-ease);
+}
+
+.cust-swatch:active {
+  transform: scale(0.9);
+}
+
+.cust-swatch.active {
+  box-shadow: 0 0 0 1.5px var(--cust-swatch-ring), 0 0 0 3px var(--cust-signal);
+}
+
+.cust-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.cust-pill {
+  padding: 0.375rem 0.75rem;
+  border-radius: var(--cust-radius-pill);
+  border: 1px solid var(--cust-rule-border);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--cust-ink);
+  background-color: var(--cust-surface);
+  cursor: pointer;
+  transition: border-color var(--cust-dur) var(--cust-ease), background-color var(--cust-dur) var(--cust-ease), transform var(--cust-dur) var(--cust-ease);
+}
+
+.cust-pill:hover {
+  border-color: var(--cust-ink-muted);
+}
+
+.cust-pill:active {
+  transform: scale(0.96);
+}
+
+.cust-pill.active {
+  background-color: var(--cust-ink);
+  color: var(--cust-ink-reverse);
+  border-color: var(--cust-ink);
+}
+
+/* ==========================================================================
+   Badges (Curated Editorial Stamps)
+   ========================================================================== */
+.cust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 2px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.cust-badge-official {
+  background-color: var(--cust-tone-official-bg);
+  color: var(--cust-tone-official-ink);
+  border: 1px solid var(--cust-tone-official-border);
+}
+
+.cust-badge-healthy {
+  background-color: var(--cust-tone-healthy-bg);
+  color: var(--cust-tone-healthy-ink);
+  border: 1px solid var(--cust-tone-healthy-border);
+}
+
+.cust-badge-promo {
+  background-color: var(--cust-tone-promo-bg);
+  color: var(--cust-tone-promo-ink);
+  border: 1px solid var(--cust-tone-promo-border);
+}
+
+.cust-badge-gray {
+  background-color: var(--cust-tone-gray-bg);
+  color: var(--cust-tone-gray-ink);
+  border: 1px solid var(--cust-tone-gray-border);
+}
+
+/* ==========================================================================
+   Form Controls
+   ========================================================================== */
+.cust-input,
+.cust-select {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  border-radius: var(--cust-radius);
+  border: 1px solid var(--cust-rule-border);
+  background-color: var(--cust-surface);
+  color: var(--cust-ink);
+  font-family: var(--cust-font-body);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  transition: border-color var(--cust-dur) var(--cust-ease);
+}
+
+.cust-input:focus,
+.cust-select:focus {
+  border-color: var(--cust-focus);
+}
+
+.cust-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--cust-ink-muted);
+  margin-bottom: 0.375rem;
+}
+
+/* ==========================================================================
+   Sticky Bottom Buy Bar
+   ========================================================================== */
+.cust-buybar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  background-color: var(--cust-surface);
+  border-top: 1px solid var(--cust-rule-border);
+  box-shadow: var(--cust-shadow-buybar);
+  padding: 0.75rem 1rem;
+}

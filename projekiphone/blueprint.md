@@ -7,11 +7,12 @@
 
 ```
 +-----------------------------------------------------------------------------------+
-|                    CLIENT LAYER (DIGIMAP DAYLIGHT & HALLMARK EDITORIAL)           |
+|                    CLIENT LAYER (HALLMARK LUXURY RETAIL & EDITORIAL SUITE)        |
 |  +---------------------------+  +-----------------------------------------------+  |
 |  | Customer Storefront       |  | Admin & Owner Executive Console               |  |
-|  | (Digimap Clean White &    |  | (Hallmark Luxury / Editorial Redesign Suite:  |  |
-|  |  Daylight Frosted Blade)  |  |  Sentient Serif, Trade Ledgers, Cotton Stock) |  |
+|  | (Hallmark Luxury Retail & |  | (Hallmark Luxury / Editorial Redesign Suite:  |  |
+|  |  Studio Precision:       |  |  Sentient Serif, Trade Ledgers, Cotton Stock) |  |
+|  |  Sentient, Split Studio)  |  |                                               |  |
 |  +---------------------------+  +-----------------------------------------------+  |
 +----------------------------------------+------------------------------------------+
                                          | HTTP / HTTPS Requests
@@ -347,22 +348,26 @@ resources/views/
 │   ├── login.blade.php          <-- Fase 16: Halaman Login Mandiri Pelanggan + Google OAuth (/login)
 │   └── register.blade.php       <-- Fase 16: Halaman Registrasi Mandiri Pelanggan (/register)
 ├── components/
-│   ├── product-card.blade.php   <-- Kartu #F5F5F7, Badge Kondisi/BH, Color Dots, Info Cicilan/Trade-In
+│   ├── customer/                <-- Fase 25: product-card, spec-badge, button, color-swatch, battery-health-meter, section-header
+│   ├── admin/                   <-- Fase 17: page-header, stat-card, card, empty-state, status-badge
+│   ├── product-card.blade.php   <-- Legacy wrapper kompatibilitas
 │   ├── glass-card.blade.php     <-- Kontainer permukaan putih/abu terang bersih
 │   ├── glass-button.blade.php   <-- Pill/Rounded CTA (#0071E3 & #1D1D1F)
 │   ├── order-badge.blade.php    <-- Semantic badges kontras tinggi di atas latar putih
 │   └── battery-meter.blade.php  <-- Indikator Battery Health untuk unit Second Like New
-├── components/admin/            <-- Fase 17: page-header, stat-card, card, empty-state, status-badge
 ├── admin/                       <-- Fase 17–20 & 24: dashboard, products/*, orders/*, trade-ins/*, settings
 ├── owner/                       <-- Fase 21–23: dashboard (+ partials/*), financial-report, staff/index
 └── customer/
-    ├── home.blade.php           <-- Visual Series Icon Ribbon + Hero Kampanye + Bento Grid
-    ├── catalog.blade.php        <-- Filter Kondisi (BNIB vs Second) + Grid Katalog 4 Kolom
-    ├── pdp.blade.php            <-- Sticky Studio Gallery + Step Configurator + Inline Trade-In
-    │                                Calculator + Click & Collect Status + Sticky Bottom Bar
-    ├── cart.blade.php           <-- Ringkasan keranjang bersih & estimasi potongan Trade-In
-    ├── checkout.blade.php       <-- Opsi Kurir / Ambil di Toko (Click & Collect) + Midtrans Snap
-    └── trade-in.blade.php       <-- 4-Step Wizard Tukar Tambah bergaya Apple/Digimap Trade-In
+    ├── home.blade.php           <-- Fase 26: Hero Offer Flagship + Series Icon Ribbon + Bento Grid
+    ├── catalog.blade.php        <-- Fase 27: Macrostructure Catalogue (11) + Dual-Condition Filter
+    ├── pdp.blade.php            <-- Fase 28: Macrostructure Split Studio (15) + Configurator + Sticky Buy Bar
+    ├── cart.blade.php           <-- Fase 29: Spec Sheet Item Ledger & Estimasi Potongan Trade-In
+    ├── checkout.blade.php       <-- Fase 29: Two-Column Distraction-Free + Midtrans Snap Modal
+    ├── trade-in.blade.php       <-- Fase 30: 4-Step Narrative Workflow Wizard Tukar Tambah
+    ├── trade-in-detail.blade.php<-- Fase 30: Status & Timeline Inspeksi Unit Trade-In
+    ├── orders.blade.php         <-- Fase 31: Buku Besar Transaksi Customer & Tracking Resi
+    ├── checkout-success.blade.php<-- Fase 31: Bukti Pembayaran Lunas & Tombol Unduh Nota PDF
+    └── utilities.blade.php      <-- Cek IMEI Kemenperin & Garansi Resmi Unit
 ```
 
 #### 6.3. Hallmark Luxury / Editorial Design System (Fase 17–24)
@@ -450,3 +455,114 @@ Seluruh warna, tipografi, dan spasi diwajibkan melewati token CSS deklarasi `:ro
    - Menghitung harga bersih (*Net Payable Price*) di halaman produk ketika pelanggan memilih model iPhone lama mereka sebagai tukar tambah.
 3. **Sticky Bottom Purchase Bar**:
    - Menggunakan `IntersectionObserver` / scroll listener untuk menampilkan bar ringkasan pembelian di bagian bawah layar saat tombol beli utama di kolom kanan tidak terlihat di *viewport*.
+
+---
+
+#### 6.5. Hallmark Customer Storefront Design System (Fase 25–32)
+Etalase belanja pelanggan (*Customer Storefront*) ditransformasi menggunakan kerangka kerja **Hallmark Redesign** dengan estetika **Luxury Retail & Studio Precision** (genre: `editorial` / `modern-minimal` hybrid). Desain menggabungkan ketenangan etalase perangkat keras fisik Apple, anatomi transaksi belanja jujur (*job: buy* dari `references/anatomy.md`), rasio ~80 kata per layar, dan penegakan ketat 16 aturan *The Floor* dari Hallmark.
+
+**a. Spesifikasi Token CSS (`resources/css/customer.css`)**
+Seluruh warna, tipografi, dan spasi diwajibkan melewati token CSS deklarasi `:root` tanpa nilai literal di dalam view:
+
+```css
+:root {
+  /* Palet Kanvas Studio & Kartu Cotton Stock */
+  --cust-paper: oklch(97.2% 0.006 215);        /* Kanvas limewash alabaster hangat (#FBFBFA) */
+  --cust-paper-subtle: oklch(94.5% 0.008 215); /* Permukaan sekunder / strip pemisah (#F5F4F0) */
+  --cust-surface: #FFFFFF;                     /* Kartu cotton stock bersih untuk produk & form */
+  --cust-surface-elevated: #FFFFFF;            /* Permukaan elevasi dropdown & modal */
+  --cust-glass: rgba(255, 255, 255, 0.88);     /* Kaca daylight sticky header & buy bar (blur 20px) */
+
+  /* Tinta & Keterbacaan (Obsidian Pekat & Slate) */
+  --cust-ink: oklch(16% 0.032 250);            /* Tinta judul utama & harga rupiah (#141413) */
+  --cust-ink-2: oklch(28% 0.020 248);          /* Teks paragraf spesifikasi & nama unit (#2D2F33) */
+  --cust-ink-muted: oklch(47% 0.014 60);       /* Teks sekunder, deskripsi varian (#6B6864) */
+  --cust-ink-faint: oklch(65% 0.010 65);       /* Label wall-text, caption garansi (#9E9B95) */
+
+  /* Garis Pembatas (Hairlines & Studio Rules) */
+  --cust-rule-hair: 1px solid oklch(88% 0.008 75);  /* Garis pemisah hairline kartu (#E5E2DC) */
+  --cust-rule-head: 1px solid var(--cust-ink);       /* Garis kepala seksi / kategori */
+  --cust-rule-double: 3px double var(--cust-ink);    /* Garis ganda ringkasan checkout / nota */
+
+  /* Sinyal Aksen & Fokus Interaktif */
+  --cust-accent: oklch(41% 0.075 248);         /* Cool Slate Titanium (#2C353D) */
+  --cust-signal: #0071E3;                      /* Apple Retail Blue untuk CTA primer Beli Sekarang */
+  --cust-signal-hover: #0066CC;
+  --cust-focus: var(--cust-signal);            /* Ring fokus keyboard :focus-visible instan */
+
+  /* Status Semantik Kurasi (Tanpa Warna Terang Norak) */
+  --cust-status-official-bg: oklch(94% 0.02 245);  --cust-status-official-text: oklch(35% 0.08 245);
+  --cust-status-healthy-bg:  oklch(94% 0.03 145);  --cust-status-healthy-text:  oklch(35% 0.08 145);
+  --cust-status-promo-bg:    oklch(94% 0.04 45);   --cust-status-promo-text:    oklch(38% 0.12 45);
+
+  /* Tipografi Studio & Moneter Tabular */
+  --cust-font-display: "Sentient", "Playfair Display", Georgia, serif;
+  --cust-font-body: "Hanken Grotesk", "Inter", -apple-system, sans-serif;
+  --cust-font-mono: "Geist Mono", ui-monospace, monospace;
+  --cust-tracking-display: -0.020em;
+  --cust-display-weight: 300;                  /* Serif berbobot ringan, berwibawa tenang */
+
+  /* Geometri & Sudut */
+  --cust-radius: 4px;                          /* Sudut presisi ala cetak studio hardware */
+  --cust-radius-pill: 999px;                   /* Pill untuk selektor warna & kapasitas */
+  --cust-shadow: 0 1px 3px rgba(20, 20, 19, 0.05);
+}
+```
+
+**b. Kelas Utility Utama Customer (`resources/css/customer.css`)**
+
+| Kelas | Karakteristik Visual & Penerapannya pada UI Pelanggan |
+|---|---|
+| `.cust-page` | Kontainer utama seluruh halaman etalase, `max-width: 1440px`, terikat `overflow-x: clip` |
+| `.cust-navbar` | Sticky daylight header dengan latar `--cust-glass`, `backdrop-filter: blur(20px)`, border bawah 1px hairline |
+| `.cust-card` | Kartu produk berkanvas cotton stock (`--cust-surface`), border `1px hairline`, hover elevasi ringan 1px |
+| `.cust-hero` | Hero stage flagship: headline serif berwibawa ringan, 1 kalimat terukur, aksi ganda, tampak di 1280x800 tanpa scroll |
+| `.cust-gallery` | Galeri studio sticky ber-rasio presisi, thumbnail bertata letak mat studio tanpa mockup ponsel fiktif |
+| `.cust-num` | Nilai moneter rupiah dan kuantitas berformat rata kanan dengan font `tabular-nums` |
+| `.cust-swatch` | Tombol titik warna bodi aktual Apple (Natural Titanium, Desert Titanium, White, Black) ber-ring fokus presisi |
+| `.cust-pill` | Tombol pill selektor kapasitas memori (128GB–1TB) bergaris batas halus dan state aktif tegas |
+| `.cust-badge` | Badge stempel kurasi (*Resmi iBox*, *Second Grade A+*, *Battery Health 95%*) |
+| `.cust-buybar` | Sticky Bottom Purchase Bar responsif dengan ringkasan varian aktif dan tombol beli langsung |
+
+**c. Pemetaan Makrostruktur per Halaman (`references/macrostructures.md`)**
+
+1. **Beranda (`customer/home.blade.php`)**:
+   - Makrostruktur: **Bento Grid (01)** & **Catalogue (11)**.
+   - Hero: *Offer as Hero* (iPhone 16 Pro Flagship) dengan rasio ~80 kata per layar, headline 7 kata, subteks 12 kata, tombol aksi ganda (*Beli Sekarang* & *Simulasi Trade-In*).
+   - Visual Ribbon: Baris ikon seri iPhone horizontal.
+   - Curated Bento Grid: 3 pilar layanan toko (Trade-In 15 Menit, Garansi Resmi vs Second QC 32-Titik, Click & Collect Gerai Fisik).
+2. **Katalog Produk (`customer/catalog.blade.php`)**:
+   - Makrostruktur: **Catalogue (11)** — *Visual Index of Inventory*.
+   - Dual-Condition Segmented Control: [Semua] | [Unit Baru Garansi Resmi] | [Second Like New Teruji].
+   - Toolbar Filter: Seri, Kapasitas, Rentang Harga, Ketersediaan Stok.
+   - Grid 4 Kolom: Kartu produk cotton stock ber-swatch warna, indikator BH, dan harga tabular.
+3. **Halaman Detail Produk / PDP (`customer/pdp.blade.php`)**:
+   - Makrostruktur: **Split Studio (15)**.
+   - Kolom Kiri: *Sticky Studio Gallery* dengan multi-angle device photography, zoom detail, dan rasio foto asli.
+   - Kolom Kanan: *Step-by-Step Configurator* (Kondisi -> Varian Warna -> Kapasitas Penyimpanan) dengan pembaruan harga seketika.
+   - Transparency Trust Panel: Data riil *Battery Health* meter, nomor IMEI terdaftar Kemenperin, status kelulusan QC 32-titik.
+   - Dual Price Slasher: Estimasi cicilan per bulan dan potongan harga tukar tambah langsung (*inline trade-in estimator*).
+   - Sticky Bottom Purchase Bar: Ringkasan dinamis varian aktif yang menempel di bawah layar.
+4. **Keranjang & Checkout Midtrans (`customer/cart.blade.php` & `customer/checkout.blade.php`)**:
+   - Makrostruktur: *Spec Sheet & Master Ledger Checkout*.
+   - Lembar keranjang: Rincian item tabular, voucher diskon, dan subtotal bersih.
+   - Checkout 2 Kolom Bebas Distraksi: Form kurir pengiriman (JNE/SiCepat/J&T) vs *Click & Collect* di gerai fisik toko, ringkasan biaya bergaris ganda (`--cust-rule-double`), serta trigger popup modal Midtrans Snap ber-focus ring instan.
+5. **Wizard Tukar Tambah (`customer/trade-in.blade.php` & `trade-in-detail.blade.php`)**:
+   - Makrostruktur: **Narrative Workflow (14)** / **Workbench (05)**.
+   - 4 Langkah Transparan: Model iPhone Lama -> Kapasitas & BH -> Kondisi Fisik & Kelengkapan -> Estimasi Nilai Tukar Tambah Instan.
+   - Opsi Klaim: Voucher potongan belanja langsung di keranjang atau transfer rekening bank customer.
+6. **Riwayat Pesanan & Nota PDF (`customer/orders.blade.php` & `checkout-success.blade.php`)**:
+   - Halaman konfirmasi pembayaran lunas seketika (*Settlement Receipt*).
+   - Master Ledger pesanan pelanggan: Tabel transaksi historis dengan stempel status, tracking resi ekspedisi, dan tombol unduh faktur PDF DomPDF resmi ber-QR Code.
+
+**d. Penegakan 16 Aturan "The Floor" Hallmark pada Customer Storefront**
+- **F1**: 100% warna dan font dideklarasikan via token `:root` di `customer.css`.
+- **F2**: Bebas dari `transition: all`; hanya transisi properti terukur (`transform`, `opacity`, `background-color`) maksimal 150ms.
+- **F4**: Terikat `overflow-x: clip` pada kontainer root (tidak ada `hidden` atau `100vw`).
+- **F6**: `:focus-visible` instan pada setiap tombol, input formulir, dot warna, dan link navigasi.
+- **F7**: Fallback `@media (prefers-reduced-motion: reduce)` pada setiap interaksi gerak.
+- **F8**: Dilarang memuat angka ulasan palsu, rating bintang buatan, logo wall partner fiktif, atau testimoni karangan; hanya menampilkan data nyata inventaris dan transaksi.
+- **F9**: Label dan badge menggunakan huruf sentence case atau lower case untracked (tidak ada tracked capitals atau small caps).
+- **F11**: Dilarang menggunakan kartu bersarang (*card inside a card*), gradien ungu-ke-biru, atau emotikon sebagai ikon.
+- **F12 & F13**: Hero headline, kalimat pengantar, dan tombol aksi tampak utuh pada resolusi 1280x800 tanpa scroll; rasio ~80 kata per layar.
+- **F14**: Kontainer etalase terpusat dan dibatasi maksimal 1440px / 1920px (gutters melebar pada layar lebar, grid tidak melar tak berbatas).

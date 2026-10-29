@@ -169,8 +169,8 @@
     <div class="email-wrapper">
         <div class="email-container">
             <div class="email-header">
-                <div class="brand-logo"> Rap-iPhone</div>
-                <div class="brand-tagline">Premium Apple Store &amp; Trade-In Indonesia</div>
+                <div class="brand-logo">Rap-iPhone</div>
+                <div class="brand-tagline">Authorized Apple Style &amp; Trade-In Studio</div>
             </div>
 
             <div class="email-body">

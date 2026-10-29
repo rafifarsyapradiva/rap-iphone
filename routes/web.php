@@ -40,6 +40,9 @@ Route::get('/api/products/search', [CatalogController::class, 'liveSearch'])->na
 Route::get('/cek-garansi', [StorefrontUtilityController::class, 'warrantyCheck'])->name('warranty.check');
 Route::get('/lacak-pesanan', [StorefrontUtilityController::class, 'trackOrder'])->name('orders.track');
 Route::get('/syarat-garansi', [StorefrontUtilityController::class, 'warrantyTerms'])->name('warranty.terms');
+Route::get('/brand', function () {
+    return view('customer.brand');
+})->name('brand.assets');
 
 // Shopping Cart Module
 Route::prefix('cart')->name('cart.')->group(function () {

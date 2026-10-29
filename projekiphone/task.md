@@ -319,3 +319,98 @@
 - [x] **24.3. Eksekusi Linter Sloplint & QA Komprehensif**
   - [x] Eksekusi `node .agent/skills/hallmark/scripts/sloplint.mjs resources/views/admin resources/views/owner --genre editorial`.
   - [x] Verifikasi uji otomatis (`php artisan test`), kompilasi aset (`npm run build`), dan uji navigasi keyboard di berbagai ukuran layar.
+
+---
+
+### Phase 25: Hallmark Customer Design Foundation, Token CSS & Master Layout (`layouts/customer.blade.php`)
+> **Konteks Fase 25–32:** Transformasi antarmuka etalase belanja pelanggan (*Customer Storefront*) menggunakan kerangka kerja **Hallmark Redesign** dengan estetika **Luxury Retail & Studio Precision** (genre: `editorial` / `modern-minimal` hybrid). Mengintegrasikan standar ketat aturan *The Floor* dari Hallmark (bebas warna literal, zero `transition: all`, container terpusat, `overflow-x: clip`, rasio 80 kata per layar, `:focus-visible` instan, data produk dan IMEI riil tanpa testimoni fiktif) berpadu harmonis dengan anatomi pekerjaan pembeli (*job: buy*) serta DNA resmi Apple/Digimap Daylight. Seluruh rute belanja, keranjang, checkout Midtrans Snap, wizard trade-in, dan webhook backend dipertahankan utuh 100%.
+- [x] **25.1. Audit Awal Sloplint & Setup Token CSS Hallmark Customer (`resources/css/customer.css`)**
+  - [x] Audit awal halaman customer dengan sloplint: `node .agent/skills/hallmark/scripts/sloplint.mjs resources/views/customer --genre editorial --render --before`.
+  - [x] Pembuatan token sistem Luxury Retail di `resources/css/customer.css` (kanvas limewash alabaster `--cust-paper: oklch(97.2% 0.006 215)`, kartu cotton stock `--cust-surface: #FFFFFF`, tinta obsidian pekat `--cust-ink: oklch(16% 0.032 250)`, teks sekunder slate `--cust-ink-muted`, aksen cool slate titanium `--cust-accent: oklch(41% 0.075 248)` & retail blue `--cust-signal: #0071E3`, font Sentient serif + Hanken Grotesk / Geist dengan `tabular-nums`).
+  - [x] Penegakan ketat 16 aturan *The Floor* dari Hallmark (bebas warna literal, zero `transition: all`, no card-in-card, no tracked capitals, no gradient ungu-ke-biru, `overflow-x: clip`, `:focus-visible` seketika).
+  - [x] Pendaftaran `@import './customer.css';` di `resources/css/app.css`.
+- [x] **25.2. Redesign Master Layout Pelanggan (`layouts/customer.blade.php`)**
+  - [x] Top Promo Announcement Bar minimalis satu kalimat terukur (cicilan, ongkir berasuransi, trade-in) tanpa emotikon norak.
+  - [x] Sticky Header Daylight Frosted (`--cust-glass`) dengan wordmark presisi, navigasi seri horizontal, search pill (`⌘K`), badge keranjang tabular, dan dropdown profil pelanggan mandiri.
+  - [x] Footer editorial kurasi: informasi gerai fisik Click & Collect, izin usaha resmi, jam operasional, link navigasi bersih, dan kredensial partner tanpa logo wall fiktif.
+- [x] **25.3. Komponen Blade Customer Reusable**
+  - [x] Pembuatan komponen Blade kurasi: `<x-customer.product-card>`, `<x-customer.spec-badge>`, `<x-customer.button>`, `<x-customer.color-swatch>`, `<x-customer.battery-health-meter>`, `<x-customer.section-header>`.
+
+---
+
+### Phase 26: Hallmark Redesign Beranda & Showcase Utama Customer (`customer/home.blade.php`)
+- [x] **26.1. Hero Flagship Showcase (Job: buy — Offer as Hero)**
+  - [x] Tampilan hero Apple flagship: headline maksimal 7 kata, 1 kalimat penjelas (maksimal 12 kata), dan tombol aksi ganda (*Beli Sekarang* & *Simulasi Trade-In*), tampak utuh pada resolusi 1280x800 tanpa scroll (F12).
+  - [x] Visual unit iPhone resolusi tinggi dalam pencahayaan studio alami (*true color photography*), tanpa latar gradien AI slop.
+- [x] **26.2. Visual Series Icon Ribbon & Curated Bento Grid**
+  - [x] Ribbon navigasi seri horizontal (*iPhone 16 Pro, 16, 15 Pro, 15, 14, 13, Second Like New, Trade-In*) dengan indikator aktif minimalis.
+  - [x] Bento Grid layanan toko (Tukar Tambah 15 Menit, Garansi Resmi TAM/iBox vs Second QC 32-Titik, Click & Collect Gerai Store).
+- [x] **26.3. Katalog Unggulan Beranda (Featured Product Rail)**
+  - [x] Grid koleksi iPhone unggulan dengan switcher kondisi instan, titik warna bodi aktual, dan informasi harga jujur (*honest pricing*).
+
+---
+
+### Phase 27: Hallmark Redesign Katalog & Filter Multi-Kondisi (`customer/catalog.blade.php`)
+- [x] **27.1. Macrostructure Catalogue (11) — Visual Index of Inventory**
+  - [x] Struktur indeks inventaris jujur bergrid rapi tanpa kartu bersarang (*card-in-card*).
+- [x] **27.2. Dual-Condition Segmented Control & Filter Toolbar**
+  - [x] Segmented control minimalis: **Semua**, **Unit Baru Garansi Resmi**, dan **Second Like New Teruji**.
+  - [x] Toolbar filter bergaris hairline: seri iPhone, kapasitas penyimpanan (128GB–1TB), rentang harga, dan status ketersediaan.
+- [x] **27.3. Grid Kartu Produk Interaktif**
+  - [x] Kartu produk berkanvas cotton stock dengan *color swatch dots* (Natural Titanium, Desert Titanium, Black, White), badge kondisi stempel kurasi, indikator *Battery Health* (untuk unit second), dan harga moneter tabular.
+
+---
+
+### Phase 28: Hallmark Redesign Halaman Detail Produk / PDP (`customer/pdp.blade.php`)
+- [x] **28.1. Macrostructure Split Studio (15) — Sticky Studio Gallery**
+  - [x] Kolom kiri: Galeri studio bertingkat yang menempel (*sticky*) saat scroll, rasio aspek presisi, thumbnail multi-angle, tanpa mockup fiktif.
+- [x] **28.2. Step-by-Step Configurator & Live Dynamic Pricing**
+  - [x] Kolom kanan: Pemilih kondisi unit (Baru vs Second Grade A+), pemilih varian warna Apple resmi dengan feedback nama warna, dan tombol pill kapasitas (128GB–1TB) dengan update harga seketika.
+- [x] **28.3. Transparency Trust Panel (Khusus Unit Second)**
+  - [x] Panel transparansi data riil: persentase *Battery Health* aktual, nomor IMEI fisik terverifikasi Kemenperin, dan ceklis kelulusan QC 32 titik.
+- [x] **28.4. Dual Price Estimator & Sticky Purchase Bar**
+  - [x] Kalkulator simulasi cicilan per bulan dan kalkulator diskon tukar tambah (*inline trade-in estimator*).
+  - [x] Sticky Bottom Purchase Bar responsif dengan ringkasan varian terpilih dan CTA pembelian instan.
+
+---
+
+### Phase 29: Hallmark Redesign Keranjang Belanja & Alur Checkout Midtrans (`customer/cart.blade.php` & `customer/checkout.blade.php`)
+- [x] **29.1. Lembar Keranjang Belanja Bergaya Spec Sheet (`cart.blade.php`)**
+  - [x] Rincian item belanja bergaris hairline, thumbnail bertanda kurasi, kontrol kuantitas presisi, dan ringkasan subtotal tabular.
+- [x] **29.2. Halaman Checkout Terpadu Bebas Distraksi (`checkout.blade.php`)**
+  - [x] Form data penerima dengan pembagian jelas: Pengiriman Ekspedisi Berasuransi (JNE/SiCepat/J&T) atau *Click & Collect* (Ambil di Toko).
+  - [x] Ringkasan pesanan bertipe buku kas master ledger dengan rincian ongkir, diskon trade-in, dan total tagihan.
+  - [x] Integrasi modal Midtrans Snap ber-focus ring instan dan proteksi submit ganda.
+
+---
+
+### Phase 30: Hallmark Redesign Wizard Jual & Tukar Tambah iPhone (`customer/trade-in.blade.php` & `trade-in-detail.blade.php`)
+- [x] **30.1. 4-Step Interactive Trade-In Wizard (Macrostructure: Narrative Workflow)**
+  - [x] Tahap 1: Pilih Seri & Model iPhone lama.
+  - [x] Tahap 2: Pilih Kapasitas & Indikasi Battery Health.
+  - [x] Tahap 3: Ceklis Kondisi Fisik, Layar, Kelengkapan Unit.
+  - [x] Tahap 4: Lembar Estimasi Nilai Tukar Tambah Instan (*Instant Appraisal Quote*).
+- [x] **30.2. Pilihan Pencairan Dana & Integrasi Keranjang**
+  - [x] Pilihan langsung: Klaim sebagai voucher potongan belanja di keranjang atau transfer rekening bank customer.
+  - [x] Halaman rincian pengajuan trade-in pelanggan (`trade-in-detail.blade.php`) dengan timeline status verifikasi toko.
+
+---
+
+### Phase 31: Hallmark Redesign Riwayat Pesanan, Pelacakan Resi & Nota PDF (`customer/orders.blade.php` & `checkout-success.blade.php`)
+- [x] **31.1. Layar Konfirmasi Pembayaran Sukses (`checkout-success.blade.php`)**
+  - [x] Tampilan tanda terima resmi lunas seketika pasca-transaksi Midtrans, info estimasi pengiriman, dan tombol unduh nota.
+- [x] **31.2. Dashboard Riwayat Pesanan Pelanggan (`customer/orders.blade.php`)**
+  - [x] Buku besar transaksi pelanggan: daftar pesanan dengan badge stempel status (*Paid, Shipped, Completed*), tracking nomor resi ekspedisi, dan tombol unduh faktur PDF DomPDF resmi.
+
+---
+
+### Phase 32: Hallmark Customer Final Sweep, Sloplint Audit, The Floor Compliance & QA
+- [x] **32.1. Audit Sloplint Seluruh Halaman Customer**
+  - [x] Eksekusi linter Hallmark: `node .agent/skills/hallmark/scripts/sloplint.mjs resources/views/customer resources/views/layouts/customer.blade.php --genre editorial`.
+  - [x] Perbaikan 100% temuan FAIL dan verifikasi kepatuhan The Floor (F1–F16).
+- [x] **32.2. Validasi Kepatuhan Aksesibilitas & Responsivitas**
+  - [x] Uji navigasi keyboard `:focus-visible` di seluruh kontrol formulir dan tombol aksi.
+  - [x] Uji tampilan responsif di mobile (375px), tablet (768px), laptop (1280px), dan desktop (1440px / 1920px terpusat).
+- [x] **32.3. Pengujian Fungsional End-to-End (E2E)**
+  - [x] Verifikasi alur belanja penuh: Katalog -> PDP (Pilih Varian) -> Tambah Keranjang -> Checkout Midtrans -> Webhook Callback -> Notifikasi WA Fonnte & Email SMTP -> Faktur PDF.
+  - [x] Eksekusi suite pengujian Laravel: `php artisan test` dan kompilasi aset `npm run build`.

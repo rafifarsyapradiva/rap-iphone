@@ -6,6 +6,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin Hub — Rap-iPhone Operations & Management')</title>
 
+    <!-- Fonts & Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo/favicon.svg') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo/apple-touch-icon.png') }}">
+
     <!-- Hallmark Luxury Editorial Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,11 +51,14 @@
 
         <div class="p-5 overflow-y-auto">
             <!-- Brand Editorial -->
-            <a href="{{ $inOwnerArea ? route('owner.dashboard') : route('admin.dashboard') }}" class="block mb-6 px-1">
-                <span class="font-serif text-xl tracking-tight text-[var(--adm-ink)] block leading-tight">Rap-iPhone</span>
-                <span class="text-xs text-[var(--adm-ink-muted)] block mt-0.5">
-                    {{ $isOwner ? 'Executive & Financial Suite' : 'Store Operations Hub' }}
-                </span>
+            <a href="{{ $inOwnerArea ? route('owner.dashboard') : route('admin.dashboard') }}" class="flex items-center gap-3 mb-6 px-1 group">
+                <img src="{{ asset('images/logo/logo-mark.svg') }}" alt="Rap-iPhone Logomark" class="w-8 h-8 rounded-lg shadow-xs shrink-0">
+                <div class="min-w-0">
+                    <span class="font-serif text-lg tracking-tight text-[var(--adm-ink)] block leading-tight truncate">Rap-iPhone</span>
+                    <span class="text-[11px] text-[var(--adm-ink-muted)] block mt-0.5 truncate">
+                        {{ $isOwner ? 'Executive & Financial Suite' : 'Store Operations Hub' }}
+                    </span>
+                </div>
             </a>
 
             <nav class="space-y-1" id="admin-sidebar-nav">

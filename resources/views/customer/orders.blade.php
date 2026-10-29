@@ -3,33 +3,29 @@
 @section('title', 'Pesanan & Akun Saya — Rap-iPhone')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+<div class="cust-page py-6 space-y-8 pb-20">
 
     <!-- Header Section -->
-    <div class="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-5 border-b border-[#E5E5EA]">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-[var(--cust-rule-border)]">
         <div>
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F5F5F7] border border-[#E5E5EA] text-xs font-semibold text-[#0066CC] mb-2">
-                <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                <span>Akun Pelanggan Rap-iPhone</span>
-            </div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-[#1D1D1F] tracking-tight">Pesanan &amp; Riwayat Trade-In Saya</h1>
-            <p class="text-xs sm:text-sm text-[#6E6E73] mt-1">
-                Lacak status pengiriman paket unit iPhone dan unduh Nota PDF Resmi ber-QR Code Anda.
+            <x-customer.spec-badge variant="official" icon="user" class="mb-1.5">
+                Akun Pelanggan Rap-iPhone
+            </x-customer.spec-badge>
+            <h1 class="font-serif text-2xl sm:text-3xl font-light text-[var(--cust-ink)] tracking-tight">Pesanan &amp; Riwayat Belanja</h1>
+            <p class="text-xs sm:text-sm text-[var(--cust-ink-muted)] mt-0.5">
+                Lacak status pesanan pengiriman unit iPhone dan unduh Nota PDF Resmi ber-QR Code.
             </p>
         </div>
 
-        <div class="flex items-center gap-3">
-            <a href="{{ url('/katalog') }}" class="glass-btn glass-btn-primary glass-btn-sm flex items-center gap-2">
-                <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
-                <span>Belanja iPhone Baru</span>
-            </a>
-        </div>
+        <x-customer.button :href="url('/katalog')" variant="primary" icon="shopping-bag" size="sm">
+            Katalog iPhone
+        </x-customer.button>
     </div>
 
-    <!-- User Profile Summary Pill -->
-    <div class="rounded-[24px] bg-[#F5F5F7] p-5 mb-8 border border-[#E5E5EA] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div class="flex items-center gap-4">
-            <div class="w-14 h-14 rounded-2xl bg-[#1D1D1F] flex items-center justify-center font-bold text-xl text-white shadow-sm overflow-hidden shrink-0">
+    <!-- User Profile Summary Card -->
+    <div class="cust-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+            <div class="w-12 h-12 rounded bg-[var(--cust-ink)] flex items-center justify-center font-bold text-lg text-white shadow-sm overflow-hidden shrink-0">
                 @if(Auth::user()->avatar)
                     <img src="{{ Auth::user()->avatar }}" alt="{{ Auth::user()->name }}" class="w-full h-full object-cover">
                 @else
@@ -38,83 +34,75 @@
             </div>
             <div>
                 <div class="flex items-center gap-2 flex-wrap">
-                    <h2 class="text-base font-bold text-[#1D1D1F]">{{ Auth::user()->name }}</h2>
-                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#E8F8EE] text-[#008040]">
+                    <h2 class="text-sm font-semibold text-[var(--cust-ink)]">{{ Auth::user()->name }}</h2>
+                    <x-customer.spec-badge variant="healthy">
                         {{ strtoupper(Auth::user()->role) }}
-                    </span>
+                    </x-customer.spec-badge>
                     @if(Auth::user()->google_id)
-                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-white text-[#1D1D1F] border border-[#D2D2D7] flex items-center gap-1">
-                            <i data-lucide="check" class="w-3 h-3 text-[#0066CC]"></i>
-                            <span>Google Verified</span>
+                        <span class="text-[10px] text-[var(--cust-tone-official-ink)] bg-[var(--cust-tone-official-bg)] px-2 py-0.5 rounded font-medium">
+                            Google Terverifikasi
                         </span>
                     @endif
                 </div>
-                <p class="text-xs text-[#6E6E73] mt-0.5">{{ Auth::user()->email }} &bull; {{ Auth::user()->phone_number ?? 'Nomor WhatsApp belum diisi' }}</p>
+                <p class="text-xs text-[var(--cust-ink-muted)] mt-0.5">{{ Auth::user()->email }} &bull; {{ Auth::user()->phone_number ?? 'Nomor WhatsApp belum diisi' }}</p>
             </div>
         </div>
 
         <form action="{{ route('logout') }}" method="POST">
             @csrf
-            <button type="submit" class="glass-btn glass-btn-danger glass-btn-sm flex items-center gap-1.5">
+            <button type="submit" class="cust-btn cust-btn-outline text-xs py-1.5 px-3 flex items-center gap-1.5 text-[var(--cust-tone-alert-ink)] hover:border-[var(--cust-tone-alert-ink)]">
                 <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
                 <span>Keluar Akun</span>
             </button>
         </form>
     </div>
 
-    <!-- Orders Section -->
-    <div class="space-y-4">
-        <h2 class="text-sm font-bold text-[#1D1D1F] uppercase tracking-wider flex items-center gap-2">
-            <i data-lucide="package" class="w-4 h-4 text-[#0066CC]"></i>
+    <!-- Orders Section (Master Ledger Style) -->
+    <div class="space-y-3">
+        <h2 class="text-xs font-semibold text-[var(--cust-ink)] uppercase tracking-wider flex items-center gap-1.5 pb-2 border-b border-[var(--cust-rule-border)]">
+            <i data-lucide="package" class="w-3.5 h-3.5 text-[var(--cust-signal)]"></i>
             <span>Daftar Transaksi Pembelian</span>
         </h2>
 
         @if(isset($orders) && count($orders) > 0)
-            <div class="grid grid-cols-1 gap-4">
+            <div class="space-y-3">
                 @foreach($orders as $order)
-                    <div class="rounded-[20px] bg-[#F5F5F7] p-5 border border-[#E5E5EA] hover:border-[#D2D2D7] transition-all">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#D2D2D7] pb-4">
-                            <div>
-                                <span class="text-xs text-[#6E6E73]">No. Nota:</span>
-                                <span class="font-mono text-sm font-bold text-[#1D1D1F] ml-1">{{ $order->order_number }}</span>
-                                <span class="text-xs text-[#6E6E73] ml-3">{{ $order->created_at->format('d M Y, H:i') }}</span>
+                    <div class="cust-card p-4 sm:p-5 space-y-3">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[var(--cust-rule-border)] pb-3">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="text-xs text-[var(--cust-ink-muted)]">Nota:</span>
+                                <span class="font-mono text-xs font-bold text-[var(--cust-ink)]">{{ $order->order_number }}</span>
+                                <span class="text-xs text-[var(--cust-ink-faint)] cust-tabular">&bull; {{ $order->created_at->format('d M Y, H:i') }} WIB</span>
                             </div>
-                            <div>
-                                <x-order-badge :status="$order->status" />
-                            </div>
+                            <x-order-badge :status="$order->status" />
                         </div>
-                        <div class="pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                            <div class="text-xs text-[#6E6E73] space-y-1">
-                                <p class="text-[#1D1D1F] font-semibold">{{ $order->recipient_name }} ({{ $order->recipient_phone }})</p>
+
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                            <div class="text-[var(--cust-ink-muted)] space-y-0.5">
+                                <p class="text-[var(--cust-ink)] font-semibold">{{ $order->recipient_name }} ({{ $order->recipient_phone }})</p>
                                 <p>{{ $order->shipping_courier }} &mdash; {{ $order->shipping_address }}</p>
-                                <p class="text-[11px] text-[#6E6E73]">
-                                    Unit: <strong class="text-[#1D1D1F]">{{ $order->items->pluck('product_name')->implode(', ') }}</strong>
+                                <p class="text-[11px]">
+                                    Unit: <strong class="text-[var(--cust-ink)]">{{ $order->items->pluck('product_name')->implode(', ') }}</strong>
                                 </p>
                             </div>
-                            <div class="text-right flex flex-col sm:items-end gap-2">
+
+                            <div class="text-right flex flex-col sm:items-end gap-1.5 shrink-0">
                                 <div>
-                                    <span class="text-xs text-[#6E6E73] block">Total Pembayaran</span>
-                                    <span class="text-base font-bold text-[#1D1D1F]">Rp {{ number_format($order->grand_total, 0, ',', '.') }}</span>
+                                    <span class="text-[10px] text-[var(--cust-ink-muted)] block">Total</span>
+                                    <span class="text-sm font-bold text-[var(--cust-ink)] cust-tabular">
+                                        Rp {{ number_format($order->grand_total, 0, ',', '.') }}
+                                    </span>
                                 </div>
-                                <div class="flex flex-wrap items-center sm:justify-end gap-2">
-                                    <a href="{{ route('checkout.success', $order->order_number) }}" class="glass-btn glass-btn-secondary glass-btn-sm text-xs">
-                                        Lihat Rincian
+                                <div class="flex flex-wrap items-center sm:justify-end gap-1.5">
+                                    <a href="{{ route('checkout.success', $order->order_number) }}" class="cust-btn cust-btn-outline text-xs py-1 px-2.5">
+                                        Rincian Nota
                                     </a>
-                                    @if($order->status === 'pending')
-                                        <a href="{{ route('checkout.success', $order->order_number) }}" class="glass-btn glass-btn-primary glass-btn-sm text-xs font-bold">
-                                            Bayar Sekarang
+                                    @if($order->status === 'paid' || $order->status === 'completed' || $order->status === 'shipped')
+                                        <a href="{{ route('orders.invoice.download', $order->order_number) }}" class="cust-btn cust-btn-primary text-xs py-1 px-2.5 flex items-center gap-1">
+                                            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                            <span>Unduh PDF</span>
                                         </a>
                                     @endif
-                                    @can('downloadInvoice', $order)
-                                        <a href="{{ route('orders.invoice.preview', $order->order_number) }}" target="_blank" class="glass-btn glass-btn-secondary glass-btn-sm text-xs inline-flex items-center gap-1.5" title="Buka nota untuk dicetak">
-                                            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
-                                            <span>Cetak</span>
-                                        </a>
-                                        <a href="{{ route('orders.invoice.download', $order->order_number) }}" class="glass-btn glass-btn-primary glass-btn-sm text-xs font-bold inline-flex items-center gap-1.5" data-testid="download-invoice">
-                                            <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
-                                            <span>Unduh Nota PDF</span>
-                                        </a>
-                                    @endcan
                                 </div>
                             </div>
                         </div>
@@ -122,68 +110,76 @@
                 @endforeach
             </div>
         @else
-            <div class="rounded-[24px] bg-[#F5F5F7] p-12 text-center border border-[#E5E5EA]">
-                <div class="w-14 h-14 rounded-2xl bg-white border border-[#D2D2D7] flex items-center justify-center mx-auto mb-4 text-[#6E6E73]">
-                    <i data-lucide="shopping-bag" class="w-7 h-7"></i>
-                </div>
-                <h3 class="text-lg font-bold text-[#1D1D1F]">Belum Ada Riwayat Pesanan</h3>
-                <p class="text-xs text-[#6E6E73] mt-1 max-w-md mx-auto">
-                    Anda belum melakukan pemesanan unit iPhone. Jelajahi katalog resmi kami untuk menemukan iPhone impian Anda.
+            <div class="cust-card p-10 text-center space-y-2">
+                <i data-lucide="package-open" class="w-8 h-8 text-[var(--cust-ink-faint)] mx-auto"></i>
+                <h3 class="text-sm font-semibold text-[var(--cust-ink)]">Belum Ada Transaksi Pembelian</h3>
+                <p class="text-xs text-[var(--cust-ink-muted)] max-w-sm mx-auto">
+                    Anda belum pernah melakukan pemesanan unit iPhone. Silakan jelajahi katalog kami.
                 </p>
-                <div class="mt-5">
-                    <a href="{{ url('/katalog') }}" class="glass-btn glass-btn-primary glass-btn-sm">
-                        <span>Mulai Belanja</span>
-                    </a>
+                <div class="pt-1">
+                    <x-customer.button :href="url('/katalog')" variant="secondary" size="sm">
+                        Jelajahi Katalog
+                    </x-customer.button>
                 </div>
             </div>
         @endif
     </div>
 
-    <!-- Trade-In Submissions Section -->
-    <div class="space-y-4 mt-10 pt-8 border-t border-[#E5E5EA]">
-        <div class="flex items-center justify-between">
-            <h2 class="text-sm font-bold text-[#1D1D1F] uppercase tracking-wider flex items-center gap-2">
-                <i data-lucide="refresh-cw" class="w-4 h-4 text-[#008040]"></i>
+    <!-- Trade-In Section -->
+    <div class="space-y-3 pt-6 border-t border-[var(--cust-rule-border)]">
+        <div class="flex items-center justify-between pb-2 border-b border-[var(--cust-rule-border)]">
+            <h2 class="text-xs font-semibold text-[var(--cust-ink)] uppercase tracking-wider flex items-center gap-1.5">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-[var(--cust-tone-healthy-ink)]"></i>
                 <span>Riwayat Pengajuan Tukar Tambah (Trade-In)</span>
             </h2>
-            <a href="{{ route('trade-in.index') }}" class="text-xs font-semibold text-[#0066CC] hover:underline flex items-center gap-1">
-                <span>+ Ajukan Trade-In Baru</span>
+            <a href="{{ route('trade-in.index') }}" class="text-xs text-[var(--cust-signal)] hover:underline font-medium">
+                + Ajukan Trade-In Baru
             </a>
         </div>
 
         @if(isset($tradeIns) && count($tradeIns) > 0)
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @foreach($tradeIns as $ti)
-                    <div class="rounded-[20px] bg-[#F5F5F7] p-5 border border-[#E5E5EA] flex flex-col justify-between gap-3">
-                        <div class="flex items-center justify-between border-b border-[#D2D2D7] pb-3">
-                            <div>
-                                <span class="font-mono text-xs font-bold text-[#0066CC]">{{ $ti->trade_in_code }}</span>
-                                <span class="text-[11px] text-[#6E6E73] ml-2">{{ $ti->created_at->format('d M Y, H:i') }}</span>
+            <div class="space-y-3">
+                @foreach($tradeIns as $tradeIn)
+                    <div class="cust-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <span class="font-mono text-xs font-bold text-[var(--cust-ink)]">{{ $tradeIn->trade_in_code }}</span>
+                                <span class="cust-badge {{ $tradeIn->status_badge_class }}">
+                                    {{ $tradeIn->status_label }}
+                                </span>
                             </div>
-                            <span class="glass-badge {{ $ti->status_badge_class }}">
-                                <span class="glass-badge-dot"></span>
-                                <span>{{ $ti->status_label }}</span>
-                            </span>
+                            <h3 class="text-sm font-bold text-[var(--cust-ink)]">{{ $tradeIn->phone_model }} ({{ $tradeIn->storage_capacity }})</h3>
+                            <p class="text-xs text-[var(--cust-ink-muted)]">
+                                Kondisi: {{ $tradeIn->physical_condition }} &bull; BH: {{ $tradeIn->battery_health }}% &bull; {{ $tradeIn->created_at->format('d M Y') }}
+                            </p>
                         </div>
-                        <div class="flex items-center justify-between gap-3">
-                            <div class="text-xs space-y-1">
-                                <p class="font-bold text-[#1D1D1F]">{{ $ti->phone_model }} ({{ $ti->storage_capacity }})</p>
-                                <p class="text-[#6E6E73]">{{ $ti->physical_condition }} &bull; BH {{ $ti->battery_health }}%</p>
+
+                        <div class="text-right flex flex-col sm:items-end gap-1.5 shrink-0">
+                            <div>
+                                <span class="text-[10px] text-[var(--cust-ink-muted)] block">Taksiran Nilai</span>
+                                <span class="text-sm font-bold text-[var(--cust-tone-healthy-ink)] cust-tabular">
+                                    Rp {{ number_format($tradeIn->final_price ?? $tradeIn->estimated_price, 0, ',', '.') }}
+                                </span>
                             </div>
-                            <div class="text-right">
-                                <span class="text-[10px] text-[#6E6E73] block">{{ $ti->final_price ? 'Harga Final' : 'Estimasi' }}</span>
-                                <span class="text-sm font-bold text-[#008040] block">Rp {{ number_format($ti->effective_price, 0, ',', '.') }}</span>
-                                <a href="{{ route('trade-in.show', $ti->trade_in_code) }}" class="text-[11px] text-[#0066CC] hover:underline font-semibold">
-                                    Lihat Detail &rarr;
-                                </a>
-                            </div>
+                            <a href="{{ route('trade-in.show', $tradeIn->trade_in_code) }}" class="cust-btn cust-btn-outline text-xs py-1 px-2.5">
+                                Detail Status
+                            </a>
                         </div>
                     </div>
                 @endforeach
             </div>
         @else
-            <div class="rounded-[20px] bg-[#F5F5F7] p-6 text-center border border-[#E5E5EA] text-xs text-[#6E6E73]">
-                Belum ada pengajuan tukar tambah iPhone. <a href="{{ route('trade-in.index') }}" class="text-[#0066CC] font-semibold hover:underline">Cek estimasi nilai iPhone lama Anda di sini</a>.
+            <div class="cust-card p-8 text-center space-y-2">
+                <i data-lucide="refresh-cw" class="w-8 h-8 text-[var(--cust-ink-faint)] mx-auto"></i>
+                <h3 class="text-sm font-semibold text-[var(--cust-ink)]">Belum Ada Pengajuan Trade-In</h3>
+                <p class="text-xs text-[var(--cust-ink-muted)]">
+                    Punya iPhone lama? Tukarkan sekarang untuk potongan harga pembelian unit baru.
+                </p>
+                <div class="pt-1">
+                    <x-customer.button :href="route('trade-in.index')" variant="secondary" size="sm">
+                        Mulai Tukar Tambah
+                    </x-customer.button>
+                </div>
             </div>
         @endif
     </div>

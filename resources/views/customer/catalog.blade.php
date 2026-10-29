@@ -4,150 +4,147 @@
 @section('meta_description', 'Jelajahi seluruh varian iPhone Baru Resmi dan Second Like New Teruji. Filter seri iPhone 16, 15, 14, 13, garansi resmi iBox/Digimap, dan kapasitas.')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+<div class="cust-page py-6 space-y-8 pb-20">
 
-    <!-- 1. Breadcrumbs & Editorial Header -->
-    <div class="space-y-4">
-        <nav class="flex items-center gap-2 text-xs text-[#6E6E73]">
-            <a href="{{ url('/') }}" class="hover:text-[#1D1D1F] transition-colors">Beranda</a>
-            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#86868B]"></i>
-            <span class="text-[#1D1D1F] font-semibold">Katalog iPhone</span>
+    <!-- 1. Breadcrumbs & Header -->
+    <div class="space-y-3">
+        <nav class="flex items-center gap-2 text-xs text-[var(--cust-ink-muted)]">
+            <a href="{{ url('/') }}" class="hover:text-[var(--cust-ink)] transition-colors">Beranda</a>
+            <span class="text-[var(--cust-ink-faint)]">/</span>
+            <span class="text-[var(--cust-ink)] font-medium">Katalog iPhone</span>
         </nav>
 
-        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-5 border-b border-[#E5E5EA]">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-[var(--cust-rule-border)]">
             <div>
-                <h1 class="text-3xl sm:text-4xl font-bold text-[#1D1D1F] tracking-tight">Beli iPhone</h1>
-                <p class="text-xs sm:text-sm text-[#6E6E73] mt-1">
-                    Tersedia <strong class="text-[#1D1D1F]">{{ $products->total() }}</strong> model resmi &amp; pre-owned terverifikasi. Gratis pengiriman berasuransi atau ambil di gerai.
+                <h1 class="font-serif text-3xl sm:text-4xl font-light text-[var(--cust-ink)] tracking-tight">
+                    Katalog Lengkap iPhone
+                </h1>
+                <p class="text-xs sm:text-sm text-[var(--cust-ink-muted)] mt-1">
+                    Tersedia <strong class="text-[var(--cust-ink)] cust-tabular">{{ $products->total() }}</strong> model resmi dan pre-owned terverifikasi.
                 </p>
             </div>
 
             <!-- Dual-Condition Segmented Control -->
-            <div class="inline-flex p-1 rounded-full bg-[#F5F5F7] border border-[#E5E5EA] self-start md:self-auto">
-                <a href="{{ request()->fullUrlWithQuery(['condition' => null, 'page' => null]) }}" class="px-4 py-1.5 rounded-full text-xs font-semibold transition-all {{ !request('condition') ? 'bg-[#1D1D1F] text-white shadow-sm' : 'text-[#6E6E73] hover:text-[#1D1D1F]' }}">
+            <div class="inline-flex p-1 rounded border border-[var(--cust-rule-border)] bg-[var(--cust-paper-subtle)] self-start md:self-auto gap-1">
+                <a href="{{ request()->fullUrlWithQuery(['condition' => null, 'page' => null]) }}" class="px-3 py-1 rounded text-xs font-medium transition-colors {{ !request('condition') ? 'bg-[var(--cust-ink)] text-white shadow-sm' : 'text-[var(--cust-ink-muted)] hover:text-[var(--cust-ink)]' }}">
                     Semua ({{ $products->total() }})
                 </a>
-                <a href="{{ request()->fullUrlWithQuery(['condition' => 'new', 'page' => null]) }}" class="px-4 py-1.5 rounded-full text-xs font-semibold transition-all {{ request('condition') === 'new' ? 'bg-[#0066CC] text-white shadow-sm' : 'text-[#6E6E73] hover:text-[#0066CC]' }}">
+                <a href="{{ request()->fullUrlWithQuery(['condition' => 'new', 'page' => null]) }}" class="px-3 py-1 rounded text-xs font-medium transition-colors {{ request('condition') === 'new' ? 'bg-[var(--cust-tone-official-bg)] text-[var(--cust-tone-official-ink)]' : 'text-[var(--cust-ink-muted)] hover:text-[var(--cust-ink)]' }}">
                     Unit Baru Resmi
                 </a>
-                <a href="{{ request()->fullUrlWithQuery(['condition' => 'second', 'page' => null]) }}" class="px-4 py-1.5 rounded-full text-xs font-semibold transition-all {{ request('condition') === 'second' ? 'bg-[#008040] text-white shadow-sm' : 'text-[#6E6E73] hover:text-[#008040]' }}">
+                <a href="{{ request()->fullUrlWithQuery(['condition' => 'second', 'page' => null]) }}" class="px-3 py-1 rounded text-xs font-medium transition-colors {{ request('condition') === 'second' ? 'bg-[var(--cust-tone-healthy-bg)] text-[var(--cust-tone-healthy-ink)]' : 'text-[var(--cust-ink-muted)] hover:text-[var(--cust-ink)]' }}">
                     Second Like New
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- 2. Layout 2 Columns: Filter Sidebar + Products Grid -->
+    <!-- 2. Two Columns Layout -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-        <!-- =========================================================================
-             FILTER SIDEBAR (Clean Daylight Panel)
-             ========================================================================= -->
+        <!-- Left: Filter Panel -->
         <aside class="lg:col-span-3">
-            <form action="{{ url('/katalog') }}" method="GET" class="bg-[#F5F5F7] p-6 rounded-[20px] border border-[#E5E5EA] space-y-6">
+            <form action="{{ url('/katalog') }}" method="GET" class="cust-card p-5 space-y-5">
                 
-                <div class="flex items-center justify-between pb-3 border-b border-[#D2D2D7]">
-                    <span class="text-sm font-bold text-[#1D1D1F] flex items-center gap-2">
-                        <i data-lucide="sliders-horizontal" class="w-4 h-4 text-[#0066CC]"></i>
+                <div class="flex items-center justify-between pb-3 border-b border-[var(--cust-rule-border)]">
+                    <span class="text-xs font-semibold text-[var(--cust-ink)] flex items-center gap-1.5">
+                        <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-[var(--cust-signal)]"></i>
                         <span>Filter Produk</span>
                     </span>
                     @if(request()->hasAny(['series', 'condition', 'warranty', 'min_price', 'max_price', 'q']))
-                        <a href="{{ url('/katalog') }}" class="text-xs text-[#D70015] hover:underline font-semibold">Reset</a>
+                        <a href="{{ url('/katalog') }}" class="text-xs text-[var(--cust-tone-alert-ink)] hover:underline font-medium">Reset</a>
                     @endif
                 </div>
 
-                <!-- 1. Keyword Search -->
-                <div class="space-y-2">
-                    <label class="text-[11px] font-bold text-[#6E6E73] uppercase tracking-wider block">Pencarian Model</label>
+                <!-- 1. Search Query -->
+                <div class="space-y-1.5">
+                    <label class="cust-label">Pencarian</label>
                     <div class="relative">
-                        <input type="text" name="q" value="{{ request('q') }}" placeholder="Ketik seri / warna..." class="glass-input !bg-white pl-9 pr-3 py-2 text-xs w-full">
-                        <i data-lucide="search" class="w-3.5 h-3.5 text-[#6E6E73] absolute left-3 top-2.5"></i>
+                        <input type="text" name="q" value="{{ request('q') }}" placeholder="Seri, warna titanium..." class="cust-input pl-8 text-xs">
+                        <i data-lucide="search" class="w-3.5 h-3.5 text-[var(--cust-ink-faint)] absolute left-2.5 top-2.5"></i>
                     </div>
                 </div>
 
-                <!-- 2. Kondisi Unit -->
-                <div class="space-y-2">
-                    <label class="text-[11px] font-bold text-[#6E6E73] uppercase tracking-wider block">Kondisi Unit</label>
+                <!-- 2. Condition Filter -->
+                <div class="space-y-1.5">
+                    <label class="cust-label">Kondisi Unit</label>
                     <div class="space-y-1 text-xs">
-                        <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-white cursor-pointer transition-colors">
-                            <input type="radio" name="condition" value="" {{ !request('condition') ? 'checked' : '' }} class="accent-[#0066CC]" onchange="this.form.submit()">
-                            <span class="text-[#1D1D1F] font-medium">Semua Kondisi</span>
+                        <label class="flex items-center gap-2 p-1.5 rounded hover:bg-[var(--cust-paper-subtle)] cursor-pointer">
+                            <input type="radio" name="condition" value="" {{ !request('condition') ? 'checked' : '' }} onchange="this.form.submit()">
+                            <span class="text-[var(--cust-ink)]">Semua Kondisi</span>
                         </label>
-                        <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-white cursor-pointer transition-colors">
-                            <input type="radio" name="condition" value="new" {{ request('condition') === 'new' ? 'checked' : '' }} class="accent-[#0066CC]" onchange="this.form.submit()">
-                            <span class="text-[#0066CC] font-semibold">Baru (BNIB Segel Resmi)</span>
+                        <label class="flex items-center gap-2 p-1.5 rounded hover:bg-[var(--cust-paper-subtle)] cursor-pointer">
+                            <input type="radio" name="condition" value="new" {{ request('condition') === 'new' ? 'checked' : '' }} onchange="this.form.submit()">
+                            <span class="text-[var(--cust-tone-official-ink)] font-medium">Baru (Segel Resmi)</span>
                         </label>
-                        <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-white cursor-pointer transition-colors">
-                            <input type="radio" name="condition" value="second" {{ request('condition') === 'second' ? 'checked' : '' }} class="accent-[#008040]" onchange="this.form.submit()">
-                            <span class="text-[#008040] font-semibold">Second Like New (QC 32 Titik)</span>
+                        <label class="flex items-center gap-2 p-1.5 rounded hover:bg-[var(--cust-paper-subtle)] cursor-pointer">
+                            <input type="radio" name="condition" value="second" {{ request('condition') === 'second' ? 'checked' : '' }} onchange="this.form.submit()">
+                            <span class="text-[var(--cust-tone-healthy-ink)] font-medium">Second (QC 32 Titik)</span>
                         </label>
                     </div>
                 </div>
 
-                <!-- 3. Seri iPhone -->
-                <div class="space-y-2">
-                    <label class="text-[11px] font-bold text-[#6E6E73] uppercase tracking-wider block">Seri iPhone</label>
+                <!-- 3. Series Filter -->
+                <div class="space-y-1.5">
+                    <label class="cust-label">Seri iPhone</label>
                     <div class="space-y-1 text-xs">
-                        <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-white cursor-pointer transition-colors">
-                            <input type="radio" name="series" value="" {{ !request('series') ? 'checked' : '' }} class="accent-[#0066CC]" onchange="this.form.submit()">
-                            <span class="text-[#1D1D1F] font-medium">Semua Seri</span>
+                        <label class="flex items-center gap-2 p-1.5 rounded hover:bg-[var(--cust-paper-subtle)] cursor-pointer">
+                            <input type="radio" name="series" value="" {{ !request('series') ? 'checked' : '' }} onchange="this.form.submit()">
+                            <span class="text-[var(--cust-ink)]">Semua Seri</span>
                         </label>
                         @foreach($availableSeries as $ser)
-                            <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-white cursor-pointer transition-colors">
-                                <input type="radio" name="series" value="{{ $ser }}" {{ request('series') === $ser ? 'checked' : '' }} class="accent-[#0066CC]" onchange="this.form.submit()">
-                                <span class="text-[#1D1D1F] font-medium">{{ $ser }}</span>
+                            <label class="flex items-center gap-2 p-1.5 rounded hover:bg-[var(--cust-paper-subtle)] cursor-pointer">
+                                <input type="radio" name="series" value="{{ $ser }}" {{ request('series') === $ser ? 'checked' : '' }} onchange="this.form.submit()">
+                                <span class="text-[var(--cust-ink)]">{{ $ser }}</span>
                             </label>
                         @endforeach
                     </div>
                 </div>
 
-                <!-- 4. Tipe Garansi -->
-                <div class="space-y-2">
-                    <label class="text-[11px] font-bold text-[#6E6E73] uppercase tracking-wider block">Tipe Garansi</label>
+                <!-- 4. Warranty Filter -->
+                <div class="space-y-1.5">
+                    <label class="cust-label">Tipe Garansi</label>
                     <div class="space-y-1 text-xs">
-                        <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-white cursor-pointer transition-colors">
-                            <input type="radio" name="warranty" value="" {{ !request('warranty') ? 'checked' : '' }} class="accent-[#0066CC]" onchange="this.form.submit()">
-                            <span class="text-[#1D1D1F] font-medium">Semua Garansi</span>
+                        <label class="flex items-center gap-2 p-1.5 rounded hover:bg-[var(--cust-paper-subtle)] cursor-pointer">
+                            <input type="radio" name="warranty" value="" {{ !request('warranty') ? 'checked' : '' }} onchange="this.form.submit()">
+                            <span class="text-[var(--cust-ink)]">Semua Tipe Garansi</span>
                         </label>
-                        <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-white cursor-pointer transition-colors">
-                            <input type="radio" name="warranty" value="resmi_ibox" {{ request('warranty') === 'resmi_ibox' ? 'checked' : '' }} class="accent-[#0066CC]" onchange="this.form.submit()">
-                            <span class="text-[#1D1D1F] font-medium">Resmi iBox (TAM)</span>
+                        <label class="flex items-center gap-2 p-1.5 rounded hover:bg-[var(--cust-paper-subtle)] cursor-pointer">
+                            <input type="radio" name="warranty" value="resmi_ibox" {{ request('warranty') === 'resmi_ibox' ? 'checked' : '' }} onchange="this.form.submit()">
+                            <span class="text-[var(--cust-ink)]">Resmi iBox (TAM)</span>
                         </label>
-                        <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-white cursor-pointer transition-colors">
-                            <input type="radio" name="warranty" value="resmi_digimap" {{ request('warranty') === 'resmi_digimap' ? 'checked' : '' }} class="accent-[#0066CC]" onchange="this.form.submit()">
-                            <span class="text-[#1D1D1F] font-medium">Resmi Digimap</span>
+                        <label class="flex items-center gap-2 p-1.5 rounded hover:bg-[var(--cust-paper-subtle)] cursor-pointer">
+                            <input type="radio" name="warranty" value="resmi_digimap" {{ request('warranty') === 'resmi_digimap' ? 'checked' : '' }} onchange="this.form.submit()">
+                            <span class="text-[var(--cust-ink)]">Resmi Digimap</span>
                         </label>
-                        <label class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-white cursor-pointer transition-colors">
-                            <input type="radio" name="warranty" value="toko" {{ request('warranty') === 'toko' ? 'checked' : '' }} class="accent-[#0066CC]" onchange="this.form.submit()">
-                            <span class="text-[#1D1D1F] font-medium">Garansi Toko Resmi</span>
+                        <label class="flex items-center gap-2 p-1.5 rounded hover:bg-[var(--cust-paper-subtle)] cursor-pointer">
+                            <input type="radio" name="warranty" value="toko" {{ request('warranty') === 'toko' ? 'checked' : '' }} onchange="this.form.submit()">
+                            <span class="text-[var(--cust-ink)]">Garansi Toko Resmi</span>
                         </label>
                     </div>
                 </div>
 
-                <!-- Submit Button -->
-                <button type="submit" class="glass-btn glass-btn-primary glass-btn-sm w-full">
+                <x-customer.button type="submit" variant="primary" class="w-full text-xs">
                     Terapkan Filter
-                </button>
+                </x-customer.button>
             </form>
         </aside>
 
-        <!-- =========================================================================
-             PRODUCTS DISPLAY GRID
-             ========================================================================= -->
+        <!-- Right: Products Grid & Toolbar -->
         <main class="lg:col-span-9 space-y-6">
             
-            <!-- Sorting Controls Bar -->
-            <div class="bg-[#F5F5F7] px-5 py-3.5 rounded-2xl border border-[#E5E5EA] flex flex-wrap items-center justify-between gap-4">
-                <span class="text-xs text-[#6E6E73]">
-                    Menampilkan halaman <strong class="text-[#1D1D1F]">{{ $products->currentPage() }}</strong> dari <strong class="text-[#1D1D1F]">{{ $products->lastPage() }}</strong>
+            <!-- Toolbar -->
+            <div class="cust-card p-3.5 px-4 flex flex-wrap items-center justify-between gap-3">
+                <span class="text-xs text-[var(--cust-ink-muted)]">
+                    Halaman <strong class="text-[var(--cust-ink)] cust-tabular">{{ $products->currentPage() }}</strong> dari <strong class="text-[var(--cust-ink)] cust-tabular">{{ $products->lastPage() }}</strong>
                 </span>
 
                 <form action="{{ url('/katalog') }}" method="GET" class="flex items-center gap-2">
                     @foreach(request()->except('sort') as $key => $val)
                         <input type="hidden" name="{{ $key }}" value="{{ $val }}">
                     @endforeach
-                    <label for="sort-select" class="text-xs font-medium text-[#6E6E73]">Urutkan:</label>
-                    <select id="sort-select" name="sort" class="glass-input !bg-white text-xs !py-1.5 !px-3 !w-auto cursor-pointer font-medium" onchange="this.form.submit()">
+                    <label for="sort-select" class="text-xs text-[var(--cust-ink-muted)]">Urutkan:</label>
+                    <select id="sort-select" name="sort" class="cust-select text-xs py-1 px-2.5 w-auto cursor-pointer" onchange="this.form.submit()">
                         <option value="newest" {{ $sort === 'newest' ? 'selected' : '' }}>Produk Terbaru</option>
                         <option value="price_asc" {{ $sort === 'price_asc' ? 'selected' : '' }}>Harga Terendah</option>
                         <option value="price_desc" {{ $sort === 'price_desc' ? 'selected' : '' }}>Harga Tertinggi</option>
@@ -157,35 +154,34 @@
             </div>
 
             <!-- Product Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                 @forelse($products as $product)
-                    <x-product-card :product="$product" />
+                    <x-customer.product-card :product="$product" />
                 @empty
-                    <div class="col-span-full py-16 text-center bg-[#F5F5F7] rounded-[24px] border border-[#E5E5EA] p-8 space-y-4">
-                        <div class="w-14 h-14 rounded-full bg-white border border-[#D2D2D7] flex items-center justify-center mx-auto text-[#6E6E73]">
-                            <i data-lucide="search-x" class="w-7 h-7"></i>
+                    <div class="col-span-full py-16 text-center cust-card p-8 space-y-3">
+                        <div class="w-12 h-12 rounded bg-[var(--cust-paper-subtle)] border border-[var(--cust-rule-border)] flex items-center justify-center mx-auto text-[var(--cust-ink-muted)]">
+                            <i data-lucide="search-x" class="w-6 h-6"></i>
                         </div>
-                        <div class="space-y-1">
-                            <h3 class="text-lg font-bold text-[#1D1D1F]">Tidak Ada iPhone yang Sesuai</h3>
-                            <p class="text-xs text-[#6E6E73] max-w-md mx-auto">
-                                Kami tidak menemukan unit yang cocok dengan kriteria filter Anda. Silakan reset filter atau gunakan kata kunci lain.
-                            </p>
-                        </div>
-                        <a href="{{ url('/katalog') }}" class="glass-btn glass-btn-secondary glass-btn-sm inline-flex">
+                        <h3 class="text-base font-semibold text-[var(--cust-ink)]">Tidak Ada iPhone yang Sesuai</h3>
+                        <p class="text-xs text-[var(--cust-ink-muted)] max-w-sm mx-auto">
+                            Tidak ditemukan unit yang cocok dengan kriteria filter Anda. Silakan reset filter atau coba kata kunci lain.
+                        </p>
+                        <x-customer.button :href="url('/katalog')" variant="secondary" size="sm" class="inline-flex mt-2">
                             Reset Semua Filter
-                        </a>
+                        </x-customer.button>
                     </div>
                 @endforelse
             </div>
 
-            <!-- Pagination Links -->
+            <!-- Pagination -->
             @if($products->hasPages())
-                <div class="pt-6">
+                <div class="pt-4">
                     {{ $products->links() }}
                 </div>
             @endif
 
         </main>
+
     </div>
 
 </div>

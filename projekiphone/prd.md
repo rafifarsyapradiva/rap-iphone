@@ -16,6 +16,7 @@ Didukung oleh framework **Laravel 12**, basis data **MySQL**, dan template engin
   - **Admin Operasional** melalui portal operasional mandiri (`/admin/login` — **Fase 14**).
   - **Pemilik Usaha (Owner)** melalui portal eksekutif mandiri (`/owner/login` — **Fase 15**).
 - **Panel Admin & Owner Hallmark Luxury / Editorial Redesign (Fase 17–24)**: seluruh halaman operasional dan analitik eksekutif (dashboard admin, produk, pesanan, trade-in, dashboard owner, laporan keuangan, staf, konfigurasi) diredesain menggunakan standar keahlian **Hallmark Redesign** dengan tone **Luxury / Editorial** (kombinasi display serif anggun, grotesque tajam, buku besar *Trade Ledger*, palet limewash hangat, aksen titanium slate, hairlines presisi, dan kepatuhan penuh aturan *The Floor* — lihat §4.5).
+- **Etalase Belanja Customer Hallmark Luxury Retail & Studio Redesign (Fase 25–32)**: seluruh halaman etalase publik (layout master, beranda showcase flagship, katalog filter multi-kondisi, halaman detail produk / PDP Split Studio, keranjang belanja, checkout Midtrans Snap, wizard trade-in 4 langkah, riwayat pesanan, konfirmasi pembayaran) diredesain menggunakan standar keahlian **Hallmark Redesign** dengan tone **Luxury Retail & Studio Precision** (kombinasi kanvas limewash alabaster, kartu cotton stock, display serif Sentient berbobot ringan, grotesque Hanken Grotesk / Geist dengan `tabular-nums`, aksen titanium slate & retail blue, tata letak anatomi *job: buy*, rasio 80 kata per layar, dan kepatuhan penuh aturan *The Floor* — lihat §4.6).
 
 ---
 
@@ -161,6 +162,46 @@ Panel Admin Operasional dan Pemilik Usaha (Owner) mengadopsi kerangka kerja **Ha
 
 ---
 
+#### 4.6. Standar UI/UX Customer Storefront — Hallmark Luxury Retail Redesign (`Fase 25–32`)
+Etalase belanja pelanggan (*Customer Storefront*) ditransformasi menggunakan kerangka kerja **Hallmark Redesign** dengan estetika **Luxury Retail & Studio Precision** (genre: `editorial` / `modern-minimal` hybrid, mengacu pada `blueprint.md` §6.5 dan keahlian desain `.agent/skills/hallmark/`):
+
+1. **Filosofi Visual & Anti-AI Slop**:
+   - Menggantikan template e-commerce generik (kartu bersarang/card-in-card, drop shadow tebal berwarna-warni, gradien ungu-ke-biru, dan animasi lambat tak menentu) dengan ketenangan etalase studio perangkat keras fisik Apple yang presisi.
+   - Mengadopsi prinsip *"One Idea Per Screen"* dan batasan ~80 kata per layar pandang (F13): informasi harga, spesifikasi teknis, kondisi unit, dan jaminan garansi ditampilkan secara jujur dan padat tanpa teks basa-basi (*marketing fluff*).
+2. **Anatomi Pekerjaan Pengunjung (*job: buy*) & Pilihan Makrostruktur**:
+   - Berdasarkan `references/anatomy.md` untuk pekerjaan pembeli (`buy`): penawaran utama (*Offer*) menjadi fokus hero; rentang varian (*range*) disajikan dalam baris/grid dengan harga seketika; produk ditampilkan dalam jarak dekat pencahayaan studio nyata (*true color daylight photography*); rincian pengiriman kurir dan jaminan garansi disajikan sebagai fakta terukur; aksi pembelian menempel di layar (*Sticky Purchase Bar*); tanpa form newsletter palsu di penutup halaman.
+   - **Makrostruktur Terpilih (`macrostructures.md`)**:
+     - Beranda: **Bento Grid (01)** & **Catalogue (11)** untuk kurasi seri iPhone dan pilar layanan toko.
+     - Katalog: **Catalogue (11)** sebagai indeks visual inventaris jujur ber-grid rapi.
+     - Halaman Detail Produk (PDP): **Split Studio (15)** dengan galeri studio vertikal menempel (*sticky*) di kolom kiri dan konfigurator langkah-demi-langkah di kolom kanan.
+     - Wizard Trade-In: **Narrative Workflow (14)** alur penaksiran unit 4-tahap yang transparan.
+3. **Materialitas, Palet Warna & Permukaan**:
+   - Kanvas Limewash Studio (`--cust-paper: oklch(97.2% 0.006 215)` / `#FBFBFA`), permukaan kartu *Cotton Stock* (`--cust-surface: #FFFFFF` dengan hairline border `1px solid oklch(88% 0.008 75)` / `#E5E2DC`), tinta teks obsidian pekat (`--cust-ink: oklch(16% 0.032 250)`), teks sekunder *pencilled slate* (`--cust-ink-muted`), aksen titanium slate (`--cust-accent: oklch(41% 0.075 248)`), dan sinyal biru retail Apple (`--cust-signal: #0071E3`).
+   - Lapisan kaca susu daylight (`--cust-glass: rgba(255, 255, 255, 0.88)` dengan `backdrop-filter: blur(20px)`) khusus pada Sticky Header dan Sticky Bottom Purchase Bar.
+4. **Tipografi Presisi & Tabular**:
+   - **Judul Display & Nama Seri**: Font serif berwibawa ringan **Sentient** (Fontshare CDN, bobot 300/400) untuk tajuk utama hero dan nama seri iPhone.
+   - **Teks Spesifikasi & Nilai Moneter**: Font grotesque tajam **Hanken Grotesk** / **Geist** dengan format `tabular-nums` untuk perataan angka rupiah, persentase *Battery Health*, nomor IMEI, dan kapasitas memori.
+   - **Label & Navigasi**: Huruf berukuran setingkat lebih kecil, *untracked*, tanpa huruf kapital kecil (*small caps*) atau huruf kapital renggang (*tracked capitals*).
+5. **Kepatuhan Terhadap Hallmark "The Floor" (F1–F16)**:
+   - Seluruh warna dan font wajib bersumber dari token CSS deklarasi `:root` di `resources/css/customer.css` (tanpa warna literal).
+   - Dilarang keras memakai `transition: all`; dilarang menganimasikan `width`, `height`, `top`, `left`.
+   - Menggunakan `overflow-x: clip` pada kontainer root (bukan `hidden` atau `100vw`).
+   - Setiap elemen interaktif wajib memiliki `:focus-visible` seketika dan fallback `prefers-reduced-motion: reduce`.
+   - Tidak memuat metrik ulasan fiktif, kutipan pelanggan palsu, atau logo wall buatan; hanya menampilkan data nyata dari database MySQL.
+6. **Preservasi Logika Backend & Integrasi (Zero Breaking Change)**:
+   - Rute belanja publik, keranjang (`CartController`), checkout (`CheckoutController`), integrasi Midtrans Snap popup, kalkulator Trade-In (`TradeInController`), notifikasi WhatsApp Fonnte & Email SMTP, generator Nota PDF DomPDF, serta autentikasi mandiri pelanggan (Fase 16) tetap utuh 100%.
+7. **Cakupan Fase Kerja (Fase 25–32)**:
+   - Fase 25: Foundation, Token CSS & Master Layout (`layouts/customer.blade.php`)
+   - Fase 26: Beranda & Showcase Flagship (`customer/home.blade.php`)
+   - Fase 27: Katalog & Filter Multi-Kondisi (`customer/catalog.blade.php`)
+   - Fase 28: Detail Produk / PDP Split Studio (`customer/pdp.blade.php`)
+   - Fase 29: Keranjang & Checkout Midtrans (`customer/cart.blade.php`, `customer/checkout.blade.php`)
+   - Fase 30: Wizard Trade-In iPhone (`customer/trade-in.blade.php`, `trade-in-detail.blade.php`)
+   - Fase 31: Riwayat Pesanan & Nota PDF (`customer/orders.blade.php`, `checkout-success.blade.php`)
+   - Fase 32: Audit Akhir Sloplint, The Floor Sweep & QA E2E Testing
+
+---
+
 ### 5. Kebutuhan Non-Fungsional (NFR)
 1. **Keamanan (Security & Role-Isolated Auth)**:
    - Sanitasi input dan proteksi terhadap CSRF, XSS, serta SQL Injection (Eloquent ORM).
@@ -172,7 +213,8 @@ Panel Admin Operasional dan Pemilik Usaha (Owner) mengadopsi kerangka kerja **Ha
    - Optimasi gambar produk dengan format WebP dan *lazy loading*.
    - Standar visual **Digimap-Inspired Daylight Minimalist & Frosted White UI** (`redesign.md`): menggunakan latar terang ber-kontras tinggi (`#FFFFFF` & `#F5F5F7`), tipografi `#1D1D1F`, dan *sticky purchase bar* untuk kenyamanan baca di bawah kondisi pencahayaan apa pun.
    - Antarmuka *mobile-first* yang mulus di smartphone, tablet, maupun layar desktop (baik untuk Portal Customer maupun Dashboard Enterprise Admin & Owner).
-   - **Panel Admin & Owner (Fase 17–24)**: Menerapkan standar **Hallmark Luxury / Editorial Redesign** sesuai §4.5 dengan kepatuhan terhadap aturan *The Floor* dan lulus audit linter Hallmark (`node .agent/skills/hallmark/scripts/sloplint.mjs resources/views/admin resources/views/owner --genre editorial`). Dilarang memakai kelas tema gelap atau warna literal di luar token.
+   - **Panel Admin & Owner (Fase 17–24)**: Menerapkan standar **Hallmark Luxury / Editorial Redesign** sesuai §4.5 dengan kepatuhan terhadap aturan *The Floor* dan lulus audit linter Hallmark (`node .agent/skills/hallmark/scripts/sloplint.mjs resources/views/admin resources/views/owner --genre editorial`).
+   - **Etalase Pelanggan / Customer Storefront (Fase 25–32)**: Menerapkan standar **Hallmark Luxury Retail & Studio Redesign** sesuai §4.6 dengan kepatuhan terhadap 16 aturan non-waivable *The Floor* dan lulus audit linter Hallmark (`node .agent/skills/hallmark/scripts/sloplint.mjs resources/views/customer resources/views/layouts/customer.blade.php --genre editorial`). Dilarang memakai kelas tema gelap, gradien ungu-ke-biru, atau warna literal di luar token CSS deklarasi `:root`.
 3. **Kemudahan Pemeliharaan (Maintainability)**:
    - Arsitektur kode bersih berorientasi layanan (*Service Layer Pattern*) untuk Midtrans, Fonnte, Mailer, dan PDF Generator.
    - Konfigurasi kredensial terisolasi penuh pada file `.env`.

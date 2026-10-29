@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 64" width="100%" height="100%" fill="none">
+  <defs>
+    <linearGradient id="rapLightSquircleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#ECECEC"/>
+    </linearGradient>
+    <linearGradient id="rapLightAccentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2997FF"/>
+      <stop offset="100%" stop-color="#0071E3"/>
+    </linearGradient>
+    <filter id="rapLightShadow" x="-20%" y="-20%" width="140%" height="140%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Group: Emblem on Left (x: 8 to 56, y: 8 to 56) -->
+  <g id="rap-emblem-light" transform="translate(6, 6)">
+    <!-- Squircle (52x52) in Alabaster -->
+    <rect x="0" y="0" width="52" height="52" rx="13" fill="url(#rapLightSquircleGrad)" filter="url(#rapLightShadow)"/>
+    <rect x="0" y="0" width="52" height="52" rx="13" stroke="#FFFFFF" stroke-opacity="0.4" stroke-width="0.8"/>
+
+    <!-- Dynamic Island Pill -->
+    <rect x="19" y="5" width="14" height="2.5" rx="1.25" fill="#161617" fill-opacity="0.35"/>
+
+    <!-- Monogram R in Obsidian -->
+    <path d="M 17 14 L 17 38" stroke="#161617" stroke-width="4.2" stroke-linecap="round"/>
+    <path d="M 17 14 H 26.5 C 32.5 14 36.5 17.5 36.5 22.5 C 36.5 27.5 32.5 31 26.5 31 H 17" stroke="#161617" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 25 30.5 L 35 38" stroke="#161617" stroke-width="4.2" stroke-linecap="round"/>
+
+    <!-- Sapphire Lens Dot -->
+    <circle cx="26.5" cy="22.5" r="2.2" fill="url(#rapLightAccentGrad)"/>
+    <circle cx="27" cy="22" r="0.75" fill="#FFFFFF" fill-opacity="0.8"/>
+  </g>
+
+  <!-- Group: Typography Wordmark on Right in Crisp Light -->
+  <g id="rap-wordmark-light" transform="translate(72, 0)">
+    <!-- Primary Title: Rap-iPhone -->
+    <text x="0" y="32" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Hanken Grotesk', 'Inter', sans-serif" font-size="23" letter-spacing="-0.035em" fill="#FFFFFF">
+      <tspan font-weight="800">Rap</tspan><tspan font-weight="400" fill="#86868B">-</tspan><tspan font-weight="600">i</tspan><tspan font-weight="700">Phone</tspan>
+    </text>
+
+    <!-- Signal Dot above "i" in Wordmark -->
+    <circle cx="50.8" cy="18.2" r="2.2" fill="url(#rapLightAccentGrad)"/>
+
+    <!-- Secondary Tagline: Authorized Style & Trade-In Studio -->
+    <text x="0.5" y="46" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Hanken Grotesk', sans-serif" font-size="7.8" font-weight="600" letter-spacing="0.14em" fill="#A1A1A6">
+      AUTHORIZED STYLE &amp; TRADE-IN
+    </text>
+  </g>
+</svg>
+
