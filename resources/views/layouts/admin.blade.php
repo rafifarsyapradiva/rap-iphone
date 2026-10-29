@@ -6,12 +6,13 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin Hub — Rap-iPhone Operations & Management')</title>
 
-    <!-- Fonts -->
+    <!-- Hallmark Luxury Editorial Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://api.fontshare.com/v2/css?f[]=sentient@300,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <!-- Lucide Icons (versi dipin agar tampilan stabil) -->
+    <!-- Lucide Icons (versi dipin) -->
     <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
 
     <!-- Vite Assets -->
@@ -36,89 +37,84 @@
         $logoutRoute = route('owner.logout');
     }
 @endphp
-<body class="bg-[#F5F5F7] text-[#1D1D1F] daylight-enterprise adm-shell min-h-screen flex selection:bg-[#0071E3] selection:text-white antialiased">
+<body class="adm-shell min-h-screen flex antialiased">
 
     <!-- Mobile Sidebar Backdrop -->
-    <div id="admin-sidebar-backdrop" class="fixed inset-0 bg-black/30 backdrop-blur-sm z-[35] hidden lg:hidden"></div>
+    <div id="admin-sidebar-backdrop" class="fixed inset-0 bg-black/20 backdrop-blur-xs z-[35] hidden lg:hidden"></div>
 
-    <!-- Sidebar -->
-    <aside id="admin-sidebar" aria-label="Navigasi utama panel" class="bg-white w-64 min-h-screen shrink-0 fixed inset-y-0 left-0 z-40 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col justify-between border-r border-[#E5E5EA]">
+    <!-- Editorial Sidebar -->
+    <aside id="admin-sidebar" aria-label="Navigasi utama panel" class="adm-sidebar w-64 min-h-screen shrink-0 fixed inset-y-0 left-0 z-40 transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-out flex flex-col justify-between">
 
         <div class="p-5 overflow-y-auto">
-            <!-- Brand -->
-            <a href="{{ $inOwnerArea ? route('owner.dashboard') : route('admin.dashboard') }}" class="flex items-center gap-3 mb-6 px-1">
-                <div class="w-10 h-10 rounded-xl bg-[#1D1D1F] flex items-center justify-center text-white shadow-sm">
-                    <i data-lucide="layers" class="w-5 h-5"></i>
-                </div>
-                <div class="min-w-0">
-                    <span class="font-extrabold text-base tracking-tight text-[#1D1D1F] block leading-tight">Rap-iPhone</span>
-                    <span class="inline-block mt-0.5 text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-50 text-[#0066CC] border border-blue-200 uppercase">
-                        {{ $isOwner ? 'Executive Owner' : 'Operations Admin' }}
-                    </span>
-                </div>
+            <!-- Brand Editorial -->
+            <a href="{{ $inOwnerArea ? route('owner.dashboard') : route('admin.dashboard') }}" class="block mb-6 px-1">
+                <span class="font-serif text-xl tracking-tight text-[var(--adm-ink)] block leading-tight">Rap-iPhone</span>
+                <span class="text-xs text-[var(--adm-ink-muted)] block mt-0.5">
+                    {{ $isOwner ? 'Executive & Financial Suite' : 'Store Operations Hub' }}
+                </span>
             </a>
 
             <nav class="space-y-1" id="admin-sidebar-nav">
-                <p class="adm-nav-group" style="margin-top:0">Operasional</p>
+                <p class="adm-nav-group" style="margin-top:0">Operasional toko</p>
 
                 <a href="{{ route('admin.dashboard') }}" @if(request()->is('admin/dashboard*')) aria-current="page" @endif class="{{ $navClass(request()->is('admin/dashboard*')) }}">
                     <span class="adm-nav-label"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></span>
                 </a>
 
                 <a href="{{ route('admin.products.index') }}" @if(request()->is('admin/products*')) aria-current="page" @endif class="{{ $navClass(request()->is('admin/products*')) }}">
-                    <span class="adm-nav-label"><i data-lucide="smartphone"></i><span>Katalog &amp; Varian Stok</span></span>
+                    <span class="adm-nav-label"><i data-lucide="smartphone"></i><span>Katalog &amp; varian stok</span></span>
                 </a>
 
                 <a href="{{ route('admin.orders.index') }}" @if(request()->is('admin/orders*')) aria-current="page" @endif class="{{ $navClass(request()->is('admin/orders*')) }}">
-                    <span class="adm-nav-label"><i data-lucide="shopping-cart"></i><span>Pesanan &amp; Logistik</span></span>
+                    <span class="adm-nav-label"><i data-lucide="shopping-cart"></i><span>Pesanan &amp; logistik</span></span>
                     @if(($shell['pending_orders'] ?? 0) > 0)
                         <span class="adm-nav-count" title="Pesanan lunas menunggu diproses">{{ $shell['pending_orders'] }}</span>
                     @endif
                 </a>
 
                 <a href="{{ route('admin.trade-ins.index') }}" @if(request()->is('admin/trade-ins*')) aria-current="page" @endif class="{{ $navClass(request()->is('admin/trade-ins*')) }}">
-                    <span class="adm-nav-label"><i data-lucide="refresh-cw"></i><span>Antrean Trade-In</span></span>
+                    <span class="adm-nav-label"><i data-lucide="refresh-cw"></i><span>Antrean trade-in</span></span>
                     @if(($shell['pending_trade_ins'] ?? 0) > 0)
                         <span class="adm-nav-count" title="Pengajuan trade-in menunggu inspeksi">{{ $shell['pending_trade_ins'] }}</span>
                     @endif
                 </a>
 
                 @if($isOwner)
-                    <p class="adm-nav-group">Finansial &amp; Owner</p>
+                    <p class="adm-nav-group">Buku besar eksekutif</p>
 
                     <a href="{{ route('owner.dashboard') }}" @if(request()->is('owner/dashboard*')) aria-current="page" @endif class="{{ $navClass(request()->is('owner/dashboard*')) }}">
-                        <span class="adm-nav-label"><i data-lucide="crown"></i><span>Analitik &amp; Arus Kas</span></span>
+                        <span class="adm-nav-label"><i data-lucide="crown"></i><span>Analitik &amp; arus kas</span></span>
                     </a>
 
                     <a href="{{ route('owner.financial.report') }}" @if(request()->is('owner/financial-report*')) aria-current="page" @endif class="{{ $navClass(request()->is('owner/financial-report*')) }}">
-                        <span class="adm-nav-label"><i data-lucide="file-spreadsheet"></i><span>Laporan &amp; Ekspor Data</span></span>
+                        <span class="adm-nav-label"><i data-lucide="file-spreadsheet"></i><span>Laporan keuangan &amp; ekspor</span></span>
                     </a>
 
                     <a href="{{ route('owner.staff.index') }}" @if(request()->is('owner/staff*')) aria-current="page" @endif class="{{ $navClass(request()->is('owner/staff*')) }}">
-                        <span class="adm-nav-label"><i data-lucide="users"></i><span>Manajemen Staf &amp; Admin</span></span>
+                        <span class="adm-nav-label"><i data-lucide="users"></i><span>Manajemen staf &amp; akun</span></span>
                     </a>
                 @endif
 
-                <p class="adm-nav-group">Sistem</p>
+                <p class="adm-nav-group">Konfigurasi</p>
 
                 <a href="{{ route('admin.settings') }}" @if(request()->is('admin/settings*')) aria-current="page" @endif class="{{ $navClass(request()->is('admin/settings*')) }}">
-                    <span class="adm-nav-label"><i data-lucide="sliders"></i><span>Konfigurasi &amp; API</span></span>
+                    <span class="adm-nav-label"><i data-lucide="sliders"></i><span>Konfigurasi &amp; status API</span></span>
                 </a>
 
-                <a href="{{ url('/') }}" target="_blank" rel="noopener" class="adm-nav-link" style="color:#0066CC">
-                    <span class="adm-nav-label"><i data-lucide="external-link"></i><span>Buka Toko (Storefront)</span></span>
+                <a href="{{ url('/') }}" target="_blank" rel="noopener" class="adm-nav-link text-[var(--adm-accent)]">
+                    <span class="adm-nav-label"><i data-lucide="external-link"></i><span>Buka etalase toko</span></span>
                 </a>
             </nav>
         </div>
 
         <!-- Profil & Logout -->
-        <div class="p-4 border-t border-[#E5E5EA] bg-[#F5F5F7]">
+        <div class="p-4 border-t border-[var(--adm-rule-border)] bg-[var(--adm-paper-subtle)]">
             <div class="flex items-center justify-between gap-2">
                 <div class="flex items-center gap-3 min-w-0">
                     <span class="adm-avatar">{{ $authUser ? mb_substr($authUser->name, 0, 1) : 'A' }}</span>
                     <div class="min-w-0">
-                        <p class="text-xs font-semibold text-[#1D1D1F] truncate">{{ $authUser ? $authUser->name : 'Admin Operasional' }}</p>
-                        <p class="text-[11px] text-[#6E6E73] truncate">{{ $authUser ? $authUser->email : 'admin@rap-iphone.com' }}</p>
+                        <p class="text-xs font-medium text-[var(--adm-ink)] truncate">{{ $authUser ? $authUser->name : 'Admin Operasional' }}</p>
+                        <p class="text-[11px] text-[var(--adm-ink-muted)] truncate">{{ $authUser ? $authUser->email : 'admin@rap-iphone.com' }}</p>
                     </div>
                 </div>
                 <form action="{{ $logoutRoute }}" method="POST">
@@ -134,33 +130,35 @@
     <!-- Main -->
     <div class="flex-1 lg:pl-64 flex flex-col min-h-screen min-w-0 relative">
 
-        <header class="adm-topbar px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+        <header class="adm-masthead px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
             <div class="flex items-center gap-3 min-w-0">
                 <button type="button" id="admin-sidebar-toggle" class="lg:hidden adm-icon-btn" aria-label="Buka Sidebar" aria-controls="admin-sidebar">
                     <i data-lucide="menu"></i>
                 </button>
 
-                <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs text-[#6E6E73] min-w-0">
-                    <a href="{{ $inOwnerArea ? route('owner.dashboard') : route('admin.dashboard') }}" class="hover:text-[#1D1D1F] transition-colors shrink-0">{{ $inOwnerArea ? 'Owner Hub' : 'Admin Hub' }}</a>
-                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[#86868B] shrink-0"></i>
-                    <span class="text-[#1D1D1F] font-semibold truncate" aria-current="page">@yield('page_title', 'Dashboard')</span>
+                <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs text-[var(--adm-ink-muted)] min-w-0">
+                    <a href="{{ $inOwnerArea ? route('owner.dashboard') : route('admin.dashboard') }}" class="hover:text-[var(--adm-ink)] transition-colors shrink-0">{{ $inOwnerArea ? 'Owner Suite' : 'Operations Hub' }}</a>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-[var(--adm-ink-faint)] shrink-0"></i>
+                    <span class="text-[var(--adm-ink)] font-medium truncate" aria-current="page">@yield('page_title', 'Dashboard')</span>
                 </nav>
             </div>
 
             <div class="flex items-center gap-2 shrink-0">
-                <div class="hidden md:flex items-center gap-2"><span class="adm-badge {{ $shell['midtrans']['ok'] ? 'adm-tone-green' : 'adm-tone-amber' }}" title="Status konfigurasi Midtrans dari .env">
-                    <span class="adm-badge-dot"></span>{{ $shell['midtrans']['label'] }}
-                </span>
-                <span class="adm-badge {{ $shell['fonnte']['ok'] ? 'adm-tone-green' : 'adm-tone-amber' }}" title="Status konfigurasi Fonnte dari .env">
-                    <span class="adm-badge-dot"></span>{{ $shell['fonnte']['label'] }}
-                </span></div>
+                <div class="hidden md:flex items-center gap-2">
+                    <span class="adm-badge {{ $shell['midtrans']['ok'] ? 'adm-tone-green' : 'adm-tone-amber' }}" title="Status konfigurasi Midtrans">
+                        <span class="adm-badge-dot"></span>{{ $shell['midtrans']['label'] }}
+                    </span>
+                    <span class="adm-badge {{ $shell['fonnte']['ok'] ? 'adm-tone-green' : 'adm-tone-amber' }}" title="Status konfigurasi Fonnte WhatsApp">
+                        <span class="adm-badge-dot"></span>{{ $shell['fonnte']['label'] }}
+                    </span>
+                </div>
 
                 @php $attention = ($shell['pending_orders'] ?? 0) + ($shell['pending_trade_ins'] ?? 0); @endphp
                 <a href="{{ ($shell['pending_orders'] ?? 0) > 0 ? route('admin.orders.index', ['status' => 'paid']) : route('admin.trade-ins.index') }}"
-                   class="adm-icon-btn relative" title="{{ $attention > 0 ? $attention . ' item menunggu tindakan' : 'Tidak ada antrean tindakan' }}" aria-label="Antrean tindakan">
+                   class="adm-icon-btn relative" title="{{ $attention > 0 ? $attention . ' item menunggu tindakan' : 'Tidak ada antrean' }}" aria-label="Antrean tindakan">
                     <i data-lucide="bell"></i>
                     @if($attention > 0)
-                        <span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-[#D70015] border-2 border-white"></span>
+                        <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-[var(--adm-tone-red-ink)] border border-[var(--adm-surface)]"></span>
                     @endif
                 </a>
             </div>
@@ -187,9 +185,9 @@
             </div>
         </main>
 
-        <footer class="px-6 py-4 border-t border-[#E5E5EA] bg-white text-xs text-[#6E6E73] flex flex-col sm:flex-row items-center justify-between gap-2">
-            <p>&copy; {{ date('Y') }} Rap-iPhone Operations</p>
-            <p>{{ $isOwner ? 'Executive Owner' : 'Operations Admin' }} &middot; Panel v2.1</p>
+        <footer class="px-6 py-4 border-t border-[var(--adm-rule-border)] bg-[var(--adm-paper)] text-xs text-[var(--adm-ink-muted)] flex flex-col sm:flex-row items-center justify-between gap-2">
+            <p>&copy; {{ date('Y') }} Rap-iPhone Maison &middot; Hak Cipta Dilindungi</p>
+            <p>{{ $isOwner ? 'Executive Owner' : 'Operations Admin' }} &middot; Luxury Editorial System v2.1</p>
         </footer>
     </div>
 
@@ -202,6 +200,31 @@
 
             var sidebar = document.getElementById('admin-sidebar');
             var backdrop = document.getElementById('admin-sidebar-backdrop');
+            var toggle = document.getElementById('admin-sidebar-toggle');
+
+            if (toggle && sidebar) {
+                toggle.addEventListener('click', function () {
+                    var isClosed = sidebar.classList.contains('-translate-x-full');
+                    if (isClosed) {
+                        sidebar.classList.remove('-translate-x-full');
+                        sidebar.classList.add('translate-x-0');
+                        if (backdrop) { backdrop.classList.remove('hidden'); }
+                    } else {
+                        sidebar.classList.add('-translate-x-full');
+                        sidebar.classList.remove('translate-x-0');
+                        if (backdrop) { backdrop.classList.add('hidden'); }
+                    }
+                });
+            }
+
+            if (backdrop && sidebar) {
+                backdrop.addEventListener('click', function () {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0');
+                    backdrop.classList.add('hidden');
+                });
+            }
+
             document.querySelectorAll('#admin-sidebar-nav a').forEach(function (link) {
                 link.addEventListener('click', function () {
                     if (window.innerWidth < 1024 && sidebar && sidebar.classList.contains('translate-x-0')) {

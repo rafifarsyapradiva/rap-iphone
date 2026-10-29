@@ -249,73 +249,73 @@
 
 ### Phase 17: Hallmark Luxury Editorial Foundation, Audit Awal & Redesign Dashboard Admin (`/admin/dashboard`)
 > **Konteks Fase 17–24:** Transformasi panel Admin & Owner menggunakan kerangka kerja **Hallmark Redesign** dengan estetika **Luxury / Editorial** (genre: `editorial`). Menggantikan pola dasbor generik dengan tata letak buku besar mewah (*master trade ledger*), kartu *cotton stock*, tipografi display serif anggun utama (*Sentient* 300/400 via Fontshare), font grotesque presisi (*Hanken Grotesk* 400/500 via Google Fonts), palet limewash hangat, aksen titanium slate, serta penegakan ketat aturan *The Floor* dari Hallmark. Logika backend (routes, controllers, validasi) tetap utuh 100%.
-- [ ] **17.1. Hallmark Scaffold, Token CSS & Komponen Blade Editorial**
-  - [ ] Audit awal halaman dengan sloplint: `node .agent/skills/hallmark/scripts/sloplint.mjs resources/views/admin/dashboard.blade.php --genre editorial --render --before`.
-  - [ ] Pembuatan token sistem Luxury/Editorial pada `resources/css/admin.css` (kanvas limewash, tinta obsidian, hairline rules, font Sentient & Hanken Grotesk).
-  - [ ] Pembuatan komponen Blade editorial: `<x-admin.page-header>`, `<x-admin.stat-card>` (Statement size), `<x-admin.card>` (Cotton stock), `<x-admin.table>` (Trade ledger), `<x-admin.status-badge>`.
-- [ ] **17.2. Redesign Master Layout Admin (`layouts/admin.blade.php`)**
-  - [ ] Transformasi sidebar menjadi editorial masthead dengan hairline divider dan pencilled counters.
-  - [ ] Penyelarasan topbar, breadcrumb, dan status koneksi API (Midtrans & Fonnte) dengan indikator terukur monokromatik.
-- [ ] **17.3. Redesign Dashboard Admin Operasional (`admin/dashboard.blade.php`)**
-  - [ ] Headline editorial, deret 4 kartu KPI bertipe *Statement Numbers*, dan panel antrean *Action Required* bergaya buku catatan kurasi.
+- [x] **17.1. Hallmark Scaffold, Token CSS & Komponen Blade Editorial**
+  - [x] Audit awal halaman dengan sloplint: `node .agent/skills/hallmark/scripts/sloplint.mjs resources/views/admin/dashboard.blade.php --genre editorial --render --before`.
+  - [x] Pembuatan token sistem Luxury/Editorial pada `resources/css/admin.css` (kanvas limewash, tinta obsidian, hairline rules, font Sentient & Hanken Grotesk).
+  - [x] Pembuatan komponen Blade editorial: `<x-admin.page-header>`, `<x-admin.stat-card>` (Statement size), `<x-admin.card>` (Cotton stock), `<x-admin.table>` (Trade ledger), `<x-admin.status-badge>`.
+- [x] **17.2. Redesign Master Layout Admin (`layouts/admin.blade.php`)**
+  - [x] Transformasi sidebar menjadi editorial masthead dengan hairline divider dan pencilled counters.
+  - [x] Penyelarasan topbar, breadcrumb, dan status koneksi API (Midtrans & Fonnte) dengan indikator terukur monokromatik.
+- [x] **17.3. Redesign Dashboard Admin Operasional (`admin/dashboard.blade.php`)**
+  - [x] Headline editorial, deret 4 kartu KPI bertipe *Statement Numbers*, dan panel antrean *Action Required* bergaya buku catatan kurasi.
 
 ---
 
 ### Phase 18: Hallmark Redesign Manajemen Produk & Inventaris (`/admin/products`)
-- [ ] **18.1. Katalog Produk Bergaya Koleksi Maison (`index.blade.php`)**
-  - [ ] Format Trade Ledger dengan thumbnail berbingkai mat, indikator stok tabular, filter seri minimalis.
-- [ ] **18.2. Formulir Kurasi & Tambah Produk (`create.blade.php`)**
-  - [ ] Form berpartisi kartu cotton stock dengan input bergaris bawah (*ruled lines*) dan label wall-text terstruktur.
-- [ ] **18.3. Galeri & Manajemen Varian (`edit.blade.php`)**
-  - [ ] Grid galeri berlabel studio, tabel varian dengan snapshot HPP/harga jual tabular, dan form varian presisi.
+- [x] **18.1. Katalog Produk Bergaya Koleksi Maison (`index.blade.php`)**
+  - [x] Format Trade Ledger dengan thumbnail berbingkai mat, indikator stok tabular, filter seri minimalis.
+- [x] **18.2. Formulir Kurasi & Tambah Produk (`create.blade.php`)**
+  - [x] Form berpartisi kartu cotton stock dengan input bergaris bawah (*ruled lines*) dan label wall-text terstruktur.
+- [x] **18.3. Galeri & Manajemen Varian (`edit.blade.php`)**
+  - [x] Grid galeri berlabel studio, tabel varian dengan snapshot HPP/harga jual tabular, dan form varian presisi.
 
 ---
 
 ### Phase 19: Hallmark Redesign Manajemen Pesanan & Logistik (`/admin/orders`)
-- [ ] **19.1. Daftar Transaksi Buku Besar / Master Ledger (`index.blade.php`)**
-  - [ ] Tabel transaksi ber-double rule, angka moneter rata kanan tabular, badge status stempel (*Settled, Dispatched, Cancelled*).
-- [ ] **19.2. Lembar Faktur & Rincian Pesanan (`show.blade.php`)**
-  - [ ] Layout 2 kolom editorial: timeline pengiriman dan rincian unit IMEI di kiri; ringkasan pelanggan, resi kurir, dan aksi status di kanan.
+- [x] **19.1. Daftar Transaksi Buku Besar / Master Ledger (`index.blade.php`)**
+  - [x] Tabel transaksi ber-double rule, angka moneter rata kanan tabular, badge status stempel (*Settled, Dispatched, Cancelled*).
+- [x] **19.2. Lembar Faktur & Rincian Pesanan (`show.blade.php`)**
+  - [x] Layout 2 kolom editorial: timeline pengiriman dan rincian unit IMEI di kiri; ringkasan pelanggan, resi kurir, dan aksi status di kanan.
 
 ---
 
 ### Phase 20: Hallmark Redesign Antrean & Verifikasi Tukar Tambah (`/admin/trade-ins`)
-- [ ] **20.1. Antrean Inspeksi Unit Trade-In (`index.blade.php`)**
-  - [ ] Tab status berhitung pencilled, tabel daftar pengajuan dengan parameter Battery Health dan grade fisik.
-- [ ] **20.2. Lembar Kerja Penilaian & Inspeksi Teknisi (`show.blade.php`)**
-  - [ ] Tampilan komparasi berdampingan antara kondisi deklarasi pelanggan vs hasil verifikasi teknisi toko, komparasi harga estimasi vs harga final.
+- [x] **20.1. Antrean Inspeksi Unit Trade-In (`index.blade.php`)**
+  - [x] Tab status berhitung pencilled, tabel daftar pengajuan dengan parameter Battery Health dan grade fisik.
+- [x] **20.2. Lembar Kerja Penilaian & Inspeksi Teknisi (`show.blade.php`)**
+  - [x] Tampilan komparasi berdampingan antara kondisi deklarasi pelanggan vs hasil verifikasi teknisi toko, komparasi harga estimasi vs harga final.
 
 ---
 
 ### Phase 21: Hallmark Redesign Dashboard Eksekutif Owner (`/owner/dashboard`)
-- [ ] **21.1. Restrukturisasi Partial Blade Eksekutif**
-  - [ ] Pemecahan modular: `_kpi-cards.blade.php`, `_sales-trend.blade.php`, `_top-products.blade.php`, `_cashflow.blade.php`.
-- [ ] **21.2. Metrik Finansial & Visualisasi Data Editorial**
-  - [ ] 4 Statement Figures (Omzet, Laba Bersih, Transaksi Selesai, Konversi) berbobot tipografi mewah; grafik tren garis halus tanpa ornamen berlebihan; Top 5 iPhone terlaris dalam kartu koleksi.
+- [x] **21.1. Restrukturisasi Partial Blade Eksekutif**
+  - [x] Pemecahan modular: `_kpi-cards.blade.php`, `_sales-trend.blade.php`, `_top-products.blade.php`, `_cashflow.blade.php`.
+- [x] **21.2. Metrik Finansial & Visualisasi Data Editorial**
+  - [x] 4 Statement Figures (Omzet, Laba Bersih, Transaksi Selesai, Konversi) berbobot tipografi mewah; grafik tren garis halus tanpa ornamen berlebihan; Top 5 iPhone terlaris dalam kartu koleksi.
 
 ---
 
 ### Phase 22: Hallmark Redesign Laporan Keuangan & Ekspor Eksekutif (`/owner/financial-report`)
-- [ ] **22.1. Toolbar Periode & Aksi Ekspor**
-  - [ ] Segmented control waktu dan tombol ekspor CSV/PDF berbingkai hairline tinta.
-- [ ] **22.2. Neraca Laba Rugi (P&L Ledger)**
-  - [ ] Rantai metrik Omzet -> HPP -> Laba Kotor -> Laba Bersih; tabel buku besar finansial dengan total bergaris ganda (*double underline*).
+- [x] **22.1. Toolbar Periode & Aksi Ekspor**
+  - [x] Segmented control waktu dan tombol ekspor CSV/PDF berbingkai hairline tinta.
+- [x] **22.2. Neraca Laba Rugi (P&L Ledger)**
+  - [x] Rantai metrik Omzet -> HPP -> Laba Kotor -> Laba Bersih; tabel buku besar finansial dengan total bergaris ganda (*double underline*).
 
 ---
 
 ### Phase 23: Hallmark Redesign Manajemen Staf & Hak Akses Toko (`/owner/staff`)
-- [ ] **23.1. Direktori Staf Toko (`index.blade.php`)**
-  - [ ] Tabel direktori staf dengan inisial monogram, badge peran terkurasi, dan status akun.
-- [ ] **23.2. Modal Form Staf & Dialog Otorisasi**
-  - [ ] Modal sheet dengan estetika letterpress, validasi field terperinci, dan konfirmasi proteksi aksi.
+- [x] **23.1. Direktori Staf Toko (`index.blade.php`)**
+  - [x] Tabel direktori staf dengan inisial monogram, badge peran terkurasi, dan status akun.
+- [x] **23.2. Modal Form Staf & Dialog Otorisasi**
+  - [x] Modal sheet dengan estetika letterpress, validasi field terperinci, dan konfirmasi proteksi aksi.
 
 ---
 
 ### Phase 24: Hallmark Final Audit, Sloplint Sweep & Quality Assurance (`/admin/settings`)
-- [ ] **24.1. Halaman Konfigurasi Toko & Status Gateway (`admin/settings.blade.php`)**
-  - [ ] Panel status integrasi Midtrans, Fonnte, SMTP, dan Google OAuth dengan credential cards dan log aktivitas.
-- [ ] **24.2. Pembersihan Sisa Utilitas CSS & Penegakan The Floor**
-  - [ ] Pemindaian nol sisa kelas tema gelap lama, memastikan 100% kepatuhan token `--adm-*` dan The Floor.
-- [ ] **24.3. Eksekusi Linter Sloplint & QA Komprehensif**
-  - [ ] Eksekusi `node .agent/skills/hallmark/scripts/sloplint.mjs resources/views/admin resources/views/owner --genre editorial`.
-  - [ ] Verifikasi uji otomatis (`php artisan test`), kompilasi aset (`npm run build`), dan uji navigasi keyboard di berbagai ukuran layar.
+- [x] **24.1. Halaman Konfigurasi Toko & Status Gateway (`admin/settings.blade.php`)**
+  - [x] Panel status integrasi Midtrans, Fonnte, SMTP, dan Google OAuth dengan credential cards dan log aktivitas.
+- [x] **24.2. Pembersihan Sisa Utilitas CSS & Penegakan The Floor**
+  - [x] Pemindaian nol sisa kelas tema gelap lama, memastikan 100% kepatuhan token `--adm-*` dan The Floor.
+- [x] **24.3. Eksekusi Linter Sloplint & QA Komprehensif**
+  - [x] Eksekusi `node .agent/skills/hallmark/scripts/sloplint.mjs resources/views/admin resources/views/owner --genre editorial`.
+  - [x] Verifikasi uji otomatis (`php artisan test`), kompilasi aset (`npm run build`), dan uji navigasi keyboard di berbagai ukuran layar.

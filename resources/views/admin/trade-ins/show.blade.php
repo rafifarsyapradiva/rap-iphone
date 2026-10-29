@@ -5,12 +5,12 @@
 
 @section('content')
 <x-admin.page-header
-    :eyebrow="$tradeIn->trade_in_code"
+    :meta="$tradeIn->trade_in_code"
     icon="refresh-cw"
     :title="'Inspeksi Teknisi: ' . $tradeIn->phone_model . ' (' . $tradeIn->storage_capacity . ')'"
-    subtitle="Verifikasi kondisi fisik aktual, kesehatan baterai, kelengkapan, dan tetapkan harga penawaran deal final.">
+    subtitle="Lembar kerja penilaian fisik: verifikasi kondisi aktual, kesehatan baterai, kelengkapan aksesoris, dan penetapan nilai deal final.">
     <x-slot:actions>
-        <a href="{{ route('admin.trade-ins.index') }}" class="glass-btn glass-btn-secondary glass-btn-sm">
+        <a href="{{ route('admin.trade-ins.index') }}" class="adm-btn adm-btn-sm">
             <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i><span>Kembali ke Antrean</span>
         </a>
         @if($tradeIn->status === 'submitted')
@@ -18,13 +18,13 @@
                 @csrf
                 @method('PATCH')
                 <input type="hidden" name="decision" value="unit_received">
-                <button type="submit" class="glass-btn glass-btn-primary glass-btn-sm">
+                <button type="submit" class="adm-btn adm-btn-primary adm-btn-sm">
                     <i data-lucide="package-check" class="w-3.5 h-3.5"></i>
                     <span>Tandai Unit Diterima di Toko</span>
                 </button>
             </form>
         @endif
-        <a href="{{ route('trade-in.show', $tradeIn->trade_in_code) }}" target="_blank" rel="noopener" class="glass-btn glass-btn-secondary glass-btn-sm">
+        <a href="{{ route('trade-in.show', $tradeIn->trade_in_code) }}" target="_blank" rel="noopener" class="adm-btn adm-btn-sm">
             <i data-lucide="eye" class="w-3.5 h-3.5"></i>
             <span>Tampilan Pelanggan</span>
         </a>
@@ -53,32 +53,32 @@
         <!-- 1. Customer & Payout Destination Card -->
         <x-admin.card title="Identitas Pelanggan &amp; Tujuan Pencairan" icon="user-check">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                <div class="p-3.5 rounded-2xl bg-[#FAFAFC] border border-[#E5E5EA] space-y-1.5">
-                    <span class="text-[10px] text-[#6E6E73] uppercase font-bold block">Data Pemohon</span>
-                    <p class="font-bold text-[#1D1D1F] text-sm">{{ $tradeIn->user->name ?? 'Customer' }}</p>
-                    <p class="text-[#6E6E73]">{{ $tradeIn->user->email ?? '-' }}</p>
-                    <p class="adm-mono text-[#008040] font-bold">{{ $tradeIn->user->phone_number ?? 'No. WA belum tersedia' }}</p>
+                <div class="p-3.5 rounded-xs bg-[var(--adm-paper-subtle)] border border-[var(--adm-rule-border)] space-y-1.5">
+                    <span class="text-[11px] text-[var(--adm-ink-muted)] font-medium block">Data Pemohon</span>
+                    <p class="font-medium text-[var(--adm-ink)] text-sm">{{ $tradeIn->user->name ?? 'Customer' }}</p>
+                    <p class="text-[var(--adm-ink-muted)]">{{ $tradeIn->user->email ?? '-' }}</p>
+                    <p class="adm-mono text-[var(--adm-ink)] font-medium">{{ $tradeIn->user->phone_number ?? 'No. WA belum tersedia' }}</p>
                 </div>
 
-                <div class="p-3.5 rounded-2xl bg-[#FAFAFC] border border-[#E5E5EA] space-y-1.5">
-                    <span class="text-[10px] text-[#6E6E73] uppercase font-bold block">Preferensi Pencairan Dana</span>
+                <div class="p-3.5 rounded-xs bg-[var(--adm-paper-subtle)] border border-[var(--adm-rule-border)] space-y-1.5">
+                    <span class="text-[11px] text-[var(--adm-ink-muted)] font-medium block">Preferensi Pencairan Dana</span>
                     @if($tradeIn->isVoucherPayout())
                         <x-admin.status-badge tone="green" label="Kupon Potongan Belanja iPhone Baru" :dot="false" />
-                        <p class="adm-mono font-bold text-[#1D1D1F] text-sm mt-1">{{ $tradeIn->customer_account_number }}</p>
-                        <p class="text-[#6E6E73]">a.n. {{ $tradeIn->customer_account_holder }}</p>
+                        <p class="adm-mono font-medium text-[var(--adm-ink)] text-sm mt-1">{{ $tradeIn->customer_account_number }}</p>
+                        <p class="text-[var(--adm-ink-muted)]">a.n. {{ $tradeIn->customer_account_holder }}</p>
                     @else
                         <x-admin.status-badge tone="blue" label="Transfer Rekening Bank Customer" :dot="false" />
-                        <p class="font-bold text-[#1D1D1F] mt-1">{{ $tradeIn->customer_bank_name }}</p>
-                        <p class="adm-mono text-[#0066CC] font-bold">{{ $tradeIn->customer_account_number }}</p>
-                        <p class="text-[#6E6E73]">a.n. {{ $tradeIn->customer_account_holder }}</p>
+                        <p class="font-medium text-[var(--adm-ink)] mt-1">{{ $tradeIn->customer_bank_name }}</p>
+                        <p class="adm-mono text-[var(--adm-ink)] font-medium">{{ $tradeIn->customer_account_number }}</p>
+                        <p class="text-[var(--adm-ink-muted)]">a.n. {{ $tradeIn->customer_account_holder }}</p>
                     @endif
                 </div>
             </div>
         </x-admin.card>
 
-        <!-- 2. Form Inspeksi Teknisi Toko Saat Unit Diterima -->
+        <!-- 2. Form Inspeksi Fisik & Fungsi Teknisi Toko -->
         <x-admin.card title="Form Inspeksi Fisik &amp; Fungsi Teknisi Toko" icon="wrench"
-            description="Sesuaikan parameter di bawah ini berdasarkan pengecekan aktual (3uTools & fisik) saat unit diterima di toko.">
+            description="Sesuaikan parameter berdasarkan pengecekan aktual (3uTools & fisik) saat unit diterima di toko.">
 
             <form action="{{ route('admin.trade-ins.inspect', $tradeIn->trade_in_code) }}" method="POST" class="space-y-4" id="tech-inspection-form">
                 @csrf
@@ -113,7 +113,7 @@
                     <div class="adm-field">
                         <label for="inspect_bh" class="adm-label">Battery Health Aktual (%)</label>
                         <input type="number" id="inspect_bh" name="battery_health" min="1" max="100"
-                               value="{{ old('battery_health', $tradeIn->battery_health) }}" required class="adm-input adm-mono tech-calc-input">
+                                value="{{ old('battery_health', $tradeIn->battery_health) }}" required class="adm-input adm-mono tech-calc-input">
                     </div>
 
                     <!-- Kelengkapan Aksesoris Aktual -->
@@ -147,15 +147,15 @@
                 </div>
 
                 <!-- Rekomendasi Harga Kalkulator Teknisi & Input Final Price -->
-                <div class="p-4 rounded-2xl bg-[#FAFAFC] border border-[#E5E5EA] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="p-4 rounded-xs bg-[var(--adm-paper-subtle)] border border-[var(--adm-rule-border)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div class="text-xs">
-                        <span class="text-[#6E6E73] block">Rekomendasi Kalkulator Berdasarkan Parameter Inspeksi:</span>
-                        <span id="tech-recommended-price" class="text-xl font-extrabold text-[#008040] block mt-0.5">
+                        <span class="text-[var(--adm-ink-muted)] block">Rekomendasi Kalkulator Berdasarkan Parameter Inspeksi:</span>
+                        <span id="tech-recommended-price" class="text-xl font-serif font-medium text-[var(--adm-tone-green-ink)] block mt-0.5">
                             Rp {{ number_format($breakdown['estimated_price'], 0, ',', '.') }}
                         </span>
                     </div>
-                    <button type="button" id="btn-apply-recommended" class="glass-btn glass-btn-secondary glass-btn-sm text-xs">
-                        <i data-lucide="wand-2" class="w-3.5 h-3.5 text-[#0066CC]"></i>
+                    <button type="button" id="btn-apply-recommended" class="adm-btn adm-btn-sm text-xs">
+                        <i data-lucide="wand-2" class="w-3.5 h-3.5"></i>
                         <span>Gunakan Harga Rekomendasi</span>
                     </button>
                 </div>
@@ -165,7 +165,7 @@
                         <label for="inspect_final_price" class="adm-label">Penawaran Harga Hasil Inspeksi (Rp)</label>
                         <input type="number" step="1000" id="inspect_final_price" name="final_price"
                                value="{{ old('final_price', $tradeIn->final_price ?? $tradeIn->estimated_price) }}"
-                               class="adm-input font-bold text-[#008040]">
+                               class="adm-input font-medium text-[var(--adm-tone-green-ink)]">
                     </div>
 
                     <div class="adm-field">
@@ -177,9 +177,9 @@
                     </div>
                 </div>
 
-                <div class="pt-3 border-t border-[#E5E5EA] flex justify-end">
-                    <button type="submit" class="glass-btn glass-btn-primary glass-btn-md text-xs font-bold">
-                        <i data-lucide="save" class="w-4 h-4"></i>
+                <div class="pt-3 border-t border-[var(--adm-rule-border)] flex justify-end">
+                    <button type="submit" class="adm-btn adm-btn-primary adm-btn-sm text-xs font-medium">
+                        <i data-lucide="save" class="w-3.5 h-3.5"></i>
                         <span>Simpan Hasil Inspeksi Teknisi</span>
                     </button>
                 </div>
@@ -198,15 +198,15 @@
 
             <!-- Price Summary Box -->
             <div class="grid grid-cols-2 gap-3 text-xs mb-4">
-                <div class="p-3.5 rounded-2xl bg-[#FAFAFC] border border-[#E5E5EA]">
-                    <span class="text-[10px] text-[#6E6E73] block uppercase font-semibold">Estimasi Awal</span>
-                    <span class="text-base font-bold text-[#1D1D1F] mt-1 block">
+                <div class="p-3.5 rounded-xs bg-[var(--adm-paper-subtle)] border border-[var(--adm-rule-border)]">
+                    <span class="text-[11px] text-[var(--adm-ink-muted)] block font-medium">Estimasi Awal</span>
+                    <span class="text-base font-serif font-medium text-[var(--adm-ink)] mt-1 block">
                         Rp {{ number_format($tradeIn->estimated_price, 0, ',', '.') }}
                     </span>
                 </div>
-                <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200">
-                    <span class="text-[10px] text-[#008040] font-bold block uppercase">Penawaran Final</span>
-                    <span class="text-base font-extrabold text-[#008040] mt-1 block">
+                <div class="p-3.5 rounded-xs bg-[var(--adm-tone-green-bg)] border border-[var(--adm-tone-green-ink)]">
+                    <span class="text-[11px] text-[var(--adm-tone-green-ink)] font-medium block">Penawaran Final</span>
+                    <span class="text-base font-serif font-medium text-[var(--adm-tone-green-ink)] mt-1 block">
                         Rp {{ number_format($tradeIn->effective_price, 0, ',', '.') }}
                     </span>
                 </div>
@@ -219,34 +219,33 @@
 
                 <div class="adm-field">
                     <label for="decision_final_price" class="adm-label">
-                        Penyesuaian Harga Deal Final (Rp) <span style="color:#D70015">*</span>
+                        Penyesuaian Harga Deal Final (Rp) <span class="text-[var(--adm-tone-red-ink)]">*</span>
                     </label>
                     <input type="number" step="1000" id="decision_final_price" name="final_price"
                            value="{{ old('final_price', $tradeIn->final_price ?? $tradeIn->estimated_price) }}" required
-                           class="adm-input text-base font-extrabold text-[#1D1D1F]">
+                           class="adm-input text-base font-serif font-medium text-[var(--adm-ink)]">
                     <p class="adm-help">
-                        Harga ini yang akan dicairkan ke rekening customer atau menjadi nilai kupon potongan belanja.
+                        Nominal ini yang akan dicairkan ke rekening pelanggan atau dijadikan nilai kupon potongan belanja.
                     </p>
                 </div>
 
                 <div class="adm-field">
                     <label for="decision_notes" class="adm-label">Catatan Keputusan / Alasan Penyesuaian / Ref Transfer</label>
                     <textarea id="decision_notes" name="admin_notes" rows="3"
-                              placeholder="Tuliskan rincian kesepakatan harga dengan customer, alasan penolakan, atau nomor referensi transfer..."
+                              placeholder="Tuliskan rincian kesepakatan harga dengan pelanggan, alasan penolakan, atau nomor referensi transfer..."
                               class="adm-textarea">{{ old('admin_notes', $tradeIn->admin_notes) }}</textarea>
                 </div>
 
                 <!-- Action Buttons: Approve & Reject -->
                 <div class="grid grid-cols-2 gap-3 pt-2">
                     <button type="submit" name="decision" value="approved"
-                            class="glass-btn glass-btn-primary glass-btn-md font-bold flex items-center justify-center gap-1.5"
-                            style="background:#008040;border-color:#008040">
+                            class="adm-btn adm-btn-primary flex items-center justify-center gap-1.5 bg-[var(--adm-tone-green-ink)] border-[var(--adm-tone-green-ink)]">
                         <i data-lucide="check-circle-2" class="w-4 h-4"></i>
                         <span>Approve (Setujui)</span>
                     </button>
 
                     <button type="submit" name="decision" value="rejected"
-                            class="glass-btn glass-btn-danger glass-btn-md font-bold flex items-center justify-center gap-1.5">
+                            class="adm-btn flex items-center justify-center gap-1.5 text-[var(--adm-tone-red-ink)] border-[var(--adm-tone-red-ink)]">
                         <i data-lucide="x-circle" class="w-4 h-4"></i>
                         <span>Reject (Tolak)</span>
                     </button>
@@ -254,10 +253,9 @@
 
                 <!-- Mark as Paid Out / Voucher Issued Button -->
                 @if(in_array($tradeIn->status, ['approved', 'inspected']))
-                    <div class="pt-3 border-t border-[#E5E5EA]">
+                    <div class="pt-3 border-t border-[var(--adm-rule-border)]">
                         <button type="submit" name="decision" value="paid_out"
-                                class="glass-btn glass-btn-secondary glass-btn-md w-full font-bold flex items-center justify-center gap-2"
-                                style="color:#0066CC;border-color:#0066CC">
+                                class="adm-btn w-full font-medium flex items-center justify-center gap-2">
                             <i data-lucide="wallet" class="w-4 h-4"></i>
                             <span>
                                 {{ $tradeIn->isVoucherPayout() ? 'Tandai Kupon Potongan Telah Aktif (Paid Out)' : 'Tandai Dana Sudah Ditransfer ke Rekening (Paid Out)' }}

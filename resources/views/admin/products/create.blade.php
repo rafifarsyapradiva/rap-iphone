@@ -5,12 +5,12 @@
 
 @section('content')
 <x-admin.page-header
-    eyebrow="Manajemen Katalog"
+    meta="Manajemen Katalog & Inventaris"
     icon="smartphone"
     title="Tambah Produk iPhone Baru"
-    subtitle="Lengkapi informasi produk induk, varian awal, dan foto. Varian dan foto dapat dikelola lagi setelah produk dibuat.">
+    subtitle="Lengkapi lembar spesifikasi produk induk, varian awal, dan foto studio. Varian dan galeri dapat dikelola lagi setelah produk dibuat.">
     <x-slot:actions>
-        <a href="{{ route('admin.products.index') }}" class="glass-btn glass-btn-secondary glass-btn-sm">
+        <a href="{{ route('admin.products.index') }}" class="adm-btn adm-btn-sm">
             <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i><span>Kembali ke Katalog</span>
         </a>
     </x-slot:actions>
@@ -20,7 +20,7 @@
     <div class="adm-alert adm-tone-red" role="alert">
         <i data-lucide="alert-octagon"></i>
         <div>
-            <p class="font-bold">Terdapat kesalahan pada input:</p>
+            <p class="font-medium">Terdapat kesalahan pada formulir:</p>
             <ul class="list-disc list-inside mt-1 space-y-0.5">
                 @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -35,17 +35,17 @@
 
     {{-- 1. Informasi Produk Induk --}}
     <x-admin.card title="1. Informasi Produk Induk iPhone" icon="smartphone"
-        description="Tentukan seri, kategori, kondisi unit (BNIB atau Second), dan jaminan garansi.">
+        description="Tentukan seri, kategori katalog, kondisi unit (BNIB atau Second), dan jenis garansi resmi.">
         <div class="adm-grid-form cols-3">
             <div class="adm-field" style="grid-column: span 2 / span 2;">
-                <label class="adm-label" for="f-name">Nama Produk iPhone <span style="color:#D70015">*</span></label>
+                <label class="adm-label" for="f-name">Nama Produk iPhone <span class="text-[var(--adm-tone-red-ink)]">*</span></label>
                 <input id="f-name" type="text" name="name" value="{{ old('name') }}" required
                        placeholder="Contoh: iPhone 16 Pro Max" class="adm-input @error('name') is-invalid @enderror">
                 @error('name')<span class="adm-error">{{ $message }}</span>@enderror
             </div>
 
             <div class="adm-field">
-                <label class="adm-label" for="f-category">Kategori Katalog <span style="color:#D70015">*</span></label>
+                <label class="adm-label" for="f-category">Kategori Katalog <span class="text-[var(--adm-tone-red-ink)]">*</span></label>
                 <select id="f-category" name="category_id" required class="adm-select @error('category_id') is-invalid @enderror">
                     @foreach($categories as $category)
                         <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
@@ -55,14 +55,14 @@
             </div>
 
             <div class="adm-field">
-                <label class="adm-label" for="f-series">Seri iPhone <span style="color:#D70015">*</span></label>
+                <label class="adm-label" for="f-series">Seri iPhone <span class="text-[var(--adm-tone-red-ink)]">*</span></label>
                 <input id="f-series" type="text" name="series" value="{{ old('series', 'iPhone 16 Series') }}" required
                        placeholder="Contoh: iPhone 16 Series" class="adm-input @error('series') is-invalid @enderror">
                 @error('series')<span class="adm-error">{{ $message }}</span>@enderror
             </div>
 
             <div class="adm-field">
-                <label class="adm-label" for="create-condition-select">Kondisi Unit <span style="color:#D70015">*</span></label>
+                <label class="adm-label" for="create-condition-select">Kondisi Unit <span class="text-[var(--adm-tone-red-ink)]">*</span></label>
                 <select name="condition" id="create-condition-select" required class="adm-select @error('condition') is-invalid @enderror">
                     <option value="new" {{ old('condition', 'new') === 'new' ? 'selected' : '' }}>Baru (BNIB Segel Resmi)</option>
                     <option value="second" {{ old('condition') === 'second' ? 'selected' : '' }}>Second Berkualitas (Pre-Owned)</option>
@@ -82,7 +82,7 @@
             </div>
 
             <div class="adm-field">
-                <label class="adm-label" for="f-warranty">Tipe Garansi <span style="color:#D70015">*</span></label>
+                <label class="adm-label" for="f-warranty">Tipe Garansi <span class="text-[var(--adm-tone-red-ink)]">*</span></label>
                 <select id="f-warranty" name="warranty_type" required class="adm-select @error('warranty_type') is-invalid @enderror">
                     @foreach($warrantyTypes as $key => $label)
                         <option value="{{ $key }}" {{ old('warranty_type', 'resmi_ibox') === $key ? 'selected' : '' }}>{{ $label }}</option>
@@ -92,23 +92,23 @@
             </div>
 
             <div class="adm-field">
-                <label class="adm-label" for="f-base">Harga Dasar Display (Rp) <span style="color:#D70015">*</span></label>
+                <label class="adm-label" for="f-base">Harga Dasar Display (Rp) <span class="text-[var(--adm-tone-red-ink)]">*</span></label>
                 <input id="f-base" type="number" name="base_price" value="{{ old('base_price', 16499000) }}" min="0" step="1000" required
-                       class="adm-input adm-num @error('base_price') is-invalid @enderror" style="text-align:left !important; font-weight:700;">
-                <span class="adm-help">Otomatis disinkronkan dengan harga jual varian terendah.</span>
+                       class="adm-input adm-num @error('base_price') is-invalid @enderror" style="text-align:left !important; font-weight:600;">
+                <span class="adm-help">Disinkronkan dengan harga jual varian terendah.</span>
                 @error('base_price')<span class="adm-error">{{ $message }}</span>@enderror
             </div>
 
             <label class="inline-flex items-center gap-2.5 cursor-pointer self-end pb-2.5">
-                <input type="checkbox" name="is_active" value="1" checked class="w-4 h-4 rounded accent-[#0071E3]">
-                <span class="adm-label">Tampilkan aktif di storefront katalog</span>
+                <input type="checkbox" name="is_active" value="1" checked class="w-4 h-4 rounded-xs accent-[var(--adm-ink)]">
+                <span class="adm-label">Tampilkan aktif di etalase toko</span>
             </label>
         </div>
 
-        <div class="adm-field" style="margin-top: 1rem;">
-            <label class="adm-label" for="f-desc">Deskripsi Spesifikasi &amp; Ketentuan Garansi <span style="color:#D70015">*</span></label>
+        <div class="adm-field" style="margin-top: 1.25rem;">
+            <label class="adm-label" for="f-desc">Deskripsi Spesifikasi &amp; Ketentuan Garansi <span class="text-[var(--adm-tone-red-ink)]">*</span></label>
             <textarea id="f-desc" name="description" rows="4" required
-                      placeholder="Tuliskan deskripsi keunggulan chipset, layar Super Retina XDR, kamera, serta ketentuan klaim garansi resmi..."
+                      placeholder="Tuliskan spesifikasi detail keunggulan chipset, layar Super Retina XDR, kamera, serta ketentuan klaim garansi resmi..."
                       class="adm-textarea @error('description') is-invalid @enderror">{{ old('description') }}</textarea>
             @error('description')<span class="adm-error">{{ $message }}</span>@enderror
         </div>
@@ -116,17 +116,17 @@
 
     {{-- 2. Varian Awal --}}
     <x-admin.card title="2. Varian Awal (Warna, Kapasitas, HPP, Harga Jual, Stok & IMEI)" icon="layers"
-        description="Tambahkan satu atau beberapa varian sekarang, atau kelola lebih lanjut setelah produk dibuat.">
+        description="Tambahkan satu atau beberapa varian awal. Konfigurasi lebih lanjut dapat dikelola setelah produk tersimpan.">
         <x-slot:actions>
-            <button type="button" id="btn-add-variant-row" class="glass-btn glass-btn-secondary glass-btn-sm">
+            <button type="button" id="btn-add-variant-row" class="adm-btn adm-btn-sm">
                 <i data-lucide="plus" class="w-3.5 h-3.5"></i><span>Tambah Baris Varian</span>
             </button>
         </x-slot:actions>
 
         <div id="variants-rows-container" class="space-y-4">
-            <div class="variant-row rounded-2xl border border-[#E5E5EA] bg-[#FAFAFC] p-4">
+            <div class="variant-row rounded-xs border border-[var(--adm-rule-border)] bg-[var(--adm-paper-subtle)] p-4">
                 <div class="flex items-center justify-between mb-3">
-                    <span class="variant-row-title adm-label">Varian #1</span>
+                    <span class="variant-row-title adm-label font-serif text-base">Varian #1</span>
                     <button type="button" class="btn-remove-variant adm-icon-btn is-danger" title="Hapus baris varian" aria-label="Hapus baris varian" style="display:none">
                         <i data-lucide="x"></i>
                     </button>
@@ -145,7 +145,7 @@
                         <label class="adm-label">Nama Warna &amp; Hex</label>
                         <div class="flex items-center gap-1.5">
                             <input type="text" name="variants[0][color_name]" value="Natural Titanium" required class="adm-input input-color-name">
-                            <input type="color" name="variants[0][color_hex]" value="#9A958E" class="input-color-hex" style="height:2.5rem;width:2.75rem;border-radius:10px;border:1px solid #D2D2D7;background:#fff;cursor:pointer;padding:2px">
+                            <input type="color" name="variants[0][color_hex]" value="#9A958E" class="input-color-hex" style="height:2.375rem;width:2.5rem;border-radius:2px;border:1px solid var(--adm-rule-border);background:var(--adm-surface);cursor:pointer;padding:2px">
                         </div>
                     </div>
                     <div class="adm-field">
@@ -157,8 +157,8 @@
                         </select>
                     </div>
                     <div class="adm-field">
-                        <label class="adm-label">Stok Unit</label>
-                        <input type="number" name="variants[0][stock]" value="10" min="0" required class="adm-input" style="font-weight:700">
+                        <label class="adm-label">Stok Unit Fisik</label>
+                        <input type="number" name="variants[0][stock]" value="10" min="0" required class="adm-input font-medium">
                     </div>
                     <div class="adm-field">
                         <label class="adm-label">HPP / Cost Price (Rp)</label>
@@ -166,7 +166,7 @@
                     </div>
                     <div class="adm-field">
                         <label class="adm-label">Harga Jual Retail (Rp)</label>
-                        <input type="number" name="variants[0][selling_price]" value="16499000" min="0" step="1000" required class="adm-input" style="font-weight:700">
+                        <input type="number" name="variants[0][selling_price]" value="16499000" min="0" step="1000" required class="adm-input font-medium">
                     </div>
                     <div class="adm-field">
                         <label class="adm-label">Battery Health % (Opsional)</label>
@@ -182,16 +182,16 @@
     </x-admin.card>
 
     {{-- 3. Foto Produk --}}
-    <x-admin.card title="3. Foto Produk Multi-Angle (Opsional)" icon="images"
-        description="Unggah foto tampak depan, belakang (modul kamera), samping, dan kelengkapan box (JPG/PNG/WebP maks. 4MB per file).">
+    <x-admin.card title="3. Foto Produk Multi-Angle Studio (Opsional)" icon="images"
+        description="Unggah foto tampak depan, belakang, samping, dan kelengkapan box (JPG/PNG/WebP maks. 4MB per file).">
         <input type="file" name="images[]" multiple accept="image/jpeg,image/png,image/webp"
-               class="adm-input file:mr-4 file:py-1.5 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#0071E3] file:text-white hover:file:bg-[#0077ED]"
+               class="adm-input file:mr-4 file:py-1 file:px-3 file:rounded-xs file:border file:border-[var(--adm-ink)] file:text-xs file:font-medium file:bg-[var(--adm-ink)] file:text-[var(--adm-ink-reverse)] hover:file:bg-[var(--adm-accent)]"
                style="padding-top:.375rem">
     </x-admin.card>
 
-    <div class="adm-sticky-actions">
-        <a href="{{ route('admin.products.index') }}" class="glass-btn glass-btn-secondary glass-btn-md">Batal</a>
-        <button type="submit" class="glass-btn glass-btn-primary glass-btn-md">
+    <div class="flex items-center justify-end gap-3 pt-2">
+        <a href="{{ route('admin.products.index') }}" class="adm-btn">Batal</a>
+        <button type="submit" class="adm-btn adm-btn-primary">
             <i data-lucide="save" class="w-4 h-4"></i>
             <span>Simpan Produk &amp; Varian</span>
         </button>

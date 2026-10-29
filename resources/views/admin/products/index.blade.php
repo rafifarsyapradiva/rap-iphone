@@ -22,13 +22,13 @@
 @endphp
 
 <x-admin.page-header
-    eyebrow="Manajemen Inventaris & Varian"
+    meta="Manajemen Inventaris & Varian"
     icon="smartphone"
     title="Katalog & Varian Stok iPhone"
-    subtitle="Kelola produk iPhone induk, kombinasi varian (warna, kapasitas, stok, HPP, harga jual, IMEI), dan foto multi-angle.">
+    subtitle="Buku besar inventaris iPhone, varian spesifikasi (warna, kapasitas, stok, HPP, harga jual, IMEI), dan kurasi galeri studio.">
     <x-slot:actions>
-        <a href="{{ route('admin.products.create') }}" class="glass-btn glass-btn-primary glass-btn-md">
-            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+        <a href="{{ route('admin.products.create') }}" class="adm-btn adm-btn-primary adm-btn-sm">
+            <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
             <span>Tambah Produk iPhone Baru</span>
         </a>
     </x-slot:actions>
@@ -36,13 +36,13 @@
 
 {{-- Kartu Metrik Inventaris --}}
 <div class="adm-stat-grid cols-4">
-    <x-admin.stat-card label="Total Model iPhone" :value="$metrics['total_products']" icon="smartphone" tone="blue"
+    <x-admin.stat-card label="Total model iPhone" :value="$metrics['total_products']" icon="smartphone" tone="blue"
         :hint="$metrics['total_variants'] . ' varian terdaftar'" />
-    <x-admin.stat-card label="Total Stok Fisik" :value="$metrics['total_stock']" icon="boxes" tone="green"
-        hint="Unit siap jual di gudang/toko" />
-    <x-admin.stat-card label="BNIB vs Second" :value="$metrics['new_products'] . ' / ' . $metrics['second_products']" icon="shield-check" tone="purple"
-        hint="Model baru resmi vs pre-owned" />
-    <x-admin.stat-card label="Stok Menipis (≤ 3)" :value="$metrics['low_stock_variants']" icon="alert-triangle"
+    <x-admin.stat-card label="Total stok fisik" :value="$metrics['total_stock']" icon="boxes" tone="green"
+        hint="Unit siap jual di gudang & toko" />
+    <x-admin.stat-card label="Rasio BNIB vs Second" :value="$metrics['new_products'] . ' / ' . $metrics['second_products']" icon="shield-check" tone="purple"
+        hint="Model resmi baru vs kurasi bekas" />
+    <x-admin.stat-card label="Stok menipis (≤ 3)" :value="$metrics['low_stock_variants']" icon="alert-triangle"
         :tone="$metrics['low_stock_variants'] > 0 ? 'amber' : 'gray'" hint="Varian perlu restock segera" />
 </div>
 
@@ -55,7 +55,7 @@
                     <a href="{{ route('admin.products.index', $filterParams(['condition' => $condKey !== 'all' ? $condKey : null])) }}"
                        class="adm-tab {{ $conditionFilter === $condKey ? 'is-active' : '' }}">
                         {{ $condLabel }}
-                        <span class="adm-tab-count">{{ $condCount }}</span>
+                        <span class="adm-tab-count">({{ $condCount }})</span>
                     </a>
                 @endforeach
             </div>
@@ -77,27 +77,27 @@
                     <input type="text" name="q" value="{{ $search }}" placeholder="Cari iPhone, SKU, IMEI, warna..." class="adm-input" aria-label="Cari produk">
                 </div>
 
-                <button type="submit" class="glass-btn glass-btn-secondary glass-btn-sm">Filter</button>
+                <button type="submit" class="adm-btn adm-btn-sm">Filter</button>
                 @if($isFiltered)
-                    <a href="{{ route('admin.products.index') }}" class="glass-btn glass-btn-ghost glass-btn-sm" style="color:#D70015">Reset</a>
+                    <a href="{{ route('admin.products.index') }}" class="adm-btn adm-btn-sm text-[var(--adm-tone-red-ink)]">Reset</a>
                 @endif
             </form>
         </div>
     </div>
 
-    {{-- Tabel Inventaris Produk --}}
-    <div class="adm-table-wrap" style="border-top: 1px solid var(--dm-border-subtle);">
+    {{-- Tabel Inventaris Produk (Master Trade Ledger) --}}
+    <div class="adm-table-wrap">
         <table class="adm-table">
             <thead>
                 <tr>
-                    <th>Produk &amp; Seri</th>
-                    <th>Kondisi &amp; Garansi</th>
-                    <th>Varian</th>
-                    <th class="adm-num">HPP</th>
-                    <th class="adm-num">Harga Jual</th>
-                    <th style="text-align:center">Stok</th>
-                    <th style="text-align:center">Status</th>
-                    <th class="adm-num">Aksi</th>
+                    <th scope="col">Produk &amp; Seri</th>
+                    <th scope="col">Kondisi &amp; Garansi</th>
+                    <th scope="col">Varian Koleksi</th>
+                    <th scope="col" class="adm-num">HPP (Modal)</th>
+                    <th scope="col" class="adm-num">Harga Jual</th>
+                    <th scope="col" style="text-align:center">Stok</th>
+                    <th scope="col" style="text-align:center">Status</th>
+                    <th scope="col" class="adm-num">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -117,15 +117,15 @@
                         {{-- Produk & Seri --}}
                         <td>
                             <div class="flex items-center gap-3">
-                                <span class="adm-thumb" style="width:3rem;height:3rem;padding:.25rem;">
+                                <span class="adm-thumb" style="width:2.75rem;height:2.75rem;">
                                     @if($primaryImg && file_exists(public_path($primaryImg)))
-                                        <img src="{{ asset($primaryImg) }}" alt="{{ $product->name }}" width="48" height="48" loading="lazy" decoding="async" class="max-h-full max-w-full object-contain">
+                                        <img src="{{ asset($primaryImg) }}" alt="{{ $product->name }}" width="44" height="44" loading="lazy" decoding="async" class="max-h-full max-w-full object-contain">
                                     @else
-                                        <i data-lucide="smartphone" class="w-5 h-5"></i>
+                                        <i data-lucide="smartphone" class="w-4 h-4 text-[var(--adm-ink-muted)]"></i>
                                     @endif
                                 </span>
                                 <div class="min-w-0">
-                                    <a href="{{ route('admin.products.edit', $product) }}" class="adm-cell-title hover:text-[#0066CC] transition-colors block" style="font-size:.875rem">{{ $product->name }}</a>
+                                    <a href="{{ route('admin.products.edit', $product) }}" class="adm-cell-title hover:underline block">{{ $product->name }}</a>
                                     <span class="adm-cell-sub">{{ $product->series }} &middot; {{ $product->images->count() }} Foto</span>
                                 </div>
                             </div>
@@ -145,7 +145,7 @@
                         <td>
                             <div class="flex items-center gap-1.5 mb-1.5">
                                 @forelse($colors as $clr)
-                                    <span class="inline-block rounded-full" style="width:.875rem;height:.875rem;background-color: {{ $clr->color_hex }};border:1px solid rgba(0,0,0,.2)" title="{{ $clr->color_name }}"></span>
+                                    <span class="inline-block rounded-xs" style="width:.75rem;height:.75rem;background-color: {{ $clr->color_hex }};border:1px solid var(--adm-rule-border)" title="{{ $clr->color_name }}"></span>
                                 @empty
                                     <span class="adm-cell-sub">Belum ada varian</span>
                                 @endforelse
@@ -155,7 +155,7 @@
                             </div>
                             <div class="flex flex-wrap gap-1">
                                 @foreach($storages as $cap)
-                                    <span class="adm-badge adm-tone-gray" style="padding:.0625rem .5rem">{{ $cap }}</span>
+                                    <span class="adm-badge adm-tone-gray" style="padding:.0625rem .375rem">{{ $cap }}</span>
                                 @endforeach
                             </div>
                         </td>
@@ -163,7 +163,7 @@
                         {{-- HPP --}}
                         <td class="adm-num adm-muted">
                             @if($variants->isNotEmpty())
-                                <span class="adm-mono" style="color:#1D1D1F">Rp {{ number_format((float) $minCost, 0, ',', '.') }}</span>
+                                <span class="adm-mono text-[var(--adm-ink)]">Rp {{ number_format((float) $minCost, 0, ',', '.') }}</span>
                                 @if($maxCost > $minCost)
                                     <span class="adm-cell-sub block">s/d Rp {{ number_format((float) $maxCost, 0, ',', '.') }}</span>
                                 @endif
@@ -203,7 +203,7 @@
                         {{-- Aksi --}}
                         <td class="adm-num">
                             <div class="inline-flex items-center gap-1.5">
-                                <a href="{{ route('admin.products.edit', $product) }}" class="glass-btn glass-btn-secondary glass-btn-sm" title="Kelola Produk, Varian & Foto">
+                                <a href="{{ route('admin.products.edit', $product) }}" class="adm-btn adm-btn-sm" title="Kelola Produk, Varian & Foto">
                                     <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
                                     <span>Kelola Varian &amp; Foto</span>
                                 </a>
@@ -223,7 +223,7 @@
                     <tr>
                         <td colspan="8">
                             <x-admin.empty-state icon="smartphone" title="Belum ada produk iPhone yang sesuai dengan filter."
-                                text="Tambahkan produk baru atau ubah kata kunci pencarian di atas." />
+                                text="Tambahkan produk baru atau sesuaikan kata kunci pencarian pada toolbar." />
                         </td>
                     </tr>
                 @endforelse

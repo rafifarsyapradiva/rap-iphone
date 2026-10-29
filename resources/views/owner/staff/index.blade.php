@@ -4,30 +4,29 @@
 @section('page_title', 'Manajemen Akun Staf & Admin')
 
 @section('content')
-<div class="space-y-6">
+<div class="adm-page">
 
     <!-- 1. Page Header -->
     <x-admin.page-header
         title="Manajemen Akun Staf &amp; Admin Toko"
         subtitle="Kelola akun karyawan operasional (admin) dan pemilik usaha (owner), atur hak akses panel inventaris/pesanan, serta perbarui kata sandi keamanan staf."
         eyebrow="Kontrol Akses Internal Toko (Owner Exclusive)"
-        icon="shield-check"
-    >
+        icon="shield-check">
         <x-slot:actions>
-            <a href="{{ route('owner.dashboard') }}" class="adm-btn adm-btn-secondary adm-btn-sm inline-flex items-center gap-2">
-                <i data-lucide="arrow-left" class="w-4 h-4 text-slate-500"></i>
+            <a href="{{ route('owner.dashboard') }}" class="adm-btn adm-btn-secondary">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
                 <span>Kembali ke Portal Finansial</span>
             </a>
         </x-slot:actions>
     </x-admin.page-header>
 
     @if($errors->any())
-        <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-800 space-y-1">
-            <p class="font-bold flex items-center gap-2 text-rose-900">
-                <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-600"></i>
+        <div class="p-4 rounded text-xs space-y-1" style="background:var(--adm-paper);border:1px solid var(--adm-rose);color:var(--adm-rose)">
+            <p class="font-bold flex items-center gap-2">
+                <i data-lucide="alert-triangle" class="w-4 h-4"></i>
                 <span>Terdapat kesalahan pada input formulir:</span>
             </p>
-            <ul class="list-disc list-inside text-rose-700 pl-1">
+            <ul class="list-disc list-inside pl-1">
                 @foreach($errors->all() as $err)
                     <li>{{ $err }}</li>
                 @endforeach
@@ -36,7 +35,7 @@
     @endif
 
     <!-- 2. Summary Metric Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <x-admin.stat-card
             label="Total Tim Internal"
             :value="($counts['total_staff'] ?? 0) . ' Staf'"
@@ -58,7 +57,7 @@
             :value="($counts['admins'] ?? 0) . ' Akun'"
             icon="shield"
             meta="Katalog, Pesanan & Trade-In"
-            color="emerald"
+            color="green"
         />
 
         <x-admin.stat-card
@@ -66,7 +65,7 @@
             :value="($counts['customers'] ?? 0) . ' User'"
             icon="user-check"
             meta="Role: customer"
-            color="slate"
+            color="gray"
         />
     </div>
 
@@ -79,14 +78,14 @@
                 @csrf
 
                 <div>
-                    <label for="name" class="adm-label">Nama Lengkap Staf <span class="text-rose-500">*</span></label>
+                    <label for="name" class="adm-label">Nama Lengkap Staf <span style="color:var(--adm-rose)">*</span></label>
                     <input type="text" id="name" name="name" value="{{ old('name') }}" required
                            placeholder="Contoh: Raka Pratama (Admin Store)"
                            class="adm-input">
                 </div>
 
                 <div>
-                    <label for="email" class="adm-label">Alamat Email Resmi <span class="text-rose-500">*</span></label>
+                    <label for="email" class="adm-label">Alamat Email Resmi <span style="color:var(--adm-rose)">*</span></label>
                     <input type="email" id="email" name="email" value="{{ old('email') }}" required
                            placeholder="staf@rap-iphone.com"
                            class="adm-input">
@@ -100,7 +99,7 @@
                                class="adm-input">
                     </div>
                     <div>
-                        <label for="role" class="adm-label">Peran Hak Akses <span class="text-rose-500">*</span></label>
+                        <label for="role" class="adm-label">Peran Hak Akses <span style="color:var(--adm-rose)">*</span></label>
                         <select id="role" name="role" required class="adm-select">
                             <option value="admin" {{ old('role', 'admin') === 'admin' ? 'selected' : '' }}>Admin Operasional</option>
                             <option value="owner" {{ old('role') === 'owner' ? 'selected' : '' }}>Pemilik Usaha (Owner)</option>
@@ -116,13 +115,13 @@
                 </div>
 
                 <div>
-                    <label for="password" class="adm-label">Kata Sandi Awal (Min. 8 Karakter) <span class="text-rose-500">*</span></label>
+                    <label for="password" class="adm-label">Kata Sandi Awal (Min. 8 Karakter) <span style="color:var(--adm-rose)">*</span></label>
                     <input type="password" id="password" name="password" required minlength="8"
                            placeholder="Minimal 8 karakter aman"
                            class="adm-input">
                 </div>
 
-                <button type="submit" class="adm-btn adm-btn-primary w-full inline-flex items-center justify-center gap-2 py-2.5 mt-2">
+                <button type="submit" class="adm-btn adm-btn-primary w-full justify-center py-2.5 mt-2">
                     <i data-lucide="check-circle-2" class="w-4 h-4"></i>
                     <span>Simpan &amp; Aktifkan Akun Staf</span>
                 </button>
@@ -136,16 +135,16 @@
                     <form action="{{ route('owner.staff.index') }}" method="GET" class="flex items-center gap-2">
                         <input type="hidden" name="role" value="{{ $roleFilter }}">
                         <div class="relative">
-                            <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2" style="color:var(--adm-muted)"></i>
                             <input type="text" name="q" value="{{ $search }}" placeholder="Cari nama / email staf..."
-                                   class="adm-input !py-1.5 !pl-8 !pr-3 text-xs w-44 sm:w-56">
+                                   class="adm-input !py-1 !pl-8 !pr-3 text-xs w-44 sm:w-56">
                         </div>
-                        <button type="submit" class="adm-btn adm-btn-secondary adm-btn-sm">Cari</button>
+                        <button type="submit" class="adm-btn adm-btn-secondary" style="padding:.25rem .625rem;font-size:.75rem">Cari</button>
                     </form>
                 </x-slot:actions>
 
                 <!-- Filter Tabs -->
-                <div class="flex flex-wrap items-center gap-1.5 pb-4 border-b border-slate-100 -mt-1 mb-4">
+                <div class="flex flex-wrap items-center gap-1.5 pb-4 -mt-1 mb-4" style="border-bottom:1px solid var(--adm-hairline)">
                     @php
                         $tabs = [
                             'all' => 'Semua Staf (' . ($counts['total_staff'] ?? 0) . ')',
@@ -155,7 +154,8 @@
                     @endphp
                     @foreach($tabs as $k => $lbl)
                         <a href="{{ route('owner.staff.index', ['role' => $k, 'q' => $search]) }}"
-                           class="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all {{ $roleFilter === $k ? 'bg-[#0071E3] text-white shadow-sm shadow-[#0071E3]/25' : 'bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200/80' }}">
+                           class="px-3 py-1.5 rounded text-xs font-medium transition-colors"
+                           style="{{ $roleFilter === $k ? 'background:var(--adm-ink);color:var(--adm-surface);' : 'background:var(--adm-paper);color:var(--adm-muted);border:1px solid var(--adm-hairline);' }}">
                             {{ $lbl }}
                         </a>
                     @endforeach
@@ -164,31 +164,26 @@
                 <!-- Staff List -->
                 <div class="space-y-3">
                     @forelse($staffMembers as $staff)
-                        <div class="p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-slate-300 transition-all space-y-3">
+                        <div class="p-4 rounded space-y-3" style="background:var(--adm-surface);border:1px solid var(--adm-hairline)">
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <div class="flex items-center gap-3.5 min-w-0">
-                                    <div class="w-11 h-11 rounded-2xl {{ $staff->role === 'owner' ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-blue-100 text-[#0066CC] border border-blue-200' }} flex items-center justify-center font-bold text-sm shrink-0">
+                                    <div class="w-10 h-10 rounded flex items-center justify-center font-bold text-sm shrink-0"
+                                         style="{{ $staff->role === 'owner' ? 'background:var(--adm-paper);color:var(--adm-ochre);border:1px solid var(--adm-hairline)' : 'background:var(--adm-paper);color:var(--adm-accent);border:1px solid var(--adm-hairline)' }}">
                                         {{ strtoupper(substr($staff->name, 0, 1)) }}
                                     </div>
                                     <div class="min-w-0">
                                         <div class="flex flex-wrap items-center gap-2">
-                                            <span class="font-bold text-slate-900 text-sm truncate">{{ $staff->name }}</span>
+                                            <span class="font-medium text-sm truncate" style="color:var(--adm-ink)">{{ $staff->name }}</span>
                                             @if($staff->role === 'owner')
-                                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-50 text-amber-700 border border-amber-200">
-                                                    Owner
-                                                </span>
+                                                <x-admin.status-badge tone="amber" label="Owner" :dot="false" />
                                             @else
-                                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-blue-50 text-blue-700 border border-blue-200">
-                                                    Admin Operasional
-                                                </span>
+                                                <x-admin.status-badge tone="blue" label="Admin Operasional" :dot="false" />
                                             @endif
                                             @if($staff->id === Auth::id())
-                                                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                                    Akun Anda
-                                                </span>
+                                                <x-admin.status-badge tone="green" label="Akun Anda" :dot="false" />
                                             @endif
                                         </div>
-                                        <p class="text-xs text-slate-500 mt-0.5 truncate">
+                                        <p class="text-xs mt-0.5 truncate" style="color:var(--adm-muted)">
                                             {{ $staff->email }} &bull; WA: {{ $staff->phone_number ?: '-' }} &bull; {{ $staff->city ?: 'Pusat' }}
                                         </p>
                                     </div>
@@ -197,8 +192,8 @@
                                 <div class="flex items-center gap-2 shrink-0">
                                     <button type="button"
                                             onclick="document.getElementById('edit-staff-{{ $staff->id }}').classList.toggle('hidden')"
-                                            class="adm-btn adm-btn-secondary adm-btn-sm inline-flex items-center gap-1.5 text-xs">
-                                        <i data-lucide="edit-3" class="w-3.5 h-3.5 text-slate-500"></i>
+                                            class="adm-btn adm-btn-secondary" style="padding:.25rem .625rem;font-size:.75rem">
+                                        <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                                         <span>Edit / Password</span>
                                     </button>
 
@@ -207,7 +202,7 @@
                                               onsubmit="return confirm('Hapus akun staf {{ addslashes($staff->name) }}?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="adm-btn adm-btn-danger adm-btn-sm inline-flex items-center gap-1">
+                                            <button type="submit" class="adm-btn adm-btn-danger" style="padding:.25rem .625rem;font-size:.75rem">
                                                 <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                                                 <span>Hapus</span>
                                             </button>
@@ -217,7 +212,7 @@
                             </div>
 
                             <!-- Collapsible Edit Form -->
-                            <div id="edit-staff-{{ $staff->id }}" class="hidden pt-3 border-t border-slate-100">
+                            <div id="edit-staff-{{ $staff->id }}" class="hidden pt-3" style="border-top:1px solid var(--adm-hairline)">
                                 <form action="{{ route('owner.staff.update', $staff) }}" method="POST" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
                                     @csrf
                                     @method('PUT')
@@ -261,7 +256,7 @@
                                     </div>
 
                                     <div class="sm:col-span-2 lg:col-span-3 flex justify-end gap-2 pt-1">
-                                        <button type="submit" class="adm-btn adm-btn-primary adm-btn-sm">
+                                        <button type="submit" class="adm-btn adm-btn-primary" style="padding:.35rem .75rem;font-size:.75rem">
                                             Simpan Perubahan Staf
                                         </button>
                                     </div>
@@ -269,16 +264,15 @@
                             </div>
                         </div>
                     @empty
-                        <x-admin.empty-state
-                            icon="users"
-                            title="Tidak Ditemukan Akun Staf"
-                            description="Tidak ditemukan akun staf yang sesuai kriteria pencarian Anda."
-                        />
+                        <div class="p-8 text-center" style="color:var(--adm-muted)">
+                            <p class="text-sm">Tidak Ditemukan Akun Staf</p>
+                            <p class="text-xs mt-1">Tidak ditemukan akun staf yang sesuai kriteria pencarian Anda.</p>
+                        </div>
                     @endforelse
                 </div>
 
                 @if($staffMembers->hasPages())
-                    <div class="pt-4 border-t border-slate-100">
+                    <div class="pt-4" style="border-top:1px solid var(--adm-hairline)">
                         {{ $staffMembers->links() }}
                     </div>
                 @endif
