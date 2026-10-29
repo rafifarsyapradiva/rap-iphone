@@ -26,6 +26,7 @@
 |    - Fase 15 Owner   : /owner/login, /owner/logout                                |
 |    - Fase 16 Customer: /login, /register, /auth/google, /logout                   |
 |  + AuthMiddleware, RoleMiddleware (Contextual Guest Redirect: customer|admin|owner)|
+|  + View Composer layouts.admin -> $shell (badge antrean & status integrasi)       |
 |  + VerifyCsrfToken (kecuali webhook endpoint api/midtrans/callback)               |
 |                                                                                   |
 |  [ CONTROLLER LAYER ]                                                             |
@@ -351,6 +352,9 @@ resources/views/
 │   ├── glass-button.blade.php   <-- Pill/Rounded CTA (#0071E3 & #1D1D1F)
 │   ├── order-badge.blade.php    <-- Semantic badges kontras tinggi di atas latar putih
 │   └── battery-meter.blade.php  <-- Indikator Battery Health untuk unit Second Like New
+├── components/admin/            <-- Fase 17: page-header, stat-card, card, empty-state, status-badge
+├── admin/                       <-- Fase 17–20 & 24: dashboard, products/*, orders/*, trade-ins/*, settings
+├── owner/                       <-- Fase 21–23: dashboard (+ partials/*), financial-report, staff/index
 └── customer/
     ├── home.blade.php           <-- Visual Series Icon Ribbon + Hero Kampanye + Bento Grid
     ├── catalog.blade.php        <-- Filter Kondisi (BNIB vs Second) + Grid Katalog 4 Kolom
@@ -361,7 +365,36 @@ resources/views/
     └── trade-in.blade.php       <-- 4-Step Wizard Tukar Tambah bergaya Apple/Digimap Trade-In
 ```
 
-#### 6.3. Fitur Interaktif Frontend (JavaScript / Vanilla DOM)
+#### 6.3. Admin Console Design System (Fase 17–24)
+Lapisan presentasi panel Admin & Owner dirapikan dengan satu design system berbasis token `--dm-*`. Kelas `.daylight-enterprise …` (tambalan kompatibilitas tema gelap) dihapus pada Fase 24.
+
+**a. Kelas CSS (`resources/css/admin.css`, di-`@import` dari `app.css`)**
+
+| Kelas | Fungsi |
+|---|---|
+| `.adm-page` | Wrapper konten, `max-width: 1400px`, `gap: 1.5rem` |
+| `.adm-page-header`, `.adm-title`, `.adm-subtitle` | Kepala halaman: judul 24 px, subjudul 13 px, slot aksi |
+| `.adm-card`, `.adm-card-head`, `.adm-card-body` | Kartu putih, radius 16 px, border `#E5E5EA` |
+| `.adm-stat` | Kartu metrik (label 11 px uppercase, angka 1.75 rem `tabular-nums`, ikon 40 px) |
+| `.adm-toolbar`, `.adm-tabs` | Baris filter/pencarian dan tab pill |
+| `.adm-table`, `.adm-num` | Tabel dengan header sticky dan angka rata kanan |
+| `.adm-field`, `.adm-input`, `.adm-select`, `.adm-textarea` | Kontrol form (tinggi 40 px, fokus ring `#0066CC`) |
+| `.adm-badge` | Badge status semantik (tone: green/amber/red/blue/purple/gray) |
+| `.adm-empty` | State kosong |
+
+**b. Komponen Blade (`resources/views/components/admin/`)**
+`page-header`, `stat-card`, `card`, `empty-state`, `status-badge`.
+
+**c. Aturan Layout (`layouts/admin.blade.php`)**
+- Sidebar 256 px (latar `#F5F5F7`), topbar 64 px sticky `z-30`, konten dibungkus `.adm-page`.
+- Breadcrumb sadar-role (`Admin › …` / `Owner › …`).
+- `View Composer: layouts.admin` mengirim `$shell` (jumlah pesanan `paid`, trade-in `submitted`, status konfigurasi Midtrans/Fonnte) untuk badge sidebar dan chip header.
+- Lucide icons dipin ke versi tetap.
+
+**d. Pola Halaman**
+Page Header → Stat Cards (opsional) → Toolbar → Card/Table → State kosong. Dipakai oleh `admin/dashboard`, `admin/products/*`, `admin/orders/*`, `admin/trade-ins/*`, `owner/dashboard`, `owner/financial-report`, `owner/staff`, `admin/settings`.
+
+#### 6.4. Fitur Interaktif Frontend (JavaScript / Vanilla DOM)
 1. **Dynamic Variant & Price Switcher (PDP & Product Card)**:
    - Mengubah gambar aktif saat *Color Swatch* diklik dan memperbarui harga utama serta nominal simulasi cicilan per bulan secara instan saat *Storage Pill* (`128GB`–`1TB`) dipilih.
 2. **Inline Trade-In Price Slasher (PDP)**:

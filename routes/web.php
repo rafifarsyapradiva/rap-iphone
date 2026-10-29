@@ -21,6 +21,7 @@ use App\Http\Controllers\Owner\FinancialReportController;
 use App\Http\Controllers\Owner\StaffManagementController;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\TradeIn;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
@@ -174,9 +175,20 @@ Route::middleware(['auth', 'role:admin,owner'])->prefix('admin')->name('admin.')
         $totalProducts = Product::count();
         $totalOrders = Order::count();
         $pendingTradeIns = TradeIn::where('status', 'submitted')->count();
+        $pendingOrders = Order::where('status', 'paid')->count();
+        $lowStockVariants = ProductVariant::where('stock', '<=', 3)->count();
         $recentOrders = Order::with('user')->latest()->take(5)->get();
+        $recentTradeIns = TradeIn::with('user')->where('status', 'submitted')->latest()->take(5)->get();
 
-        return view('admin.dashboard', compact('totalProducts', 'totalOrders', 'pendingTradeIns', 'recentOrders'));
+        return view('admin.dashboard', compact(
+            'totalProducts',
+            'totalOrders',
+            'pendingTradeIns',
+            'pendingOrders',
+            'lowStockVariants',
+            'recentOrders',
+            'recentTradeIns'
+        ));
     })->name('dashboard');
 
     // Admin Product & Inventory Management (Phase 10.1)

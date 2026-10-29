@@ -15,6 +15,7 @@ Didukung oleh framework **Laravel 12**, basis data **MySQL**, dan template engin
   - **Customer (Pelanggan)** melalui jalur publik mandiri (`/login` & `/register` + Google OAuth — **Fase 16**).
   - **Admin Operasional** melalui portal operasional mandiri (`/admin/login` — **Fase 14**).
   - **Pemilik Usaha (Owner)** melalui portal eksekutif mandiri (`/owner/login` — **Fase 15**).
+- **Panel Admin & Owner yang rapi dan konsisten (Fase 17–24)**: seluruh halaman operasional (dashboard, produk, pesanan, trade-in, dashboard owner, laporan keuangan, staf, konfigurasi) dirapikan dengan satu Admin Design System (lihat §4.5).
 
 ---
 
@@ -133,6 +134,18 @@ Setiap tingkatan pengguna (*Customer*, *Admin Operasional*, dan *Owner*) memilik
 
 ---
 
+#### 4.5. Standar UI/UX Panel Admin & Owner (`Fase 17–24`)
+Panel Admin Operasional dan Owner wajib mengikuti **Admin Design System** (`blueprint.md` §6.3) agar tampilan rapi, konsisten, dan nyaman dipandang:
+1. **Pola halaman baku**: Page Header (judul, subjudul, aksi utama) → Kartu Metrik (opsional) → Toolbar (tab, pencarian, filter) → Kartu/Tabel konten.
+2. **Konsistensi visual**: seluruh halaman memakai kelas/komponen `adm-*` dan token Digimap Daylight (`#FFFFFF`, `#F5F5F7`, `#1D1D1F`, `#0066CC`/`#0071E3`); dilarang memakai kelas tema gelap (`text-white` pada latar terang, `bg-[#161B22]`, `border-white/*`, `text-[#8E8E93]`).
+3. **Keterbacaan data**: angka moneter rata kanan dengan `tabular-nums`, header tabel sticky, status memakai badge semantik seragam, kontras teks utama ≥ 4.5:1.
+4. **State lengkap**: setiap tabel memiliki state kosong; setiap form menampilkan pesan error per field; aksi destruktif memakai konfirmasi.
+5. **Navigasi jujur**: indikator di sidebar/header (jumlah pesanan perlu diproses, trade-in menunggu inspeksi, status Midtrans/Fonnte) menampilkan data nyata, bukan label statis.
+6. **Responsivitas**: tanpa scroll horizontal pada lebar 390 px kecuali di dalam kontainer tabel.
+7. **Cakupan halaman**: Fase 17 `/admin/dashboard`, Fase 18 `/admin/products`, Fase 19 `/admin/orders`, Fase 20 `/admin/trade-ins`, Fase 21 `/owner/dashboard`, Fase 22 `/owner/financial-report`, Fase 23 `/owner/staff`, Fase 24 `/admin/settings`.
+
+---
+
 ### 5. Kebutuhan Non-Fungsional (NFR)
 1. **Keamanan (Security & Role-Isolated Auth)**:
    - Sanitasi input dan proteksi terhadap CSRF, XSS, serta SQL Injection (Eloquent ORM).
@@ -144,6 +157,7 @@ Setiap tingkatan pengguna (*Customer*, *Admin Operasional*, dan *Owner*) memilik
    - Optimasi gambar produk dengan format WebP dan *lazy loading*.
    - Standar visual **Digimap-Inspired Daylight Minimalist & Frosted White UI** (`redesign.md`): menggunakan latar terang ber-kontras tinggi (`#FFFFFF` & `#F5F5F7`), tipografi `#1D1D1F`, dan *sticky purchase bar* untuk kenyamanan baca di bawah kondisi pencahayaan apa pun.
    - Antarmuka *mobile-first* yang mulus di smartphone, tablet, maupun layar desktop (baik untuk Portal Customer maupun Dashboard Enterprise Admin & Owner).
+   - **Panel Admin & Owner (Fase 17–24)** wajib memakai Admin Design System (`adm-*`) sesuai §4.5 dan tidak boleh memakai kelas tema gelap.
 3. **Kemudahan Pemeliharaan (Maintainability)**:
    - Arsitektur kode bersih berorientasi layanan (*Service Layer Pattern*) untuk Midtrans, Fonnte, Mailer, dan PDF Generator.
    - Konfigurasi kredensial terisolasi penuh pada file `.env`.

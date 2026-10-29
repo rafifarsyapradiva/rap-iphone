@@ -1,111 +1,105 @@
 @extends('layouts.admin')
 
+@section('title', 'Pesanan & Logistik — Rap-iPhone Admin')
 @section('page_title', 'Pesanan & Logistik')
 
 @section('content')
-<div class="space-y-6">
+<x-admin.page-header
+    eyebrow="Manajemen Pesanan, Resi Kurir & Nota Faktur"
+    icon="truck"
+    title="Pesanan &amp; Logistik"
+    subtitle="Filter pesanan berdasarkan status, alokasikan IMEI unit, input nomor resi kurir (otomatis notifikasi WA & Email), serta cetak nota & label thermal 100×150 mm.">
+</x-admin.page-header>
 
-    {{-- Header --}}
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0071E3]/15 border border-[#0071E3]/30 text-xs font-semibold text-[#5AC8FA] mb-2">
-                <i data-lucide="truck" class="w-3.5 h-3.5"></i>
-                <span>Manajemen Pesanan, Resi Kurir &amp; Nota Faktur</span>
-            </div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Pesanan &amp; Logistik</h1>
-            <p class="text-xs sm:text-sm text-[#8E8E93] mt-0.5">
-                Filter pesanan berdasarkan status, alokasikan IMEI unit, input nomor resi kurir (otomatis notifikasi WA &amp; Email), serta cetak nota &amp; label thermal 100&times;150 mm.
-            </p>
-        </div>
-    </div>
-
-    @if($errors->any())
-        <div class="p-4 rounded-2xl bg-[#FF453A]/15 border border-[#FF453A]/30 text-white flex items-start gap-3">
-            <i data-lucide="alert-triangle" class="w-5 h-5 text-[#FF453A] shrink-0"></i>
-            <div class="text-sm font-medium space-y-0.5">
-                @foreach($errors->all() as $error)
-                    <p>{{ $error }}</p>
-                @endforeach
-            </div>
-        </div>
-    @endif
-
-    {{-- Metrik --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        @php
-            $cards = [
-                ['label' => 'Menunggu Bayar', 'value' => $metrics['pending'], 'icon' => 'clock', 'color' => '#FF9F0A', 'hint' => 'Belum ada pembayaran'],
-                ['label' => 'Perlu Diproses', 'value' => $metrics['to_process'], 'icon' => 'package-check', 'color' => '#5AC8FA', 'hint' => 'Lunas & siap dikemas'],
-                ['label' => 'Dalam Pengiriman', 'value' => $metrics['shipped'], 'icon' => 'truck', 'color' => '#BF5AF2', 'hint' => 'Sudah diserahkan kurir'],
-                ['label' => 'Selesai', 'value' => $metrics['completed'], 'icon' => 'badge-check', 'color' => '#34C759', 'hint' => 'Diterima customer'],
-            ];
-        @endphp
-        @foreach($cards as $card)
-            <div class="glass-card rounded-2xl p-5 border border-white/10">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-[11px] font-semibold text-[#8E8E93] uppercase tracking-wider">{{ $card['label'] }}</p>
-                        <p class="text-2xl font-black mt-1" style="color: {{ $card['color'] }}">{{ $card['value'] }}</p>
-                    </div>
-                    <div class="w-11 h-11 rounded-xl flex items-center justify-center border" style="color: {{ $card['color'] }}; background: {{ $card['color'] }}22; border-color: {{ $card['color'] }}55;">
-                        <i data-lucide="{{ $card['icon'] }}" class="w-5 h-5"></i>
-                    </div>
-                </div>
-                <p class="text-[11px] text-[#8E8E93] mt-3">{{ $card['hint'] }}</p>
-            </div>
-        @endforeach
-    </div>
-
-    {{-- Filter & Pencarian --}}
-    <div class="glass-card rounded-2xl p-4 border border-white/10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        @php
-            $statusTabs = [
-                'all' => 'Semua (' . $metrics['total'] . ')',
-                'pending' => 'Pending',
-                'paid' => 'Lunas',
-                'processing' => 'Diproses',
-                'shipped' => 'Dikirim',
-                'completed' => 'Selesai',
-                'cancelled' => 'Batal',
-            ];
-        @endphp
-        <div class="flex flex-wrap items-center gap-1.5">
-            @foreach($statusTabs as $tabKey => $tabLabel)
-                <a href="{{ route('admin.orders.index', array_filter(['status' => $tabKey, 'q' => $search])) }}"
-                   class="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all {{ $statusFilter === $tabKey ? 'bg-[#0071E3] text-white shadow-md' : 'bg-white/5 text-[#8E8E93] hover:text-white hover:bg-white/10' }}">
-                    {{ $tabLabel }}
-                    @if($tabKey !== 'all' && ($counts[$tabKey] ?? 0) > 0)
-                        <span class="ml-1 opacity-70">{{ $counts[$tabKey] }}</span>
-                    @endif
-                </a>
+@if($errors->any())
+    <div class="adm-alert adm-tone-red" role="alert">
+        <i data-lucide="alert-triangle"></i>
+        <div class="space-y-0.5">
+            @foreach($errors->all() as $error)
+                <p>{{ $error }}</p>
             @endforeach
         </div>
+    </div>
+@endif
 
-        <form action="{{ route('admin.orders.index') }}" method="GET" class="flex items-center gap-2 w-full lg:w-80">
-            @if($statusFilter !== 'all')
-                <input type="hidden" name="status" value="{{ $statusFilter }}">
-            @endif
-            <div class="relative flex-grow">
-                <input type="text" name="q" value="{{ $search }}" placeholder="Cari no. nota, penerima, resi, email..." class="glass-input py-2 pl-9 pr-3 text-xs w-full">
-                <i data-lucide="search" class="w-3.5 h-3.5 text-[#8E8E93] absolute left-3 top-2.5"></i>
+{{-- Metrik Status Pesanan --}}
+@php
+    $cards = [
+        ['label' => 'Menunggu Bayar', 'value' => $metrics['pending'], 'icon' => 'clock', 'tone' => 'amber', 'hint' => 'Belum ada pembayaran', 'status' => 'pending'],
+        ['label' => 'Perlu Diproses', 'value' => $metrics['to_process'], 'icon' => 'package-check', 'tone' => 'green', 'hint' => 'Lunas & siap dikemas', 'status' => 'paid'],
+        ['label' => 'Dalam Pengiriman', 'value' => $metrics['shipped'], 'icon' => 'truck', 'tone' => 'purple', 'hint' => 'Sudah diserahkan kurir', 'status' => 'shipped'],
+        ['label' => 'Selesai', 'value' => $metrics['completed'], 'icon' => 'badge-check', 'tone' => 'blue', 'hint' => 'Diterima customer', 'status' => 'completed'],
+    ];
+@endphp
+<div class="adm-stat-grid cols-4">
+    @foreach($cards as $card)
+        <x-admin.stat-card
+            :label="$card['label']"
+            :value="$card['value']"
+            :icon="$card['icon']"
+            :tone="$card['tone']"
+            :hint="$card['hint']"
+            :href="route('admin.orders.index', array_filter(['status' => $card['status'], 'q' => $search]))"
+            :active="$statusFilter === $card['status']" />
+    @endforeach
+</div>
+
+<x-admin.card flush>
+    {{-- Filter & Pencarian --}}
+    <div class="adm-card-body" style="padding-bottom: 1rem;">
+        @php
+            $statusTabs = [
+                'all' => ['Semua', $metrics['total']],
+                'pending' => ['Pending', $counts['pending'] ?? 0],
+                'paid' => ['Lunas', $counts['paid'] ?? 0],
+                'processing' => ['Diproses', $counts['processing'] ?? 0],
+                'shipped' => ['Dikirim', $counts['shipped'] ?? 0],
+                'completed' => ['Selesai', $counts['completed'] ?? 0],
+                'cancelled' => ['Batal', $counts['cancelled'] ?? 0],
+            ];
+        @endphp
+        <div class="adm-toolbar">
+            <div class="adm-tabs">
+                @foreach($statusTabs as $tabKey => [$tabLabel, $tabCount])
+                    <a href="{{ route('admin.orders.index', array_filter(['status' => $tabKey !== 'all' ? $tabKey : null, 'q' => $search])) }}"
+                       class="adm-tab {{ $statusFilter === $tabKey ? 'is-active' : '' }}">
+                        {{ $tabLabel }}
+                        @if($tabCount > 0)
+                            <span class="adm-tab-count">{{ $tabCount }}</span>
+                        @endif
+                    </a>
+                @endforeach
             </div>
-            <button type="submit" class="glass-btn glass-btn-secondary glass-btn-sm text-xs">Cari</button>
-        </form>
+
+            <form action="{{ route('admin.orders.index') }}" method="GET" class="adm-filters">
+                @if($statusFilter !== 'all')
+                    <input type="hidden" name="status" value="{{ $statusFilter }}">
+                @endif
+                <div class="adm-search">
+                    <i data-lucide="search"></i>
+                    <input type="text" name="q" value="{{ $search }}" placeholder="Cari no. nota, penerima, resi..." class="adm-input" aria-label="Cari pesanan">
+                </div>
+                <button type="submit" class="glass-btn glass-btn-secondary glass-btn-sm">Cari</button>
+                @if($search !== '' || $statusFilter !== 'all')
+                    <a href="{{ route('admin.orders.index') }}" class="glass-btn glass-btn-ghost glass-btn-sm" style="color:#D70015">Reset</a>
+                @endif
+            </form>
+        </div>
     </div>
 
     {{-- Tabel Pesanan + Form Cetak Massal --}}
     <form id="bulk-print-form" method="POST" action="{{ route('admin.orders.bulk.invoices') }}" target="_blank">
         @csrf
 
-        {{-- Toolbar Aksi Massal --}}
-        <div id="bulk-toolbar" class="sticky top-20 z-20 mb-4 glass-card-elevated rounded-2xl px-4 py-3 border border-[#0071E3]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        {{-- Toolbar Aksi Massal (Muncul saat baris dipilih) --}}
+        <div id="bulk-toolbar" class="sticky top-20 z-20 mx-4 mb-4 p-3.5 bg-blue-50 border border-blue-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm transition-all" style="display:none">
             <div class="flex items-center gap-3 text-xs">
-                <span class="w-8 h-8 rounded-lg bg-[#0071E3]/20 text-[#5AC8FA] flex items-center justify-center">
+                <span class="w-8 h-8 rounded-xl bg-[#0071E3] text-white flex items-center justify-center font-bold">
                     <i data-lucide="check-square" class="w-4 h-4"></i>
                 </span>
                 <div>
-                    <p class="font-bold text-white"><span id="selected-count">0</span> pesanan dipilih</p>
-                    <p class="text-[11px] text-[#8E8E93]">Maks. {{ $bulkMax }} per cetak &middot; Label hanya untuk status Lunas / Diproses / Dikirim</p>
+                    <p class="font-bold text-[#1D1D1F]"><span id="selected-count">0</span> pesanan dipilih</p>
+                    <p class="text-[11px] text-[#6E6E73]">Maks. {{ $bulkMax }} per cetak &middot; Label hanya untuk status Lunas / Diproses / Dikirim</p>
                 </div>
             </div>
             <div class="flex items-center gap-2">
@@ -122,131 +116,127 @@
             </div>
         </div>
 
-        <div class="glass-card rounded-3xl border border-white/10 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="border-b border-white/10 bg-white/5 text-[11px] font-bold text-[#8E8E93] uppercase tracking-wider">
-                            <th class="py-3.5 pl-5 pr-2 w-10">
-                                <input type="checkbox" id="select-all" class="w-4 h-4 rounded accent-[#0071E3] cursor-pointer" aria-label="Pilih semua">
-                            </th>
-                            <th class="py-3.5 px-3">No. Nota &amp; Waktu</th>
-                            <th class="py-3.5 px-3">Pelanggan</th>
-                            <th class="py-3.5 px-3">Unit</th>
-                            <th class="py-3.5 px-3">Kurir &amp; Resi</th>
-                            <th class="py-3.5 px-3 text-right">Total</th>
-                            <th class="py-3.5 px-3">Status</th>
-                            <th class="py-3.5 px-5 text-right">Aksi Operasional</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-white/10 text-xs">
-                        @forelse($orders as $order)
-                            <tr class="hover:bg-white/[0.03] transition-colors">
-                                <td class="py-4 pl-5 pr-2">
-                                    <input type="checkbox" name="order_ids[]" value="{{ $order->id }}" data-order-checkbox
-                                           class="w-4 h-4 rounded accent-[#0071E3] cursor-pointer" aria-label="Pilih {{ $order->order_number }}">
-                                </td>
-                                <td class="py-4 px-3">
-                                    <a href="{{ route('admin.orders.show', $order->order_number) }}" class="font-mono font-bold text-[#5AC8FA] hover:underline block">
-                                        {{ $order->order_number }}
-                                    </a>
-                                    <span class="text-[11px] text-[#8E8E93]">{{ $order->created_at->format('d M Y, H:i') }}</span>
-                                </td>
-                                <td class="py-4 px-3">
-                                    <p class="font-bold text-white">{{ $order->recipient_name }}</p>
-                                    <p class="text-[11px] font-mono text-[#8E8E93]">{{ $order->recipient_phone }}</p>
-                                    <p class="text-[11px] text-[#8E8E93]">{{ $order->user->email ?? '-' }}</p>
-                                </td>
-                                <td class="py-4 px-3 max-w-[220px]">
-                                    @foreach($order->items as $item)
-                                        <p class="text-white truncate">{{ $item->quantity }}x {{ $item->product_name }}</p>
-                                        <p class="text-[11px] text-[#8E8E93] truncate">
-                                            {{ $item->variant_details }}
-                                            @if($item->allocated_imei)
-                                                &middot; <span class="font-mono text-[#5AC8FA]">IMEI: {{ $item->allocated_imei }}</span>
-                                            @endif
-                                        </p>
-                                    @endforeach
-                                </td>
-                                <td class="py-4 px-3">
-                                    <p class="text-white font-medium">{{ $order->shipping_courier ?: '-' }}</p>
-                                    @if($order->shipping_tracking_number)
-                                        <p class="text-[11px] font-mono font-bold text-[#34C759]">{{ $order->shipping_tracking_number }}</p>
-                                    @else
-                                        <p class="text-[11px] text-[#8E8E93]">Resi belum diinput</p>
-                                    @endif
-                                </td>
-                                <td class="py-4 px-3 text-right font-bold text-white whitespace-nowrap">
-                                    Rp {{ number_format((float) $order->grand_total, 0, ',', '.') }}
-                                </td>
-                                <td class="py-4 px-3">
-                                    <x-order-badge :status="$order->status" />
-                                </td>
-                                <td class="py-4 px-5 text-right whitespace-nowrap">
-                                    <div class="inline-flex items-center gap-1.5">
-                                        @if($order->status !== 'cancelled')
-                                            <button type="button"
-                                                    class="glass-btn glass-btn-primary glass-btn-sm text-xs inline-flex items-center gap-1.5 btn-open-resi-modal"
-                                                    data-order-number="{{ $order->order_number }}"
-                                                    data-action-url="{{ route('admin.orders.shipping', $order->order_number) }}"
-                                                    data-recipient="{{ $order->recipient_name }}"
-                                                    data-courier="{{ $order->shipping_courier }}"
-                                                    data-tracking="{{ $order->shipping_tracking_number ?? '' }}"
-                                                    title="Input Nomor Resi & Kirim Notifikasi WA/Email">
-                                                <i data-lucide="truck" class="w-3.5 h-3.5"></i>
-                                                <span>{{ $order->shipping_tracking_number ? 'Edit Resi' : 'Input Resi' }}</span>
-                                            </button>
+        <div class="adm-table-wrap" style="border-top: 1px solid var(--dm-border-subtle);">
+            <table class="adm-table">
+                <thead>
+                    <tr>
+                        <th style="width:2.5rem;padding-left:1.25rem;padding-right:0.5rem">
+                            <input type="checkbox" id="select-all" class="w-4 h-4 rounded accent-[#0071E3] cursor-pointer" aria-label="Pilih semua pesanan">
+                        </th>
+                        <th>No. Nota &amp; Waktu</th>
+                        <th>Pelanggan</th>
+                        <th>Unit Dipesan</th>
+                        <th>Kurir &amp; Resi</th>
+                        <th class="adm-num">Total Tagihan</th>
+                        <th style="text-align:center">Status</th>
+                        <th class="adm-num" style="padding-right:1.25rem">Aksi Operasional</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($orders as $order)
+                        <tr>
+                            <td style="padding-left:1.25rem;padding-right:0.5rem">
+                                <input type="checkbox" name="order_ids[]" value="{{ $order->id }}" data-order-checkbox
+                                       class="w-4 h-4 rounded accent-[#0071E3] cursor-pointer" aria-label="Pilih {{ $order->order_number }}">
+                            </td>
+                            <td>
+                                <a href="{{ route('admin.orders.show', $order->order_number) }}" class="adm-mono font-bold text-[#0066CC] hover:underline block">
+                                    {{ $order->order_number }}
+                                </a>
+                                <span class="adm-cell-sub">{{ $order->created_at->format('d M Y, H:i') }}</span>
+                            </td>
+                            <td>
+                                <p class="adm-cell-title">{{ $order->recipient_name }}</p>
+                                <p class="adm-cell-sub adm-mono">{{ $order->recipient_phone }}</p>
+                                <p class="adm-cell-sub">{{ $order->user->email ?? '-' }}</p>
+                            </td>
+                            <td style="max-width:240px">
+                                @foreach($order->items as $item)
+                                    <p class="adm-cell-title truncate">{{ $item->quantity }}x {{ $item->product_name }}</p>
+                                    <p class="adm-cell-sub truncate">
+                                        {{ $item->variant_details }}
+                                        @if($item->allocated_imei)
+                                            &middot; <span class="adm-mono text-[#0066CC]">IMEI: {{ $item->allocated_imei }}</span>
                                         @endif
+                                    </p>
+                                @endforeach
+                            </td>
+                            <td>
+                                <p class="adm-cell-title">{{ $order->shipping_courier ?: '-' }}</p>
+                                @if($order->shipping_tracking_number)
+                                    <p class="adm-mono text-[11px] font-bold text-[#008040]">{{ $order->shipping_tracking_number }}</p>
+                                @else
+                                    <p class="adm-cell-sub text-[#86868B]">Resi belum diinput</p>
+                                @endif
+                            </td>
+                            <td class="adm-num">
+                                <span class="adm-cell-title">Rp {{ number_format((float) $order->grand_total, 0, ',', '.') }}</span>
+                            </td>
+                            <td style="text-align:center">
+                                <x-order-badge :status="$order->status" />
+                            </td>
+                            <td class="adm-num" style="padding-right:1.25rem">
+                                <div class="inline-flex items-center gap-1.5">
+                                    @if($order->status !== 'cancelled')
+                                        <button type="button"
+                                                class="glass-btn glass-btn-primary glass-btn-sm text-xs inline-flex items-center gap-1.5 btn-open-resi-modal"
+                                                data-order-number="{{ $order->order_number }}"
+                                                data-action-url="{{ route('admin.orders.shipping', $order->order_number) }}"
+                                                data-recipient="{{ $order->recipient_name }}"
+                                                data-courier="{{ $order->shipping_courier }}"
+                                                data-tracking="{{ $order->shipping_tracking_number ?? '' }}"
+                                                title="Input Nomor Resi & Kirim Notifikasi WA/Email">
+                                            <i data-lucide="truck" class="w-3.5 h-3.5"></i>
+                                            <span>{{ $order->shipping_tracking_number ? 'Edit Resi' : 'Input Resi' }}</span>
+                                        </button>
+                                    @endif
 
-                                        <a href="{{ route('admin.orders.show', $order->order_number) }}"
-                                           class="glass-btn glass-btn-secondary glass-btn-sm text-xs inline-flex items-center gap-1.5"
-                                           title="Kelola Status, Alokasi IMEI & Detail Pesanan">
-                                            <i data-lucide="sliders" class="w-3.5 h-3.5 text-[#5AC8FA]"></i>
-                                            <span>Kelola</span>
-                                        </a>
+                                    <a href="{{ route('admin.orders.show', $order->order_number) }}"
+                                       class="glass-btn glass-btn-secondary glass-btn-sm text-xs inline-flex items-center gap-1.5"
+                                       title="Kelola Status, Alokasi IMEI & Detail Pesanan">
+                                        <i data-lucide="sliders" class="w-3.5 h-3.5 text-[#0066CC]"></i>
+                                        <span>Kelola</span>
+                                    </a>
 
-                                        <a href="{{ route('admin.orders.invoice', $order->order_number) }}" target="_blank"
-                                           class="glass-btn glass-btn-secondary glass-btn-sm text-xs inline-flex items-center gap-1.5" title="Lihat & cetak nota">
-                                            <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
-                                            <span>Nota</span>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="8" class="py-12 text-center text-[#8E8E93]">
-                                    <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 opacity-40"></i>
-                                    <p class="text-sm font-medium text-white">Tidak ada pesanan yang ditemukan.</p>
-                                    <p class="text-xs mt-1">Ubah filter status atau kata kunci pencarian di atas.</p>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            @if($orders->hasPages())
-                <div class="px-6 py-4 border-t border-white/10">
-                    {{ $orders->links() }}
-                </div>
-            @endif
+                                    <a href="{{ route('admin.orders.invoice', $order->order_number) }}" target="_blank" rel="noopener"
+                                       class="glass-btn glass-btn-secondary glass-btn-sm text-xs inline-flex items-center gap-1.5" title="Lihat & cetak nota">
+                                        <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                                        <span>Nota</span>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8">
+                                <x-admin.empty-state icon="inbox" title="Tidak ada pesanan yang ditemukan." text="Ubah filter status atau kata kunci pencarian di atas." />
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
+
+        @if($orders->hasPages())
+            <div class="adm-pagination">
+                {{ $orders->links() }}
+            </div>
+        @endif
     </form>
-</div>
+</x-admin.card>
 
 {{-- Modal Input Nomor Resi Pengiriman Cepat --}}
-<div id="resi-quick-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-md p-4">
-    <div class="glass-card-elevated rounded-3xl border border-white/15 max-w-md w-full p-6 space-y-5 shadow-2xl">
-        <div class="flex items-center justify-between pb-3 border-b border-white/10">
+<div id="resi-quick-modal" class="glass-modal-backdrop" aria-hidden="true">
+    <div class="glass-modal max-w-md p-6 space-y-5">
+        <div class="flex items-center justify-between pb-3 border-b border-[#E5E5EA]">
             <div>
-                <span class="text-[10px] font-bold text-[#5AC8FA] uppercase tracking-wider">Logistik &amp; Otomasi Notifikasi</span>
-                <h3 class="text-base font-bold text-white mt-0.5">
-                    Input Resi Pengiriman <span id="modal-order-number" class="font-mono text-[#5AC8FA]"></span>
+                <span class="text-[10px] font-bold text-[#0066CC] uppercase tracking-wider">Logistik &amp; Otomasi Notifikasi</span>
+                <h3 class="text-base font-bold text-[#1D1D1F] mt-0.5">
+                    Input Resi Pengiriman <span id="modal-order-number" class="adm-mono text-[#0066CC]"></span>
                 </h3>
             </div>
-            <button type="button" id="btn-close-resi-modal" class="text-[#8E8E93] hover:text-white p-1">
-                <i data-lucide="x" class="w-4 h-4"></i>
+            <button type="button" id="btn-close-resi-modal" class="adm-icon-btn" aria-label="Tutup modal">
+                <i data-lucide="x"></i>
             </button>
         </div>
 
@@ -254,30 +244,30 @@
             @csrf
             @method('PATCH')
 
-            <div class="p-3 rounded-xl bg-white/5 border border-white/10 text-xs flex items-center justify-between">
-                <span class="text-[#8E8E93]">Penerima Paket:</span>
-                <span id="modal-recipient-name" class="font-bold text-white"></span>
+            <div class="p-3 rounded-xl bg-[#F5F5F7] border border-[#E5E5EA] text-xs flex items-center justify-between">
+                <span class="text-[#6E6E73]">Penerima Paket:</span>
+                <span id="modal-recipient-name" class="font-bold text-[#1D1D1F]"></span>
             </div>
 
-            <div class="space-y-1.5">
-                <label class="text-xs font-semibold text-white block">Kurir Ekspedisi <span class="text-[#FF453A]">*</span></label>
-                <select name="shipping_courier" id="modal-shipping-courier" required class="glass-input text-xs w-full bg-[#161B22]">
+            <div class="adm-field">
+                <label class="adm-label" for="modal-shipping-courier">Kurir Ekspedisi <span style="color:#D70015">*</span></label>
+                <select name="shipping_courier" id="modal-shipping-courier" required class="adm-select">
                     @foreach($couriers ?? [] as $courierKey => $courierLabel)
                         <option value="{{ $courierKey }}">{{ $courierLabel }}</option>
                     @endforeach
                 </select>
             </div>
 
-            <div class="space-y-1.5">
-                <label class="text-xs font-semibold text-white block">Nomor Resi Pengiriman (AWB) <span class="text-[#FF453A]">*</span></label>
+            <div class="adm-field">
+                <label class="adm-label" for="modal-tracking-number">Nomor Resi Pengiriman (AWB) <span style="color:#D70015">*</span></label>
                 <input type="text" name="shipping_tracking_number" id="modal-tracking-number" required
                        placeholder="Contoh: JNE-8899001122 / SICEPAT-001122"
-                       class="glass-input text-xs font-mono font-bold text-[#34C759] w-full uppercase">
+                       class="adm-input adm-mono font-bold text-[#008040] uppercase">
             </div>
 
-            <div class="p-3 rounded-xl bg-[#34C759]/10 border border-[#34C759]/30 text-[11px] text-[#E5E5EA] flex items-start gap-2.5">
-                <i data-lucide="send" class="w-4 h-4 text-[#34C759] shrink-0 mt-0.5"></i>
-                <span>
+            <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-[#1D1D1F] flex items-start gap-2.5">
+                <i data-lucide="send" class="w-4 h-4 text-[#008040] shrink-0 mt-0.5"></i>
+                <span class="text-[11px] leading-relaxed">
                     Menyimpan nomor resi akan otomatis mengubah status pesanan menjadi <strong>DIKIRIM (Shipped)</strong> dan memicu pengiriman notifikasi <strong>WhatsApp (Fonnte)</strong> &amp; <strong>Email</strong> ke pelanggan.
                 </span>
             </div>
@@ -301,12 +291,16 @@
         const checkboxes = Array.from(document.querySelectorAll('[data-order-checkbox]'));
         const counter = document.getElementById('selected-count');
         const actions = document.querySelectorAll('[data-bulk-action]');
+        const bulkToolbar = document.getElementById('bulk-toolbar');
         const maxSelected = {{ $bulkMax }};
 
         function refresh() {
             const selected = checkboxes.filter(cb => cb.checked).length;
-            counter.textContent = selected;
+            if (counter) counter.textContent = selected;
             actions.forEach(btn => btn.disabled = selected === 0 || selected > maxSelected);
+            if (bulkToolbar) {
+                bulkToolbar.style.display = selected > 0 ? 'flex' : 'none';
+            }
             if (selectAll) {
                 selectAll.checked = selected > 0 && selected === checkboxes.length;
                 selectAll.indeterminate = selected > 0 && selected < checkboxes.length;
@@ -329,8 +323,7 @@
         const inpTracking = document.getElementById('modal-tracking-number');
 
         function closeResiModal() {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
+            modal.classList.remove('active');
         }
 
         document.querySelectorAll('.btn-open-resi-modal').forEach(btn => {
@@ -358,8 +351,7 @@
                     selCourier.add(customOpt);
                 }
 
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
+                modal.classList.add('active');
                 setTimeout(() => inpTracking.focus(), 50);
             });
         });
