@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\OrderManagementController;
 use App\Http\Controllers\Admin\ProductManagementController;
 use App\Http\Controllers\Admin\TradeInVerificationController;
+use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Customer\CartController;
@@ -113,6 +114,17 @@ Route::middleware('guest')->group(function () {
 */
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Phase 14: Dedicated Admin Operations Authentication Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AdminAuthController::class, 'login'])->name('login.submit');
+    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 });
 
 /*

@@ -200,18 +200,18 @@
 ---
 
 ### Phase 14: Jalur Login Admin Sendiri (Dedicated Admin Operations Login Portal)
-- [ ] **14.1. Rute & Controller Autentikasi Khusus Admin (`AdminAuthController`)**
-  - [ ] Pembuatan rute khusus Admin pada `routes/web.php`: `GET /admin/login` (`admin.login`), `POST /admin/login` (`admin.login.submit`), dan `POST /admin/logout` (`admin.logout`).
-  - [ ] Pembuatan `App\Http\Controllers\Auth\AdminAuthController` dengan proteksi *brute-force rate limiting* terpisah (`admin-login|{email}|{ip}`).
-  - [ ] Implementasi *Strict Admin Role Guard*: Memvalidasi bahwa kredensial yang masuk wajib memiliki `role === 'admin'`. Jika akun ber-role `customer` atau `owner` mencoba masuk melalui `/admin/login`, autentikasi ditolak dengan pesan otorisasi spesifik.
-- [ ] **14.2. Antarmuka Halaman Login Admin Mandiri (`resources/views/auth/admin-login.blade.php`)**
-  - [ ] Desain halaman login khusus **Rap-iPhone Store Operations Portal** dengan estetika *Digimap Enterprise Light UI* (`#FFFFFF` & `#F5F5F7`).
-  - [ ] Isolasi penuh dari elemen pelanggan: Tanpa tombol Google OAuth publik dan tanpa tautan pendaftaran akun pelanggan (*register*).
-  - [ ] Penyediaan *Quick Demo Account Chip* khusus Admin Operasional (`admin@rap-iphone.com`) untuk percepatan pengujian internal.
-- [ ] **14.3. Pengalihan Otomatis (Redirect) & Proteksi Middleware Admin**
-  - [ ] Pengalihan pasca-login sukses langsung menuju `route('admin.dashboard')` (`/admin/dashboard`).
-  - [ ] Pembaruan `RoleMiddleware` agar pengguna *guest* (belum terautentikasi) yang mengakses prefix `/admin/*` otomatis diarahkan ke `route('admin.login')` (`/admin/login`).
-  - [ ] Pengalihan pasca-logout dari panel operasional admin kembali menuju halaman `/admin/login`.
+- [x] **14.1. Rute & Controller Autentikasi Khusus Admin (`AdminAuthController`)**
+  - [x] Pembuatan rute khusus Admin pada `routes/web.php`: `GET /admin/login` (`admin.login`), `POST /admin/login` (`admin.login.submit`), dan `POST /admin/logout` (`admin.logout`).
+  - [x] Pembuatan `App\Http\Controllers\Auth\AdminAuthController` dengan proteksi *brute-force rate limiting* terpisah (`admin-login|{email}|{ip}`).
+  - [x] Implementasi *Strict Admin Role Guard*: Memvalidasi bahwa kredensial yang masuk wajib memiliki `role === 'admin'`. Jika akun ber-role `customer` atau `owner` mencoba masuk melalui `/admin/login`, autentikasi ditolak dengan pesan otorisasi spesifik.
+- [x] **14.2. Antarmuka Halaman Login Admin Mandiri (`resources/views/auth/admin-login.blade.php`)**
+  - [x] Desain halaman login khusus **Rap-iPhone Store Operations Portal** dengan estetika *Digimap Enterprise Light UI* (`#FFFFFF` & `#F5F5F7`).
+  - [x] Isolasi penuh dari elemen pelanggan: Tanpa tombol Google OAuth publik dan tanpa tautan pendaftaran akun pelanggan (*register*).
+  - [x] Penyediaan *Quick Demo Account Chip* khusus Admin Operasional (`admin@rap-iphone.com`) untuk percepatan pengujian internal.
+- [x] **14.3. Pengalihan Otomatis (Redirect) & Proteksi Middleware Admin**
+  - [x] Pengalihan pasca-login sukses langsung menuju `route('admin.dashboard')` (`/admin/dashboard`).
+  - [x] Pembaruan `RoleMiddleware` agar pengguna *guest* (belum terautentikasi) yang mengakses prefix `/admin/*` otomatis diarahkan ke `route('admin.login')` (`/admin/login`).
+  - [x] Pengalihan pasca-logout dari panel operasional admin kembali menuju halaman `/admin/login`.
 
 ---
 

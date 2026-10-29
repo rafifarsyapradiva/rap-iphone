@@ -191,7 +191,7 @@ class Phase11OwnerDashboardTest extends TestCase
         $now = Carbon::now();
 
         // Pesanan Lunas Hari Ini: 1x iPhone 16 Pro Max (Jual 24jt, HPP 21jt, Diskon 500rb -> Grand Total 23.5jt, Laba Bersih 2.5jt)
-        $todayOrder = $this->createOrderWithItem($this->variant16Pro, 1, 'paid', $now->copy()->subHours(1), 500000.00);
+        $todayOrder = $this->createOrderWithItem($this->variant16Pro, 1, 'paid', $now->copy(), 500000.00);
 
         // Pesanan Lunas 3 Hari Lalu (Masuk Mingguan & Bulanan): 2x iPhone 15 (Jual 24jt, HPP 20jt -> Laba Bersih 4jt)
         $threeDaysAgoOrder = $this->createOrderWithItem($this->variant15, 2, 'completed', $now->copy()->subDays(3));

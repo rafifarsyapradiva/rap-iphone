@@ -17,8 +17,26 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        // 1. Ensure user is authenticated
+        // 1. Ensure user is authenticated with contextual portal redirect
         if (!Auth::check()) {
+            if ($request->is('admin*')) {
+                return redirect()->guest(route('admin.login'))->with(
+                    'error',
+                    'Silakan masuk ke Portal Operasional Admin terlebih dahulu.'
+                );
+            }
+
+            if ($request->is('owner*')) {
+                $ownerLoginRoute = \Illuminate\Support\Facades\Route::has('owner.login')
+                    ? route('owner.login')
+                    : route('login');
+
+                return redirect()->guest($ownerLoginRoute)->with(
+                    'error',
+                    'Silakan masuk ke Portal Eksekutif Owner terlebih dahulu.'
+                );
+            }
+
             return redirect()->guest(route('login'))->with(
                 'error',
                 'Silakan masuk terlebih dahulu untuk mengakses halaman tersebut.'

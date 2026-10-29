@@ -123,7 +123,7 @@
                         <p class="text-[11px] text-[#6E6E73] truncate">{{ Auth::check() ? Auth::user()->email : 'admin@rap-iphone.com' }}</p>
                     </div>
                 </div>
-                <form action="{{ url('/logout') }}" method="POST">
+                <form action="{{ Route::has('admin.logout') && (!Auth::check() || Auth::user()->role === 'admin') ? route('admin.logout') : (Route::has('owner.logout') && Auth::check() && Auth::user()->role === 'owner' ? route('owner.logout') : url('/logout')) }}" method="POST">
                     @csrf
                     <button type="submit" class="p-2 text-[#6E6E73] hover:text-[#E30000] transition-colors" title="Keluar">
                         <i data-lucide="log-out" class="w-4 h-4"></i>

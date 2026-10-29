@@ -190,13 +190,15 @@ class Phase4AuthTest extends TestCase
     }
 
     /**
-     * Test 10: Role middleware blocks guest and redirects to login.
+     * Test 10: Role middleware blocks guest and redirects to login (or admin.login for admin prefix).
      */
     public function test_role_middleware_blocks_guest(): void
     {
-        $response = $this->get('/admin/dashboard');
-
+        $response = $this->get('/customer/orders');
         $response->assertRedirect(route('login'));
+
+        $adminResponse = $this->get('/admin/dashboard');
+        $adminResponse->assertRedirect(route('admin.login'));
     }
 
     /**
