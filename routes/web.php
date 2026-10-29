@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\ProductManagementController;
 use App\Http\Controllers\Admin\TradeInVerificationController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\OwnerAuthController;
 use App\Http\Controllers\Customer\CartController;
@@ -92,29 +93,35 @@ Route::get('/admin-preview', function () {
 
 /*
 |--------------------------------------------------------------------------
-| Guest Authentication Routes
+| Phase 16: Dedicated Customer Authentication & Registration Routes
 |--------------------------------------------------------------------------
 */
 Route::middleware('guest')->group(function () {
-    // Conventional Auth
+    // Primary Customer Auth Routes
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
-
+    Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
     Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
-    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
 
-    // Google Console OAuth (Laravel Socialite)
+    // Google Console OAuth (Laravel Socialite - Khusus Customer)
     Route::get('/auth/google', [GoogleAuthController::class, 'redirectToGoogle'])->name('auth.google');
     Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+
+    // Customer Explicit Aliases (Phase 16 Specification)
+    Route::get('/customer/login', [AuthController::class, 'showLoginForm'])->name('customer.login');
+    Route::post('/customer/login', [AuthController::class, 'login'])->name('customer.login.submit');
+    Route::get('/customer/register', [AuthController::class, 'showRegisterForm'])->name('customer.register');
+    Route::post('/customer/register', [AuthController::class, 'register'])->name('customer.register.submit');
 });
 
 /*
 |--------------------------------------------------------------------------
-| Authenticated Common Routes
+| Authenticated Common & Customer Routes
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::post('/customer/logout', [AuthController::class, 'logout'])->name('customer.logout');
 });
 
 /*

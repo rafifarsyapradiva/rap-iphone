@@ -144,8 +144,13 @@
                                     <p class="text-[11px] text-[#6E6E73]">Masuk sebagai</p>
                                     <p class="text-xs font-semibold text-[#1D1D1F] truncate">{{ Auth::user()->email }}</p>
                                 </div>
-                                @if(in_array(Auth::user()->role, ['admin', 'owner']))
-                                    <a href="{{ url('/admin/dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-xs text-[#0066CC] hover:bg-[#F5F5F7] font-semibold">
+                                @if(Auth::user()->isOwner())
+                                    <a href="{{ route('owner.dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-xs text-[#BF4800] hover:bg-[#F5F5F7] font-semibold">
+                                        <i data-lucide="crown" class="w-3.5 h-3.5"></i>
+                                        <span>Portal Eksekutif</span>
+                                    </a>
+                                @elseif(Auth::user()->isAdmin())
+                                    <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-xs text-[#0066CC] hover:bg-[#F5F5F7] font-semibold">
                                         <i data-lucide="shield" class="w-3.5 h-3.5"></i>
                                         <span>Panel Admin</span>
                                     </a>
@@ -154,7 +159,15 @@
                                     <i data-lucide="package" class="w-3.5 h-3.5 text-[#6E6E73]"></i>
                                     <span>Pesanan Saya</span>
                                 </a>
-                                <form action="{{ url('/logout') }}" method="POST">
+                                @php
+                                    $logoutRoute = route('logout');
+                                    if (Auth::user()->isOwner() && Route::has('owner.logout')) {
+                                        $logoutRoute = route('owner.logout');
+                                    } elseif (Auth::user()->isAdmin() && Route::has('admin.logout')) {
+                                        $logoutRoute = route('admin.logout');
+                                    }
+                                @endphp
+                                <form action="{{ $logoutRoute }}" method="POST">
                                     @csrf
                                     <button type="submit" class="w-full flex items-center gap-2 px-4 py-2 text-xs text-[#D70015] hover:bg-[#FFEBEA]/60 text-left font-medium">
                                         <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
@@ -164,10 +177,15 @@
                             </div>
                         </div>
                     @else
-                        <a href="{{ url('/login') }}" class="glass-btn glass-btn-dark glass-btn-sm">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            <span>Masuk</span>
-                        </a>
+                        <div class="flex items-center gap-1.5">
+                            <a href="{{ route('login') }}" class="glass-btn glass-btn-dark glass-btn-sm">
+                                <i data-lucide="user" class="w-3.5 h-3.5"></i>
+                                <span>Masuk</span>
+                            </a>
+                            <a href="{{ route('register') }}" class="hidden sm:inline-flex px-3 py-1.5 rounded-full text-xs font-semibold text-[#0071E3] hover:bg-[#E8F2FF] border border-[#B8D7FF] transition-all">
+                                <span>Daftar</span>
+                            </a>
+                        </div>
                     @endauth
 
                     <!-- Mobile Navigation Hamburger Toggle -->
@@ -209,6 +227,17 @@
                         <span>Pesanan &amp; Akun Saya</span>
                         <i data-lucide="package" class="w-4 h-4"></i>
                     </a>
+                @else
+                    <div class="grid grid-cols-2 gap-2 pt-2 border-t border-[#E5E5EA]">
+                        <a href="{{ route('login') }}" class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-[#1D1D1F] text-white text-xs font-semibold">
+                            <i data-lucide="log-in" class="w-3.5 h-3.5"></i>
+                            <span>Masuk</span>
+                        </a>
+                        <a href="{{ route('register') }}" class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-[#F5F5F7] border border-[#D2D2D7] text-[#1D1D1F] text-xs font-semibold hover:bg-[#E8E8ED]">
+                            <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+                            <span>Daftar</span>
+                        </a>
+                    </div>
                 @endauth
             </div>
         </div>

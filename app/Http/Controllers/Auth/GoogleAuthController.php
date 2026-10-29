@@ -16,7 +16,7 @@ use Throwable;
 class GoogleAuthController extends Controller
 {
     /**
-     * Redirect user to Google OAuth Consent screen.
+     * Redirect user to Google OAuth Consent screen (Strictly for Customer Portal).
      */
     public function redirectToGoogle(): RedirectResponse
     {
@@ -33,7 +33,7 @@ class GoogleAuthController extends Controller
     }
 
     /**
-     * Handle callback from Google OAuth.
+     * Handle callback from Google OAuth with Strict Customer Role Guard.
      */
     public function handleGoogleCallback(Request $request): RedirectResponse
     {
@@ -65,39 +65,54 @@ class GoogleAuthController extends Controller
         // 1. Search existing user by google_id
         $user = User::where('google_id', $googleId)->first();
 
-        if ($user) {
-            // Update avatar if currently empty
-            if (empty($user->avatar) && !empty($avatar)) {
-                $user->update(['avatar' => $avatar]);
-            }
-        } else {
-            // 2. Search existing user by email to link account
+        // 2. If not found by google_id, search by email to link account
+        if (!$user) {
             $user = User::where('email', $email)->first();
-
-            if ($user) {
-                $user->update([
-                    'google_id' => $googleId,
-                    'avatar' => $user->avatar ?: $avatar,
-                ]);
-            } else {
-                // 3. Create a brand new user with default 'customer' role
-                $user = User::create([
-                    'name' => $name,
-                    'email' => $email,
-                    'google_id' => $googleId,
-                    'avatar' => $avatar,
-                    'role' => 'customer',
-                    'password' => Hash::make(Str::random(32)),
-                    'email_verified_at' => now(),
-                ]);
-            }
         }
 
-        // Authenticate the user and regenerate session
+        // Strict Role Guard for Google OAuth: Reject internal roles (admin & owner)
+        if ($user) {
+            if ($user->isAdmin()) {
+                return redirect()->route('admin.login')->withErrors([
+                    'email' => 'Akses ditolak: Akun Google ini terdaftar sebagai Staf Operasional (Admin). Silakan masuk menggunakan kata sandi di Portal Operasional.',
+                ]);
+            }
+
+            if ($user->isOwner()) {
+                return redirect()->route('owner.login')->withErrors([
+                    'email' => 'Akses ditolak: Akun Google ini terdaftar sebagai Pemilik Usaha (Owner). Silakan masuk menggunakan kata sandi di Portal Eksekutif.',
+                ]);
+            }
+
+            // User is customer: update google_id & avatar
+            $updates = [];
+            if ($user->google_id !== $googleId) {
+                $updates['google_id'] = $googleId;
+            }
+            if (empty($user->avatar) && !empty($avatar)) {
+                $updates['avatar'] = $avatar;
+            }
+            if (!empty($updates)) {
+                $user->update($updates);
+            }
+        } else {
+            // 3. Create a brand new customer account
+            $user = User::create([
+                'name' => $name,
+                'email' => $email,
+                'google_id' => $googleId,
+                'avatar' => $avatar,
+                'role' => 'customer',
+                'password' => Hash::make(Str::random(32)),
+                'email_verified_at' => now(),
+            ]);
+        }
+
+        // Authenticate the verified customer and regenerate session
         Auth::login($user, remember: true);
         $request->session()->regenerate();
 
-        return AuthController::redirectBasedOnRole($user)
+        return redirect()->intended(url('/'))
             ->with('success', "Selamat datang di Rap-iPhone, {$user->name}!");
     }
 }

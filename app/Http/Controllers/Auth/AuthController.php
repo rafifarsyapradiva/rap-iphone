@@ -16,7 +16,7 @@ use Illuminate\View\View;
 class AuthController extends Controller
 {
     /**
-     * Show the Apple Glassmorphism login form.
+     * Show the Apple Glassmorphism login form for Customers.
      */
     public function showLoginForm(): View|RedirectResponse
     {
@@ -28,7 +28,8 @@ class AuthController extends Controller
     }
 
     /**
-     * Handle conventional authentication request with brute-force rate limiting.
+     * Handle customer authentication request with brute-force rate limiting
+     * and strict customer role verification.
      */
     public function login(Request $request): RedirectResponse
     {
@@ -41,7 +42,10 @@ class AuthController extends Controller
             'password.required' => 'Kata sandi wajib diisi.',
         ]);
 
-        $throttleKey = Str::transliterate(Str::lower($request->input('email')).'|'.$request->ip());
+        // Dedicated customer rate limiting key: customer-login|{email}|{ip}
+        $throttleKey = Str::transliterate(
+            'customer-login|' . Str::lower($request->input('email')) . '|' . $request->ip()
+        );
 
         // Protect against brute-force attacks (max 5 attempts per minute)
         if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
@@ -54,13 +58,39 @@ class AuthController extends Controller
         $remember = $request->boolean('remember');
 
         if (Auth::attempt($credentials, $remember)) {
-            RateLimiter::clear($throttleKey);
-            $request->session()->regenerate();
-
             /** @var User $user */
             $user = Auth::user();
 
-            return $this->redirectBasedOnRole($user)
+            // Strict Customer Role Guard: Reject internal accounts (admin or owner)
+            if (!$user->isCustomer()) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                RateLimiter::hit($throttleKey, 60);
+
+                if ($user->isAdmin()) {
+                    return back()->withErrors([
+                        'email' => 'Akses ditolak: Akun Staf Operasional (Admin) wajib masuk melalui Portal Operasional (/admin/login).',
+                    ])->onlyInput('email');
+                }
+
+                if ($user->isOwner()) {
+                    return back()->withErrors([
+                        'email' => 'Akses ditolak: Akun Pemilik Usaha (Owner) wajib masuk melalui Portal Eksekutif (/owner/login).',
+                    ])->onlyInput('email');
+                }
+
+                return back()->withErrors([
+                    'email' => 'Akses ditolak: Portal ini khusus diperuntukkan bagi Pelanggan (Customer).',
+                ])->onlyInput('email');
+            }
+
+            // Customer credentials and role validated successfully
+            RateLimiter::clear($throttleKey);
+            $request->session()->regenerate();
+
+            return redirect()->intended(url('/'))
                 ->with('success', "Selamat datang kembali, {$user->name}!");
         }
 
@@ -72,7 +102,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Show the Apple Glassmorphism registration form.
+     * Show the Apple Glassmorphism registration form for Customers.
      */
     public function showRegisterForm(): View|RedirectResponse
     {
@@ -136,11 +166,15 @@ class AuthController extends Controller
     }
 
     /**
-     * Helper to perform role-based redirect.
+     * Helper to perform role-based redirect for authenticated sessions.
      */
     public static function redirectBasedOnRole(User $user): RedirectResponse
     {
-        if ($user->hasAdminAccess()) {
+        if ($user->isOwner()) {
+            return redirect()->intended(route('owner.dashboard'));
+        }
+
+        if ($user->isAdmin()) {
             return redirect()->intended(route('admin.dashboard'));
         }
 

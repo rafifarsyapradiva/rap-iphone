@@ -1,6 +1,6 @@
 @extends('layouts.customer')
 
-@section('title', 'Daftar Akun Baru - Rap-iPhone')
+@section('title', 'Daftar Akun Pelanggan Baru - Rap-iPhone')
 
 @section('content')
 <div class="relative min-h-[calc(100vh-140px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-[#F5F5F7]">
@@ -19,6 +19,10 @@
                 </div>
                 <h1 class="text-2xl font-bold text-[#1D1D1F] tracking-tight">Buat Akun Rap-iPhone</h1>
                 <p class="text-xs text-[#6E6E73] mt-1.5">Bergabung untuk kemudahan belanja iPhone resmi & tukar tambah cepat</p>
+                <div class="mt-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#E8F2FF] text-[#0066CC] border border-[#B8D7FF]">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#0066CC]"></span>
+                    <span>Registrasi Mandiri Pelanggan (Role: Customer)</span>
+                </div>
             </div>
 
             <!-- Error Notifications -->
@@ -84,7 +88,10 @@
                         <label for="phone_number" class="text-xs font-semibold text-[#1D1D1F]">
                             Nomor WhatsApp (Opsional)
                         </label>
-                        <span class="text-[11px] text-[#008009] font-medium">Untuk update nota & resi</span>
+                        <span class="text-[11px] text-[#008009] font-medium flex items-center gap-1">
+                            <i data-lucide="bell" class="w-3 h-3"></i>
+                            <span>Notifikasi pesanan &amp; resi via Fonnte WA</span>
+                        </span>
                     </div>
                     <div class="relative">
                         <i data-lucide="phone" class="w-4 h-4 text-[#6E6E73] absolute left-3.5 top-3.5"></i>
@@ -131,14 +138,20 @@
                 </button>
             </form>
 
-            <!-- Footer Link -->
-            <div class="mt-6 text-center pt-4 border-t border-[#E5E5EA]">
+            <!-- Footer Link & Staff Advisory -->
+            <div class="mt-6 text-center pt-4 border-t border-[#E5E5EA] space-y-3">
                 <p class="text-xs text-[#6E6E73]">
-                    Sudah memiliki akun?
+                    Sudah memiliki akun Rap-iPhone?
                     <a href="{{ route('login') }}" class="font-semibold text-[#0066CC] hover:underline transition-colors ml-1">
                         Masuk di Sini
                     </a>
                 </p>
+                <div class="pt-3 border-t border-[#F0F0F2]">
+                    <p class="text-[11px] text-[#86868B] leading-relaxed">
+                        Pendaftaran ini khusus untuk akun Pelanggan belanja B2C & Tukar Tambah.<br>
+                        Akun Staf Toko (Admin) dikelola dan didaftarkan langsung oleh Pemilik Usaha melalui panel eksekutif.
+                    </p>
+                </div>
             </div>
 
         </div>

@@ -71,7 +71,7 @@ class Phase4AuthTest extends TestCase
     }
 
     /**
-     * Test 4: Role redirection after login for Owner.
+     * Test 4: Strict customer role guard rejects owner on /login and guides to owner portal.
      */
     public function test_owner_is_redirected_to_admin_workspace(): void
     {
@@ -82,17 +82,18 @@ class Phase4AuthTest extends TestCase
             'role' => 'owner',
         ]);
 
-        $response = $this->post('/login', [
+        $response = $this->from('/login')->post('/login', [
             'email' => $email,
             'password' => 'password123',
         ]);
 
-        $this->assertAuthenticatedAs($owner);
-        $response->assertRedirect(route('admin.dashboard'));
+        $this->assertGuest();
+        $response->assertRedirect('/login');
+        $response->assertSessionHasErrors('email');
     }
 
     /**
-     * Test 5: Role redirection after login for Admin.
+     * Test 5: Strict customer role guard rejects admin on /login and guides to admin portal.
      */
     public function test_admin_is_redirected_to_admin_workspace(): void
     {
@@ -103,13 +104,14 @@ class Phase4AuthTest extends TestCase
             'role' => 'admin',
         ]);
 
-        $response = $this->post('/login', [
+        $response = $this->from('/login')->post('/login', [
             'email' => $email,
             'password' => 'password123',
         ]);
 
-        $this->assertAuthenticatedAs($admin);
-        $response->assertRedirect(route('admin.dashboard'));
+        $this->assertGuest();
+        $response->assertRedirect('/login');
+        $response->assertSessionHasErrors('email');
     }
 
     /**

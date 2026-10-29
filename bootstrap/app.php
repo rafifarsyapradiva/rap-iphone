@@ -24,6 +24,17 @@ return Application::configure(basePath: dirname(__DIR__))
             return route('login');
         });
 
+        $middleware->redirectUsersTo(function (\Illuminate\Http\Request $request) {
+            $user = \Illuminate\Support\Facades\Auth::user();
+            if ($user && $user->isOwner()) {
+                return route('owner.dashboard');
+            }
+            if ($user && $user->isAdmin()) {
+                return route('admin.dashboard');
+            }
+            return url('/');
+        });
+
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
         ]);

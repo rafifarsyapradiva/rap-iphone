@@ -232,14 +232,14 @@
 ---
 
 ### Phase 16: Jalur Login dan Register Customer Sendiri (Dedicated Customer Auth & Registration Portal)
-- [ ] **16.1. Pemurnian Rute & Controller Autentikasi Pelanggan (`AuthController` / `CustomerAuthController` & `GoogleAuthController`)**
-  - [ ] Penataan jalur autentikasi mandiri khusus pelanggan pada `GET /login` (`login`), `POST /login`, `GET /register` (`register`), `POST /register`, serta alias `customer.login` dan `customer.register`.
-  - [ ] Implementasi *Strict Customer Role Guard* pada halaman `/login` pelanggan: Hanya mengizinkan akun dengan `role === 'customer'`. Apabila akun internal (`admin` atau `owner`) mencoba masuk di halaman login pelanggan, autentikasi ditolak dan diarahkan ke portal internal masing-masing (`/admin/login` atau `/owner/login`).
-  - [ ] Pengamanan `GoogleAuthController` (`/auth/google` & `/auth/google/callback`): Memastikan autentikasi & pembuatan akun 1-klik Google OAuth dikhususkan murni bagi akun ber-role `customer` serta menolak email yang terdaftar sebagai `admin` atau `owner`.
-- [ ] **16.2. Pemurnian Antarmuka Login & Registrasi Mandiri Pelanggan (`resources/views/auth/login.blade.php` & `register.blade.php`)**
-  - [ ] Pembersihan halaman `resources/views/auth/login.blade.php` dari *Quick Demo Chips* milik Admin dan Owner, sehingga hanya menampilkan *Quick Demo Chip* khusus Pelanggan (`customer@rap-iphone.com`) dan fitur relevan belanja B2C.
-  - [ ] Penyempurnaan halaman registrasi mandiri pelanggan (`resources/views/auth/register.blade.php`) dengan validasi Nama Lengkap, Email, Nomor WhatsApp aktif (untuk notifikasi Fonnte), Kata Sandi (Bcrypt), persetujuan Syarat & Ketentuan, serta opsi *Daftar 1-Klik dengan Google*.
-  - [ ] Penambahan informasi dan tautan bantuan pelanggan yang jelas antara halaman `/login` dan `/register`.
-- [ ] **16.3. Sinkronisasi Navigasi Layout & Pengujian Isolasi Lintas-Jalur (End-to-End Multi-Portal Auth)**
-  - [ ] Penyelarasan tombol Masuk, Daftar, dan Logout pada `layouts/customer.blade.php` dan `layouts/admin.blade.php` agar sesuai dengan jalur autentikasi masing-masing role (`customer`, `admin`, `owner`).
-  - [ ] Pengujian menyeluruh skenario positif dan negatif (*cross-role login rejection* & *contextual guest redirect*) pada ketiga jalur autentikasi mandiri (Fase 14, Fase 15, dan Fase 16).
+- [x] **16.1. Pemurnian Rute & Controller Autentikasi Pelanggan (`AuthController` / `CustomerAuthController` & `GoogleAuthController`)**
+  - [x] Penataan jalur autentikasi mandiri khusus pelanggan pada `GET /login` (`login`), `POST /login`, `GET /register` (`register`), `POST /register`, serta alias `customer.login` dan `customer.register`.
+  - [x] Implementasi *Strict Customer Role Guard* pada halaman `/login` pelanggan: Hanya mengizinkan akun dengan `role === 'customer'`. Apabila akun internal (`admin` atau `owner`) mencoba masuk di halaman login pelanggan, autentikasi ditolak dan diarahkan ke portal internal masing-masing (`/admin/login` atau `/owner/login`).
+  - [x] Pengamanan `GoogleAuthController` (`/auth/google` & `/auth/google/callback`): Memastikan autentikasi & pembuatan akun 1-klik Google OAuth dikhususkan murni bagi akun ber-role `customer` serta menolak email yang terdaftar sebagai `admin` atau `owner`.
+- [x] **16.2. Pemurnian Antarmuka Login & Registrasi Mandiri Pelanggan (`resources/views/auth/login.blade.php` & `register.blade.php`)**
+  - [x] Pembersihan halaman `resources/views/auth/login.blade.php` dari *Quick Demo Chips* milik Admin dan Owner, sehingga hanya menampilkan *Quick Demo Chip* khusus Pelanggan (`customer@rap-iphone.com`) dan fitur relevan belanja B2C.
+  - [x] Penyempurnaan halaman registrasi mandiri pelanggan (`resources/views/auth/register.blade.php`) dengan validasi Nama Lengkap, Email, Nomor WhatsApp aktif (untuk notifikasi Fonnte), Kata Sandi (Bcrypt), persetujuan Syarat & Ketentuan, serta opsi *Daftar 1-Klik dengan Google*.
+  - [x] Penambahan informasi dan tautan bantuan pelanggan yang jelas antara halaman `/login` dan `/register`.
+- [x] **16.3. Sinkronisasi Navigasi Layout & Pengujian Isolasi Lintas-Jalur (End-to-End Multi-Portal Auth)**
+  - [x] Penyelarasan tombol Masuk, Daftar, dan Logout pada `layouts/customer.blade.php` dan `layouts/admin.blade.php` agar sesuai dengan jalur autentikasi masing-masing role (`customer`, `admin`, `owner`).
+  - [x] Pengujian menyeluruh skenario positif dan negatif (*cross-role login rejection* & *contextual guest redirect*) pada ketiga jalur autentikasi mandiri (Fase 14, Fase 15, dan Fase 16).
