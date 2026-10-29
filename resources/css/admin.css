@@ -29,10 +29,12 @@
   --adm-tone-blue-ink: oklch(35% 0.08 248);
   --adm-tone-green-bg: oklch(94% 0.03 145);
   --adm-tone-green-ink: oklch(35% 0.08 145);
+  --adm-tone-green-border: oklch(35% 0.08 145 / 0.18);
   --adm-tone-amber-bg: oklch(94% 0.04 75);
   --adm-tone-amber-ink: oklch(38% 0.09 75);
   --adm-tone-red-bg: oklch(94% 0.04 25);
   --adm-tone-red-ink: oklch(38% 0.10 25);
+  --adm-tone-red-border: oklch(38% 0.10 25 / 0.18);
   --adm-tone-purple-bg: oklch(94% 0.03 300);
   --adm-tone-purple-ink: oklch(38% 0.08 300);
   --adm-tone-gray-bg: oklch(92% 0.01 78);
@@ -861,6 +863,340 @@ a.adm-list-item:focus-visible {
   font-size: 0.6875rem;
   font-weight: 500;
   color: var(--adm-ink-faint);
+}
+
+/* ==========================================================================
+   Hallmark Multi-Portal Auth Suite — Admin & Owner (/admin/login, /owner/login)
+   ========================================================================== */
+.adm-auth-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: var(--adm-paper);
+  color: var(--adm-ink);
+  font-family: var(--adm-font-body);
+  overflow-x: clip;
+}
+
+.adm-auth-masthead {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: var(--adm-rule-hair);
+  background-color: var(--adm-surface);
+}
+
+.adm-auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.adm-auth-brand-mark {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--adm-radius);
+  background-color: var(--adm-ink);
+  color: var(--adm-ink-reverse);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.adm-auth-brand-title {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--adm-ink);
+  line-height: 1.2;
+}
+
+.adm-auth-brand-sub {
+  display: block;
+  font-size: 0.6875rem;
+  color: var(--adm-ink-muted);
+  line-height: 1;
+}
+
+.adm-auth-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--adm-radius);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  background-color: var(--adm-accent-soft);
+  color: var(--adm-accent);
+  border: 1px solid var(--adm-accent);
+}
+
+.adm-auth-badge-owner {
+  background-color: var(--adm-tone-amber-bg);
+  color: var(--adm-tone-amber-ink);
+  border: 1px solid var(--adm-tone-amber-ink);
+}
+
+.adm-auth-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+}
+
+.adm-auth-card {
+  width: 100%;
+  max-width: 460px;
+  background-color: var(--adm-surface);
+  border: var(--adm-rule-hair);
+  border-radius: var(--adm-radius);
+  padding: 2.25rem 2rem;
+  box-shadow: var(--adm-shadow);
+}
+
+.adm-auth-header {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.adm-auth-icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--adm-radius);
+  background-color: var(--adm-paper-subtle);
+  border: var(--adm-rule-hair);
+  color: var(--adm-accent);
+  margin-bottom: 1rem;
+}
+
+.adm-auth-title {
+  font-family: var(--adm-font-display);
+  font-weight: var(--adm-display-weight);
+  font-size: 1.625rem;
+  line-height: 1.25;
+  color: var(--adm-ink);
+  letter-spacing: var(--adm-tracking-display);
+  margin: 0;
+}
+
+.adm-auth-desc {
+  font-size: 0.8125rem;
+  color: var(--adm-ink-muted);
+  margin-top: 0.375rem;
+  line-height: 1.4;
+}
+
+.adm-auth-alert {
+  padding: 0.75rem 1rem;
+  border-radius: var(--adm-radius);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+}
+
+.adm-auth-alert-error {
+  background-color: var(--adm-tone-red-bg);
+  color: var(--adm-tone-red-ink);
+  border: 1px solid var(--adm-tone-red-border);
+}
+
+.adm-auth-alert-success {
+  background-color: var(--adm-tone-green-bg);
+  color: var(--adm-tone-green-ink);
+  border: 1px solid var(--adm-tone-green-border);
+}
+
+.adm-auth-field {
+  margin-bottom: 1rem;
+}
+
+.adm-auth-field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.375rem;
+}
+
+.adm-auth-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--adm-ink);
+  margin-bottom: 0.375rem;
+}
+
+.adm-auth-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.adm-auth-input-icon {
+  position: absolute;
+  left: 0.875rem;
+  width: 1rem;
+  height: 1rem;
+  color: var(--adm-ink-muted);
+  pointer-events: none;
+}
+
+.adm-auth-input {
+  width: 100%;
+  padding: 0.625rem 0.875rem 0.625rem 2.375rem;
+  border-radius: var(--adm-radius);
+  border: var(--adm-rule-hair);
+  background-color: var(--adm-paper-subtle);
+  color: var(--adm-ink);
+  font-family: var(--adm-font-body);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  transition: border-color var(--adm-dur-micro) var(--adm-ease-out), background-color var(--adm-dur-micro) var(--adm-ease-out);
+}
+
+.adm-auth-input:focus {
+  background-color: var(--adm-surface);
+  border-color: var(--adm-focus);
+}
+
+.adm-auth-toggle-pass {
+  position: absolute;
+  right: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--adm-ink-muted);
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.adm-auth-toggle-pass:hover {
+  color: var(--adm-ink);
+}
+
+.adm-auth-submit-btn {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--adm-radius);
+  background-color: var(--adm-ink);
+  color: var(--adm-ink-reverse);
+  font-family: var(--adm-font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: opacity var(--adm-dur-micro) var(--adm-ease-out);
+}
+
+.adm-auth-submit-btn:hover {
+  opacity: 0.9;
+}
+
+.adm-auth-demo-bar {
+  margin-top: 1.5rem;
+  padding-top: 1.125rem;
+  border-top: var(--adm-rule-hair);
+}
+
+.adm-auth-demo-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--adm-ink-muted);
+  margin-bottom: 0.5rem;
+}
+
+.adm-auth-demo-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--adm-radius);
+  background-color: var(--adm-paper-subtle);
+  border: var(--adm-rule-hair);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color var(--adm-dur-micro) var(--adm-ease-out), border-color var(--adm-dur-micro) var(--adm-ease-out);
+}
+
+.adm-auth-demo-btn:hover {
+  background-color: var(--adm-surface);
+  border-color: var(--adm-ink);
+}
+
+.adm-auth-demo-left {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.adm-auth-demo-monogram {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: var(--adm-radius);
+  background-color: var(--adm-accent);
+  color: var(--adm-ink-reverse);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+.adm-auth-demo-title {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--adm-ink);
+}
+
+.adm-auth-demo-email {
+  font-size: 0.6875rem;
+  color: var(--adm-ink-muted);
+  font-family: monospace;
+}
+
+.adm-auth-demo-action {
+  font-size: 0.6875rem;
+  color: var(--adm-accent);
+  font-weight: 500;
+}
+
+.adm-auth-footer {
+  padding: 1rem 1.5rem;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--adm-ink-muted);
+  border-top: var(--adm-rule-hair);
+  background-color: var(--adm-surface);
+}
+
+.adm-auth-link {
+  color: var(--adm-accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.adm-auth-link:hover {
+  text-decoration: underline;
 }
 
 /* Fallback reduced motion */

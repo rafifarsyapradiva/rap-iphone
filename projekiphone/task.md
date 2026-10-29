@@ -485,3 +485,108 @@
     - Pengujian integritas dan anti-tamper QR Code faktur serta masking PII.
   - [x] Eksekusi seluruh pengujian aplikasi (`php artisan test`) untuk memastikan nol regresi fungsional (162 passed, 1120 assertions).
 
+---
+
+### Phase 35: Hallmark Luxury Editorial & Studio Redesign — Multi-Portal Auth Suite (Customer Login & Register, Admin Login, Owner Login)
+> **Konteks Fase 35:** Seluruh halaman autentikasi multi-portal (`/login`, `/register`, `/admin/login`, `/owner/login`) yang sebelumnya dibangun pada Fase 14, 15, dan 16 masih menggunakan pola desain lama berbasis kelas Tailwind arbitrer yang tidak rapi, berantakan, inkonsisten, dan memuat akumulasi pelanggaran *AI Slop* (kartu bersarang/card-in-card pada demo chip & benefit cards, warna literal heksadesimal acak yang menyimpang dari token `:root`, animasi `transition: all`, sudut membulat balon `rounded-3xl`, label tracked capitals, serta pemisah middle-dot). Fase 35 mentransformasi seluruh rangkaian antarmuka autentikasi ini menggunakan kerangka kerja **Hallmark Redesign** dengan mengacu pada standar `.agent/skills/hallmark/`:
+> - **Portal Pelanggan (`/login` & `/register`)**: Mengadopsi estetika **Hallmark Luxury Retail & Studio Precision** menggunakan token CSS `--cust-*` dari `resources/css/customer.css` (kanvas limewash alabaster, kartu cotton stock hairline, tipografi display serif Sentient 300/400, Google OAuth button bersahaja, dan demo chip bersih satu baris).
+> - **Portal Admin Operasional (`/admin/login`)**: Mengadopsi estetika **Hallmark Luxury / Editorial** menggunakan token CSS `--adm-*` dari `resources/css/admin.css` (kanvas limewash, kartu cotton stock, font Sentient, format Store Operations Ledger bergaris tipis presisi).
+> - **Portal Eksekutif Owner (`/owner/login`)**: Mengadopsi estetika **Hallmark Luxury / Editorial** menggunakan token CSS `--adm-*` dari `resources/css/admin.css` (tampilan buku besar eksekutif/Executive Ledger, aksen cool slate titanium, wibawa finansial tenang tanpa gradien norak).
+> - **Penegakan Penuh 16 Aturan Non-Waivable The Floor Hallmark (F1–F16)**.
+> - **Preservasi 100% Logika Backend & Keamanan**: Seluruh rute Laravel, aksi controller, strict role guards, rate limiting, session regeneration, CSRF protection, dan routing yang sudah teruji pada Fase 14, 15, 16, 33, dan 34 tetap utuh tanpa perubahan fungsional.
+
+- [x] **35.1. Hallmark Redesign Halaman Login Pelanggan (`resources/views/auth/login.blade.php`)**
+  - [x] Audit awal tampilan login dengan linter Hallmark: `node .agent/skills/hallmark/scripts/sloplint.mjs resources/views/auth/login.blade.php --genre editorial --render`.
+  - [x] Transformasi kontainer kartu ke kanvas limewash alabaster `--cust-paper` (`oklch(97.2% 0.006 215)`) dan kartu cotton stock `--cust-surface` (`#FFFFFF`) dengan garis pembatas hairline `1px solid oklch(88% 0.008 75)` dan radius presisi `--cust-radius` (4px), membuang sudut balon `rounded-3xl`.
+  - [x] Penerapan tipografi display serif **Sentient** (bobot 300/400) pada tajuk utama dan font tubuh **Hanken Grotesk** / **Geist** untuk input dan label form.
+  - [x] Redesign tombol *1-Click Google OAuth* menjadi tombol daylight bersih bergaris hairline, menghilangkan efek scaling sembarangan (`group-hover:scale-110`).
+  - [x] Redesign kontrol formulir (Email, Sandi, Toggle Mata, Ingat Saya, Tombol Masuk) dengan 8 status interaksi lengkap dan ring fokus keyboard seketika (`:focus-visible` / F6).
+  - [x] Eliminasi pelanggaran *Card-in-Card (F11)* pada demo credential chip: mengubah kartu bersarang menjadi aksi baris kurasi (*inline ruled action*) satu baris bergaris batas atas tipis (`border-t`) dengan inisial monogram `C`.
+  - [x] Transformasi strip keunggulan belanja B2C menjadi baris datar bergaris hairline tanpa kartu bertingkat (*flat ruled trust strip*).
+  - [x] Pembersihan tautan bantuan footer dari pemisah middle-dot `&bull;` (F10) dan tracked capitals (F9).
+  - [x] Pembersihan 100% kelas warna heksadesimal literal (`#F5F5F7`, `#1D1D1F`, `#0071E3`, `#E5E5EA`, dll) dan penggantian dengan variabel token `--cust-*`.
+
+- [x] **35.2. Hallmark Redesign Halaman Registrasi Pelanggan (`resources/views/auth/register.blade.php`)**
+  - [x] Audit awal halaman registrasi dengan linter Hallmark: `node .agent/skills/hallmark/scripts/sloplint.mjs resources/views/auth/register.blade.php --genre editorial --render`.
+  - [x] Transformasi layout ke struktur 1 kolom terpusat yang lapang (max-width 520px) berkanvas limewash alabaster `--cust-paper` dan kartu cotton stock `--cust-surface`.
+  - [x] Penerapan tipografi display serif **Sentient** pada judul registrasi dan subjudul satu kalimat lugas tanpa kata basa-basi.
+  - [x] Redesign tombol *Daftar 1-Klik dengan Google* minimalis dan pemisah formulir hairline halus.
+  - [x] Penataan kontrol input formulir: Nama Lengkap, Alamat Email Aktif, Nomor WhatsApp (notifikasi Fonnte), Sandi (Min 8 Karakter), dan Konfirmasi Sandi dengan focus ring `:focus-visible` seketika.
+  - [x] Redesign checklist persetujuan *Syarat & Ketentuan* dan *Kebijakan Privasi* dengan border presisi dan link tinta slate.
+  - [x] Redesign tombol aksi *Daftar Akun Rap-iPhone* berlatar retail blue `--cust-signal` (`#0071E3`) dengan state fokus dan hover terukur tanpa `transition: all`.
+  - [x] Penyelarasan notifikasi error validasi formulir berbingkai hairline merah tenang tanpa ikon kartun berlebihan.
+  - [x] Pembersihan 100% kelas warna heksadesimal literal dan kepatuhan penuh aturan *The Floor* Hallmark.
+
+- [x] **35.3. Hallmark Redesign Halaman Login Admin Operasional (`resources/views/auth/admin-login.blade.php`)**
+  - [x] Audit awal login admin dengan linter Hallmark: `node .agent/skills/hallmark/scripts/sloplint.mjs resources/views/auth/admin-login.blade.php --genre editorial --render`.
+  - [x] Transformasi ke estetika **Store Operations Ledger** menggunakan token `--adm-*` (`resources/css/admin.css`): kanvas limewash `--adm-paper`, kartu cotton stock `--adm-surface`, border hairline `1px solid var(--adm-rule-hair)`, dan radius sudut 2px (`--adm-radius`).
+  - [x] Redesign topbar masthead minimalis: logo Rap-iPhone, indikator waktu operasional toko lokal, dan badge status stempel kurasi `--adm-badge` (*Admin Operations Portal*).
+  - [x] Penerapan tipografi display serif **Sentient** (300/400) pada tajuk form dan deskripsi singkat tugas staf toko.
+  - [x] Redesign formulir kredensial staf operasional (Email Staf, Kata Sandi, Ingat Sesi) dengan kontrol ruled lines dan focus ring seketika `:focus-visible`.
+  - [x] Eliminasi *card-in-card* pada quick demo chip admin: mengganti sub-card bertingkat menjadi aksi baris datar bergaris tipis (*inline ruled demo action*) dengan monogram `A` dan pengisian form 1-klik.
+  - [x] Pembersihan 100% kelas warna heksadesimal Tailwind arbitrer, pembuangan `transition: all` dan efek pulsasi kartun (`animate-pulse`).
+
+- [x] **35.4. Hallmark Redesign Halaman Login Eksekutif Owner (`resources/views/auth/owner-login.blade.php`)**
+  - [x] Audit awal login owner dengan linter Hallmark: `node .agent/skills/hallmark/scripts/sloplint.mjs resources/views/auth/owner-login.blade.php --genre editorial --render`.
+  - [x] Transformasi ke estetika **Executive Financial Portal** menggunakan token `--adm-*`: kanvas limewash alabaster `--adm-paper`, kartu cotton stock `--adm-surface`, aksen Cool Slate Titanium `--adm-accent` (`oklch(41% 0.075 248)`), dan radius presisi 2px.
+  - [x] Pembuangan total ornamen *AI Slop*: efek ambient blur kuning/amber (`blur-2xl`), gradien oranye/kuning norak, dan elemen dekoratif fiktif.
+  - [x] Redesign masthead topbar eksekutif dengan tipografi tenang, breadcrumb ringan ke etalase publik, dan badge stempel peran kurasi (*Executive Portal*).
+  - [x] Penerapan display serif **Sentient** pada tajuk portal eksekutif dan subjudul terukur satu kalimat lugas.
+  - [x] Redesign kontrol formulir kredensial pemilik usaha dengan kontrol bergaris batas presisi dan `:focus-visible` seketika.
+  - [x] Eliminasi *card-in-card* pada quick demo chip owner: transformasi menjadi aksi inline ruled ber-monogram `O`.
+  - [x] Pembersihan 100% warna literal heksadesimal arbitrer dan penegakan ketat aturan *The Floor* Hallmark.
+
+- [x] **35.5. Audit Sloplint, The Floor Compliance Sweep, Form Accessibility & QA Testing**
+  - [x] Eksekusi linter Hallmark pada seluruh direktori auth: `node .agent/skills/hallmark/scripts/sloplint.mjs resources/views/auth --genre editorial --render`.
+  - [x] Verifikasi dan perbaikan 100% temuan FAIL dan REFLEX hingga seluruh halaman berstatus lulus bersih.
+  - [x] Uji aksesibilitas keyboard: memastikan seluruh input formulir, tombol toggle password, checkbox, tombol submit, dan tombol Google memiliki cincin `:focus-visible` seketika saat navigasi menggunakan tombol `Tab`.
+  - [x] Uji responsivitas formulir autentikasi pada berbagai ukuran layar (mobile 375px, tablet 768px, laptop 1280px, dan desktop 1440px / 1920px terpusat).
+  - [x] Eksekusi seluruh automated test suite Laravel (`php artisan test`) untuk memastikan nol regresi fungsional pada alur login, registrasi, rate limiter, CSRF, Google OAuth, dan isolasi role multi-portal.
+
+---
+
+### Phase 36: Konfigurasi Sistem & Integrasi API Monitoring Status Koneksi Payment Gateway Midtrans, WhatsApp Fonnte, SMTP Mailer, dan Google OAuth 2.0 (System Configuration & Third-Party API Health Monitoring Suite)
+> **Konteks Fase 36:** Platform Rap-iPhone mengandalkan empat pilar integrasi layanan pihak ketiga: **Midtrans Payment Gateway (Snap API & Webhook)** untuk transaksi moneter otomatis, **WhatsApp Fonnte Gateway** untuk notifikasi seketika alur belanja dan *trade-in*, **SMTP Mailer & DomPDF Engine** untuk pengiriman faktur resmi terlampir, serta **Google Console OAuth 2.0 (Socialite)** untuk Single Sign-On (SSO) pelanggan. Fase 36 memodernisasi arsitektur monitoring dari sekadar pengecekan string statis di `.env` menjadi rangkaian pemantauan kesehatan sistem terpadu (*system health & live diagnostic probe engine*):
+> - Memindahkan controller pengaturan dari namespace customer (`StorefrontUtilityController.php`) ke controller admin dedikasi `App\Http\Controllers\Admin\SystemSettingController.php`.
+> - Membangun `App\Services\SystemHealthService.php` dengan kapabilitas *live connection probe* (timeout 3 detik), pengukuran latensi respon (ms), diagnosis kegagalan otentikasi/timeout jaringan, serta ringkasan spesifikasi runtime sistem.
+> - Menyediakan endpoint AJAX `POST /admin/settings/test/{gateway}` dan meredesain `resources/views/admin/settings.blade.php` dengan estetika **Hallmark Luxury / Editorial** (kartu status stempel kurasi, indikator latensi tabular, tombol *"Uji Koneksi"* interaktif dengan spinner feedback, panel ringkasan infrastruktur sistem, dan tabel log notifikasi real-time).
+> - Memperkaya view composer `$shell` pada `AppServiceProvider.php` untuk memonitor status keempat layanan eksternal di topbar panel Admin dan Owner.
+> - Penulisan automated test suite `tests/Feature/SystemConfigurationMonitoringTest.php` untuk menjamin keandalan 100% dan nol regresi.
+
+- [x] **36.1. Pembuatan Service Layer Pemantauan Kesehatan Sistem & Probe API (`App\Services\SystemHealthService.php`)**
+  - [x] Pembuatan method `getFullStatus(bool $livePing = false)` yang mengagregasikan status Midtrans, Fonnte, SMTP, Google OAuth, dan ringkasan runtime sistem.
+  - [x] Implementasi `probeMidtrans(bool $livePing)`: Verifikasi Server Key, deteksi mode Sandbox vs Production, URL webhook callback, dan live HTTP ping dengan basic auth ke Midtrans API disertai kalkulasi latensi (ms).
+  - [x] Implementasi `probeFonnte(bool $livePing)`: Verifikasi Token Fonnte, endpoint pengiriman pesan, dan live HTTP probe ke endpoint device status Fonnte disertai kalkulasi latensi (ms).
+  - [x] Implementasi `probeSmtp(bool $livePing)`: Deteksi mail driver (`log`/`smtp`), host, port, enkripsi, dan live socket handshake (`fsockopen` timeout 3s) untuk memverifikasi kesiapan server email tanpa spamming.
+  - [x] Implementasi `probeGoogleOAuth(bool $livePing)`: Verifikasi Client ID & Redirect URI Socialite, dan live HTTP probe ke Google OpenID Discovery (`https://accounts.google.com/.well-known/openid-configuration`) untuk mengonfirmasi reachability server autentikasi Google.
+  - [x] Implementasi `getSystemEnvironmentInfo()`: Menampilkan versi PHP, versi Laravel, koneksi database aktif, driver cache & queue, status symlink storage publik, dan waktu server.
+
+- [x] **36.2. Restrukturisasi Controller Layer & Routing Admin Settings (`SystemSettingController.php`)**
+  - [x] Pembuatan controller khusus `App\Http\Controllers\Admin\SystemSettingController.php` dengan dependensi `SystemHealthService` yang terinjeksi rapi.
+  - [x] Penghapusan method `adminSettings()` dari `App\Http\Controllers\Customer\StorefrontUtilityController.php` guna menegakkan *Single Responsibility Principle* dan pemisahan wewenang operasional admin vs etalase publik pelanggan.
+  - [x] Pendaftaran rute baru pada `routes/web.php`: `GET /admin/settings` (`admin.settings`) dan endpoint AJAX `POST /admin/settings/test/{gateway}` (`admin.settings.test`) di bawah middleware `auth` dan `role:admin,owner`.
+
+- [x] **36.3. Hallmark Editorial Redesign Antarmuka Pengaturan & Diagnostic Dashboard (`admin/settings.blade.php`)**
+  - [x] Penerapan estetika **Hallmark Luxury / Editorial** dengan token `--adm-*`, garis pembatas hairline halus, font Sentient Display dan Hanken Grotesk / tabular nums.
+  - [x] Penyediaan kartu integrasi interaktif untuk Midtrans, Fonnte, SMTP, dan Google OAuth lengkap dengan detail konfigurasi dan footer aksi probe.
+  - [x] Penambahan tombol *"Uji Koneksi"* individual per gateway serta tombol *"Uji Semua Koneksi"* di header yang memicu probe AJAX tanpa reload halaman.
+  - [x] Visualisasi feedback status seketika: badge stempel status (*Connected*, *Standby*, *Auth Failed*, *Offline*), latensi aktual (`[xx ms]`), dan pesan diagnostik detail.
+  - [x] Penambahan panel spesifikasi runtime sistem (PHP, Laravel, Database, Queue, Cache, Public Storage Link, Server Timestamp).
+  - [x] Preservasi tabel log notifikasi real-time (`recentLogs`) untuk audit jejak pengiriman pesan WhatsApp dan Email.
+  - [x] Preservasi 100% assertion teks untuk kompatibilitas pengujian eksisting (`Phase17To24AdminUiTest` & `Phase12EndToEndAndFinalizationTest`).
+
+- [x] **36.4. Ekstensi Topbar View Composer Status Gateway (`AppServiceProvider.php`)**
+  - [x] Pembaruan view composer `layouts.admin` pada `AppServiceProvider.php` agar variabel `$shell` menyediakan status 4 gateway lengkap (Midtrans, Fonnte, SMTP, Google OAuth).
+  - [x] Menjaga backward compatibility penuh dengan properti eksisting `$shell['midtrans']` dan `$shell['fonnte']` agar layout admin dan owner tidak mengalami error.
+
+- [x] **36.5. Pembuatan Automated Feature Test Suite & Verifikasi QA Menyeluruh**
+  - [x] Pembuatan test suite terdedikasi `tests/Feature/SystemConfigurationMonitoringTest.php` yang menguji:
+    - Akses halaman `/admin/settings` oleh Admin Operasional dan Pemilik Usaha (Owner).
+    - Proteksi penolakan akses oleh Pelanggan (*Customer*) dan Pengunjung belum login (*Guest*).
+    - Validasi struktur output `SystemHealthService::getFullStatus()`.
+    - Simulasi live probe AJAX untuk Midtrans, Fonnte, SMTP, dan Google OAuth menggunakan `Http::fake()`.
+    - Penolakan gateway tidak dikenal dengan respon HTTP 404.
+    - Penolakan pemanggilan endpoint probe oleh role Pelanggan (`403 Forbidden`).
+  - [x] Verifikasi 100% kelulusan seluruh test suite (`php artisan test`) dan kompilasi aset frontend (`cmd /c npm run build`).
+
+

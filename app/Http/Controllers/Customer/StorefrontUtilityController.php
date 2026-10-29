@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
-use App\Models\NotificationLog;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\ProductVariant;
@@ -80,45 +79,6 @@ class StorefrontUtilityController extends Controller
             'orderQuery' => '',
             'trackedOrder' => null,
         ]);
-    }
-
-    /**
-     * Halaman Konfigurasi Sistem & Status Integrasi API Pihak Ketiga (/admin/settings).
-     */
-    public function adminSettings(): View
-    {
-        $midtransKey = (string) config('services.midtrans.server_key', '');
-        $fonnteToken = (string) config('services.fonnte.token', '');
-        $googleClientId = (string) config('services.google.client_id', '');
-        $smtpHost = (string) config('mail.mailers.smtp.host', '');
-
-        $integrations = [
-            'midtrans' => [
-                'name' => 'Midtrans Payment Gateway (Snap API & Webhook)',
-                'mode' => config('services.midtrans.is_production') ? 'Production' : 'Sandbox Mode',
-                'configured' => !empty($midtransKey) && !str_contains($midtransKey, 'your_midtrans'),
-                'webhook_url' => route('api.midtrans.callback'),
-            ],
-            'fonnte' => [
-                'name' => 'Fonnte WhatsApp Notification Gateway',
-                'endpoint' => config('services.fonnte.api_url', 'https://api.fonnte.com/send'),
-                'configured' => !empty($fonnteToken) && !str_contains($fonnteToken, 'your_fonnte'),
-            ],
-            'smtp' => [
-                'name' => 'Laravel Mailer & DomPDF Invoice Engine',
-                'driver' => config('mail.default', 'log'),
-                'host' => $smtpHost ?: 'localhost / log fallback',
-            ],
-            'google' => [
-                'name' => 'Google Console OAuth 2.0 (Socialite)',
-                'redirect' => config('services.google.redirect'),
-                'configured' => !empty($googleClientId) && !str_contains($googleClientId, 'your_google'),
-            ],
-        ];
-
-        $recentLogs = NotificationLog::latest('created_at')->take(8)->get();
-
-        return view('admin.settings', compact('integrations', 'recentLogs'));
     }
 }
 

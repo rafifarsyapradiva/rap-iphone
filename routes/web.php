@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\OrderManagementController;
 use App\Http\Controllers\Admin\ProductManagementController;
+use App\Http\Controllers\Admin\SystemSettingController;
 use App\Http\Controllers\Admin\TradeInVerificationController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\AuthController;
@@ -234,8 +235,9 @@ Route::middleware(['auth', 'role:admin,owner'])->prefix('admin')->name('admin.')
         Route::patch('/{tradeIn:trade_in_code}/decision', [TradeInVerificationController::class, 'updateDecision'])->name('decision');
     });
 
-    // System & Third-Party API Configuration Status (Phase 12)
-    Route::get('/settings', [StorefrontUtilityController::class, 'adminSettings'])->name('settings');
+    // System & Third-Party API Configuration & Health Monitoring (Phase 36)
+    Route::get('/settings', [SystemSettingController::class, 'index'])->name('settings');
+    Route::post('/settings/test/{gateway}', [SystemSettingController::class, 'testConnection'])->name('settings.test');
 });
 
 /*

@@ -17,6 +17,8 @@ Didukung oleh framework **Laravel 12**, basis data **MySQL**, dan template engin
   - **Pemilik Usaha (Owner)** melalui portal eksekutif mandiri (`/owner/login` — **Fase 15**).
 - **Panel Admin & Owner Hallmark Luxury / Editorial Redesign (Fase 17–24)**: seluruh halaman operasional dan analitik eksekutif (dashboard admin, produk, pesanan, trade-in, dashboard owner, laporan keuangan, staf, konfigurasi) diredesain menggunakan standar keahlian **Hallmark Redesign** dengan tone **Luxury / Editorial** (kombinasi display serif anggun, grotesque tajam, buku besar *Trade Ledger*, palet limewash hangat, aksen titanium slate, hairlines presisi, dan kepatuhan penuh aturan *The Floor* — lihat §4.5).
 - **Etalase Belanja Customer Hallmark Luxury Retail & Studio Redesign (Fase 25–32)**: seluruh halaman etalase publik (layout master, beranda showcase flagship, katalog filter multi-kondisi, halaman detail produk / PDP Split Studio, keranjang belanja, checkout Midtrans Snap, wizard trade-in 4 langkah, riwayat pesanan, konfirmasi pembayaran) diredesain menggunakan standar keahlian **Hallmark Redesign** dengan tone **Luxury Retail & Studio Precision** (kombinasi kanvas limewash alabaster, kartu cotton stock, display serif Sentient berbobot ringan, grotesque Hanken Grotesk / Geist dengan `tabular-nums`, aksen titanium slate & retail blue, tata letak anatomi *job: buy*, rasio 80 kata per layar, dan kepatuhan penuh aturan *The Floor* — lihat §4.6).
+- **Multi-Portal Auth Suite Hallmark Luxury Editorial & Studio Redesign (Fase 35)**: seluruh antarmuka pintu masuk dan autentikasi mandiri (customer login `/login`, customer register `/register`, admin operations login `/admin/login`, owner executive login `/owner/login`) diredesain secara komprehensif menggunakan standar keahlian **Hallmark Redesign** (`.agent/skills/hallmark/`). Redesign ini secara khusus menuntaskan permasalahan tampilan antarmuka autentikasi yang sebelumnya masih tidak rapi, berantakan, inkonsisten, dan memuat pelanggaran *AI Slop* (kartu bersarang/card-in-card pada demo chip & benefit cards, warna literal heksadesimal acak yang menyimpang dari token `:root`, transisi tidak terarah `transition: all`, label tracked capitals, pemisah middle-dot, dan sudut balon `rounded-3xl`). Portal Pelanggan mengadopsi estetika **Luxury Retail & Studio Precision** (token `--cust-*`, kanvas limewash, kartu cotton stock hairline, display serif Sentient, tombol Google OAuth minimalis, demo chip inline), sedangkan Portal Admin & Owner mengadopsi estetika **Luxury / Editorial** (token `--adm-*`, display serif Sentient, format buku kas *Store Operations Ledger* & *Executive Financial Portal* presisi dengan aksen Cool Slate Titanium, serta kepatuhan 100% pada 16 aturan *The Floor* — lihat §4.9).
+- **Konfigurasi Sistem & Integrasi API Monitoring (Fase 36)**: pemantauan status koneksi live secara real-time untuk 4 integrasi pihak ketiga eksternal (Payment Gateway Midtrans, WhatsApp Fonnte, SMTP Mailer, dan Google OAuth 2.0), dilengkapi pengukuran latensi (ms), live test probe via AJAX, ringkasan spesifikasi runtime sistem, dan pemisahan arsitektur controller admin khusus (`SystemSettingController`) yang terisolasi dari kontrol etalase pelanggan — lihat §4.10 dan §11.
 
 ---
 
@@ -115,6 +117,11 @@ Setiap tingkatan pengguna (*Customer*, *Admin Operasional*, dan *Owner*) memilik
    - Daftar antrean pengajuan dari customer.
    - Form verifikasi fisik unit saat diterima di toko.
    - Penyesuaian penawaran harga final & tombol persetujuan transfer/tukar.
+5. **Konfigurasi Sistem & Monitoring Integrasi API (Fase 36)**:
+   - Monitoring status live 4 gateway eksternal (Payment Gateway Midtrans, WhatsApp Fonnte, SMTP Mailer, dan Google OAuth 2.0).
+   - Diagnostic probe dengan pengukuran latensi (ms), deteksi status koneksi, dan tombol pengujian langsung via AJAX tanpa refresh halaman.
+   - Audit jejak pengiriman pesan notifikasi WhatsApp dan Email terpadu secara real-time.
+   - Informasi spesifikasi runtime sistem (versi PHP, Laravel, status DB, Cache, Queue, dan Symlink storage publik).
 
 #### 4.4. Modul Pemilik Usaha / Owner Dashboard (`Fase 15 — Jalur Login Owner Sendiri`)
 1. **Portal Login Mandiri Eksekutif Owner (`/owner/login` — `Fase 15`)**:
@@ -244,6 +251,52 @@ Untuk menjaga keandalan sistem berskala produksi, platform Rap-iPhone menerapkan
 
 ---
 
+#### 4.9. Standar UI/UX Multi-Portal Auth Suite — Hallmark Luxury Editorial & Studio Redesign (`Fase 35`)
+Rangkaian halaman autentikasi pintu masuk (`/login`, `/register`, `/admin/login`, `/owner/login`) ditransformasi total menggunakan kerangka kerja **Hallmark Redesign** dengan mengacu pada standar keahlian `.agent/skills/hallmark/`:
+
+1. **Konteks & Analisis Masalah UI/UX Autentikasi Saat Ini**:
+   - **Ketidakrapian & Tampilan Berantakan**: Antarmuka autentikasi yang dibuat pada Fase 14, 15, dan 16 belum tersentuh sistem desain modern Hallmark (yang sebelumnya diterapkan pada panel admin/owner di Fase 17–24 dan etalase customer di Fase 25–32).
+   - **Pelanggaran "AI Slop" & Ketidaksesuaian Standar**:
+     - *Card-in-Card Nesting* (Pelanggaran F11): Terdapat kartu bersarang di dalam kartu utama, seperti *quick demo credential chips* dan *shopping perks* yang dikemas dalam rounded container bertingkat.
+     - *Arbitrary Literal Hex Colors* (Pelanggaran F1): Bertaburan kelas Tailwind heksadesimal arbitrer (`bg-[#F5F5F7]`, `border-[#E5E5EA]`, `text-[#1D1D1F]`, `text-[#0066CC]`, `text-[#B45309]`) alih-alih token CSS sistem `:root`.
+     - *Sembarangan Animasi & Transisi* (Pelanggaran F2): Penggunaan `transition: all` dan `active:scale-[0.99]` yang melanggar disiplin gerak mikro.
+     - *Tracked Capitals & Meta Strings* (Pelanggaran F9 & F10): Label menggunakan huruf kapital renggang (`uppercase tracking-wider`) dan pemisah tautan berupa middle-dot (`&bull;`).
+     - *Sudut Balon & Ketiadaan Fokus Presisi*: Sudut membulat `rounded-3xl` yang kekanak-kanakan serta ketiadaan ring fokus keyboard seketika (`:focus-visible` / F6).
+
+2. **Filosofi & Karakteristik Desain per Portal Autentikasi**:
+   - **Portal Pelanggan (`/login` & `/register`) — Hallmark Luxury Retail & Studio Precision**:
+     - Menggunakan token CSS `--cust-*` dari `resources/css/customer.css`.
+     - Kanvas limewash alabaster `--cust-paper` (`oklch(97.2% 0.006 215)`), kartu *Cotton Stock* `--cust-surface` (`#FFFFFF`) bergaris pembatas *hairline* `1px solid oklch(88% 0.008 75)`, tinta utama obsidian pekat `--cust-ink`, dan teks sekunder slate `--cust-ink-muted`.
+     - Tipografi tajuk display menggunakan serif berwibawa ringan **Sentient** (Fontshare CDN, bobot 300/400) dan teks tubuh grotesque **Hanken Grotesk** / **Geist**.
+     - Tombol Google OAuth 1-klik yang tenang, elegan, tanpa border gradien norak.
+     - Transformasi demo account helper menjadi aksi baris kurasi (*inline ruled action*) satu baris bergaris batas halus tanpa kartu bersarang (*zero card-in-card*).
+     - Form registrasi mandiri (`/register`) berstruktur vertikal teratur dengan checklist persetujuan syarat & ketentuan bergaris hairline halus.
+   - **Portal Admin Operasional (`/admin/login`) — Hallmark Luxury / Editorial**:
+     - Menggunakan token CSS `--adm-*` dari `resources/css/admin.css`.
+     - Mengadopsi format buku catatan kurasi operasional (*Store Operations Ledger*): kanvas limewash alabaster `--adm-paper`, kartu cotton stock `--adm-surface`, kepala form beraksen display serif Sentient, badge stempel operasional kurasi (`--adm-badge`), aksen tunggal Cool Slate Titanium `--adm-accent`, dan kontrol input bergaris batas presisi dengan ring fokus seketika (`:focus-visible`).
+     - Quick demo chip khusus staf admin disajikan dalam format inline ruled text bersih.
+   - **Portal Pemilik Usaha / Owner (`/owner/login`) — Hallmark Luxury / Editorial**:
+     - Menggunakan token CSS `--adm-*` dari `resources/css/admin.css`.
+     - Mengadopsi format portal finansial eksekutif (*Executive & Financial Portal*): wibawa tenang display serif Sentient, aksen Cool Slate Titanium, layout bersahaja bebas distraksi tanpa efek ambient glow atau gradien kuning/oranye norak, dan demo helper chip eksekutif bergaris hairline.
+
+3. **Penegakan Penuh 16 Aturan Non-Waivable "The Floor" dari Hallmark (F1–F16)**:
+   - **F1**: 100% warna dan font bersumber dari token deklarasi `:root` (`customer.css` atau `admin.css`), bebas dari warna heksadesimal literal di dalam Blade template.
+   - **F2**: Bebas dari `transition: all`; dilarang keras menganimasikan `width`, `height`, `top`, `left`.
+   - **F4**: Kontainer root terikat `overflow-x: clip` (bukan `hidden` atau `100vw`).
+   - **F6**: Setiap elemen interaktif (input, tombol submit, tombol Google, link) memiliki `:focus-visible` seketika.
+   - **F7**: Fallback `@media (prefers-reduced-motion: reduce)` pada setiap interaksi gerak.
+   - **F9**: Label input dan navigasi menggunakan huruf sentence case atau lower case untracked (tanpa tracked capitals atau small caps).
+   - **F10**: Tanpa pemisah middle-dot (`&bull;`) atau panah dekoratif yang ditempel paksa ke teks tautan.
+   - **F11**: Dilarang menggunakan kartu di dalam kartu (*card inside a card*), gradien ungu-ke-biru, atau emotikon sebagai ikon.
+   - **F12 & F13**: Prinsip "One Idea Per Screen": tajuk utama, pengantar, dan formulir tampak utuh pada viewport tanpa scrolling berlebihan; rasio kata padat dan lugas.
+   - **F14**: Kontainer terpusat dan dibatasi maksimal lebar terukur (gutters melebar pada layar lebar).
+   - **F16**: Wajib lolos audit linter Hallmark (`node .agent/skills/hallmark/scripts/sloplint.mjs resources/views/auth --genre editorial --render`).
+
+4. **Preservasi 100% Logika Backend & Keamanan (Zero Breaking Changes)**:
+   - Seluruh rute Laravel (`login`, `register`, `admin.login`, `owner.login`), aksi controller (`AuthController`, `AdminAuthController`, `OwnerAuthController`, `GoogleAuthController`), CSRF token protection, password hashing Bcrypt, session fixation defense (`session()->regenerate()`), rate limiter anti brute-force, dan isolasi role guard tetap berfungsi 100%.
+
+---
+
 ### 5. Kebutuhan Non-Fungsional (NFR)
 1. **Keamanan (Security & Role-Isolated Auth)**:
    - Sanitasi input dan proteksi terhadap CSRF, XSS, serta SQL Injection (Eloquent ORM).
@@ -257,6 +310,7 @@ Untuk menjaga keandalan sistem berskala produksi, platform Rap-iPhone menerapkan
    - Antarmuka *mobile-first* yang mulus di smartphone, tablet, maupun layar desktop (baik untuk Portal Customer maupun Dashboard Enterprise Admin & Owner).
    - **Panel Admin & Owner (Fase 17–24)**: Menerapkan standar **Hallmark Luxury / Editorial Redesign** sesuai §4.5 dengan kepatuhan terhadap aturan *The Floor* dan lulus audit linter Hallmark (`node .agent/skills/hallmark/scripts/sloplint.mjs resources/views/admin resources/views/owner --genre editorial`).
    - **Etalase Pelanggan / Customer Storefront (Fase 25–32)**: Menerapkan standar **Hallmark Luxury Retail & Studio Redesign** sesuai §4.6 dengan kepatuhan terhadap 16 aturan non-waivable *The Floor* dan lulus audit linter Hallmark (`node .agent/skills/hallmark/scripts/sloplint.mjs resources/views/customer resources/views/layouts/customer.blade.php --genre editorial`). Dilarang memakai kelas tema gelap, gradien ungu-ke-biru, atau warna literal di luar token CSS deklarasi `:root`.
+   - **Multi-Portal Auth Suite (Fase 35)**: Menerapkan standar **Hallmark Luxury Editorial & Studio Redesign** sesuai §4.9 pada seluruh antarmuka pintu masuk (`resources/views/auth/login.blade.php`, `register.blade.php`, `admin-login.blade.php`, `owner-login.blade.php`) dengan kepatuhan penuh terhadap 16 aturan *The Floor* (menghilangkan card-in-card, warna literal heksadesimal, transition all, tracked capitals, middle dots) dan lulus audit linter Hallmark (`node .agent/skills/hallmark/scripts/sloplint.mjs resources/views/auth --genre editorial --render`).
 3. **Kemudahan Pemeliharaan (Maintainability)**:
    - Arsitektur kode bersih berorientasi layanan (*Service Layer Pattern*) untuk Midtrans, Fonnte, Mailer, dan PDF Generator.
    - Konfigurasi kredensial terisolasi penuh pada file `.env`.
@@ -319,3 +373,28 @@ Untuk menjaga keandalan sistem berskala produksi, platform Rap-iPhone menerapkan
   - Menegakkan rate limiting anti-brute force multi-portal, perlindungan session fixation, dan security headers lengkap.
   - Mengamankan upload file (whitelist MIME, ukuran max 3MB, hash acak) dan menerapkan verifikasi integritas HMAC-SHA256 pada nota faktur PDF ber-QR Code dengan masking PII pelanggan.
   - Verifikasi otomatis komprehensif melalui automated test suite `tests/Feature/SecurityHardeningTest.php` dan eksekusi seluruh regression suite `php artisan test`.
+
+---
+
+### 10. Roadmap Lanjutan: Hallmark Multi-Portal Auth Suite Redesign (Fase 35)
+- **Fase 35: Hallmark Luxury Editorial & Studio Redesign — Multi-Portal Auth Suite (Customer Login & Register, Admin Login, Owner Login)**
+  - Mengeliminasi ketidakrapian dan kekacauan visual pada 4 halaman pintu masuk autentikasi utama (`/login`, `/register`, `/admin/login`, `/owner/login`).
+  - Menerapkan kerangka kerja **Hallmark Redesign** (`.agent/skills/hallmark/`) dengan membagi dua arahan estetika: **Luxury Retail & Studio Precision** (Customer) dan **Luxury / Editorial** (Admin & Owner).
+  - Menegakkan kepatuhan 100% terhadap 16 aturan *The Floor* dari Hallmark (menghilangkan card-in-card, arbitrary hex classes, transition all, tracked capitals, middle dots, dan sudut balon membulat berlebihan).
+  - Mempertahankan 100% keandalan isolasi peran (*Strict Multi-Portal Role Isolation*), otorisasi, keamanan sesi, dan proteksi brute force yang telah dibangun pada Fase 14, 15, 16, 33, dan 34.
+  - Verifikasi otomatis komprehensif melalui Hallmark linter (`node .agent/skills/hallmark/scripts/sloplint.mjs resources/views/auth --genre editorial --render`), unit/feature test suite (`php artisan test`), dan pengujian aksesibilitas keyboard `:focus-visible`.
+
+---
+
+### 11. Roadmap Lanjutan: Konfigurasi Sistem & Integrasi API Monitoring Status Koneksi Midtrans, WhatsApp Fonnte, SMTP Mailer, dan Google OAuth 2.0 (Fase 36)
+- **Fase 36: System Configuration & Third-Party API Health Monitoring Suite**
+  - Transformasi pemantauan status konfigurasi dari pengecekan statis file `.env` menjadi *live diagnostic probe engine* real-time (`App\Services\SystemHealthService`).
+  - Pemantauan status 4 gateway eksternal utama:
+    - **Midtrans Payment Gateway**: mode Sandbox/Production, validasi Server Key, URL Webhook Callback, dan HTTP probe berlatensi (ms).
+    - **WhatsApp Fonnte**: validasi Token, endpoint pengiriman pesan, dan probe status koneksi perangkat WhatsApp secara langsung.
+    - **SMTP Mailer**: validasi driver email, host, port, enkripsi, serta socket handshake (`fsockopen`) untuk menguji ketersediaan port email tanpa mengirim pesan fiktif.
+    - **Google Console OAuth 2.0**: validasi Client ID, Redirect URI Socialite, dan HTTP probe ke Google OpenID Configuration endpoint.
+  - Pemisahan arsitektur controller admin khusus (`App\Http\Controllers\Admin\SystemSettingController`) yang mengeliminasi ketercampuran tanggung jawab di controller pelanggan (`StorefrontUtilityController`).
+  - Redesign antarmuka `/admin/settings` mengadopsi estetika **Hallmark Luxury / Editorial** dengan tombol aksi *"Uji Koneksi"* live ber-spinner, ringkasan spesifikasi runtime server (PHP, Laravel, Database, Cache, Queue, Public Storage Symlink, Server Time), dan log riwayat notifikasi.
+  - Sinkronisasi status koneksi 4 gateway pada variabel `$shell` (`AppServiceProvider`) untuk indikator topbar masthead panel Admin dan Owner.
+  - Verifikasi otomatis melalui dedicated automated test suite `tests/Feature/SystemConfigurationMonitoringTest.php` dan pengujian regresi seluruh sistem (`php artisan test`).

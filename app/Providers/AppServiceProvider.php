@@ -31,8 +31,14 @@ class AppServiceProvider extends ServiceProvider
 
             $midtransKey = (string) config('services.midtrans.server_key', '');
             $fonnteToken = (string) config('services.fonnte.token', '');
+            $googleClientId = (string) config('services.google.client_id', '');
+            $smtpHost = (string) config('mail.mailers.smtp.host', '');
+            $mailDriver = (string) config('mail.default', 'log');
+
             $midtransOk = $midtransKey !== '' && ! str_contains($midtransKey, 'your_midtrans');
             $fonnteOk = $fonnteToken !== '' && ! str_contains($fonnteToken, 'your_fonnte');
+            $googleOk = $googleClientId !== '' && ! str_contains($googleClientId, 'your_google');
+            $smtpOk = ! in_array($mailDriver, ['log', 'array']) || ($smtpHost !== '' && ! str_contains($smtpHost, 'localhost'));
 
             $view->with('shell', [
                 'pending_orders' => Order::where('status', 'paid')->count(),
@@ -46,6 +52,14 @@ class AppServiceProvider extends ServiceProvider
                 'fonnte' => [
                     'ok' => $fonnteOk,
                     'label' => $fonnteOk ? 'WhatsApp Aktif' : 'WhatsApp Simulasi',
+                ],
+                'smtp' => [
+                    'ok' => $smtpOk,
+                    'label' => $smtpOk ? 'Mailer Host Siap' : 'Mailer Log Simulasi',
+                ],
+                'google' => [
+                    'ok' => $googleOk,
+                    'label' => $googleOk ? 'Google SSO Aktif' : 'Google SSO Standby',
                 ],
             ]);
         });

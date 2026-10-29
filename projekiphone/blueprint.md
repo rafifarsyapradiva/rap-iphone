@@ -14,6 +14,12 @@
 |  |  Studio Precision:       |  |  Sentient Serif, Trade Ledgers, Cotton Stock) |  |
 |  |  Sentient, Split Studio)  |  |                                               |  |
 |  +---------------------------+  +-----------------------------------------------+  |
+|  +-----------------------------------------------------------------------------+  |
+|  | Multi-Portal Auth Suite (Fase 35: Hallmark Luxury Retail & Editorial)        |  |
+|  |  - Customer /login & /register: Limewash Studio, Sentient, Zero Card-in-Card|  |
+|  |  - Admin /admin/login: Store Operations Ledger, Sentient Serif, Hairlines   |  |
+|  |  - Owner /owner/login: Executive Financial Portal, Cool Slate Titanium      |  |
+|  +-----------------------------------------------------------------------------+  |
 +----------------------------------------+------------------------------------------+
                                          | HTTP / HTTPS Requests
                                          v
@@ -38,6 +44,7 @@
 |  + CartController & CheckoutController                                            |
 |  + TradeInController                                                              |
 |  + Admin\OrderController, Admin\ProductController, Admin\TradeInController        |
+|  + Admin\SystemSettingController (Fase 36 — Monitoring & Diagnostic Probe)        |
 |  + Owner\DashboardController, Owner\FinancialReportController                     |
 |                                                                                   |
 |  [ SERVICE LAYER ]                                                                |
@@ -45,6 +52,7 @@
 |  + App\Services\FonnteService        -> WhatsApp Notifications API Client         |
 |  + App\Services\InvoicePdfService    -> DomPDF Generator Engine                   |
 |  + App\Services\NotificationService  -> Multi-channel Orchestrator (WA + Email)   |
+|  + App\Services\SystemHealthService  -> Live Gateway Health & Diagnostic Probe    |
 |                                                                                   |
 |  [ EVENT & LISTENER DISPATCH ]                                                    |
 |  + OrderCreatedEvent                 -> Notif WA & Email Tagihan                  |
@@ -277,7 +285,8 @@ app/
 │   │   ├── Admin/
 │   │   │   ├── ProductManagementController.php
 │   │   │   ├── OrderManagementController.php
-│   │   │   └── TradeInVerificationController.php
+│   │   │   ├── TradeInVerificationController.php
+│   │   │   └── SystemSettingController.php     <-- Fase 36: Konfigurasi Sistem & Live API Monitoring
 │   │   ├── Owner/
 │   │   │   ├── ExecutiveDashboardController.php
 │   │   │   ├── FinancialReportController.php
@@ -298,7 +307,8 @@ app/
 │   ├── MidtransService.php         <-- Generate Snap Token & Cek Status
 │   ├── FonnteService.php           <-- Kirim Pesan WhatsApp via Fonnte API
 │   ├── InvoicePdfService.php       <-- Render Nota PDF DomPDF
-│   └── NotificationOrchestrator.php<-- Trigger WA + Email serentak
+│   ├── NotificationOrchestrator.php<-- Trigger WA + Email serentak
+│   └── SystemHealthService.php     <-- Fase 36: Live Connection Probe Engine & Diagnostic Runner
 └── Mail/
     ├── OrderInvoiceMail.php        <-- Mailable dengan attachment Nota PDF
     └── PaymentConfirmedMail.php
@@ -361,6 +371,43 @@ app/
   - Rincian Produk: Seri iPhone, Varian Warna, Kapasitas, Nomor IMEI Unit, Status Garansi, Harga Satuan, Diskon, Total.
   - QR Code Validasi Keaslian Nota.
   - Syarat & Ketentuan Klaim Garansi Toko & Garansi Resmi.
+
+#### 4.5. Sistem Pemantauan Konektivitas & Diagnostik API Real-Time (System Health & API Monitoring Suite — Fase 36)
+- **Service Engine**: `App\Services\SystemHealthService`
+- **Controller Admin**: `App\Http\Controllers\Admin\SystemSettingController`
+- **Tujuan Arsitektur**: Mengubah pengecekan statis `.env` menjadi sistem pemantauan aktif yang mampu melakukan *live connection probe* (dengan batasan network timeout 3 detik), pengukuran latensi respon (ms), diagnosis pesan error HTTP/Socket, serta agregasi status infrastruktur runtime ke antarmuka Admin & Owner.
+
+1. **Spesifikasi Probe Gateway Pihak Ketiga**:
+   - **Midtrans Payment Gateway**:
+     - *Endpoint Probe*: `GET {baseUrl}/v2/token` dengan header `Authorization: Basic {base64(serverKey + ':')}`.
+     - *Status Evaluasi*: `connected` (HTTP 200, 400, 404 menandakan gateway online & responsif), `invalid_credentials` (HTTP 401 Unauthorized), `offline` (Connection Timeout/DNS failure).
+   - **WhatsApp Fonnte Gateway**:
+     - *Endpoint Probe*: `POST https://api.fonnte.com/device` dengan header `Authorization: {token}`.
+     - *Status Evaluasi*: `connected` (HTTP 200 dengan `device_status: connect`), `disconnected` (device offline/scan QR needed), `invalid_credentials` (HTTP 401/token salah), `simulation` (kredensial belum diset).
+   - **SMTP Mailer Transport**:
+     - *Socket Probe*: Handshake socket TCP ke `config('mail.mailers.smtp.host')` pada port `config('mail.mailers.smtp.port')` via `fsockopen` (timeout 3 detik).
+     - *Status Evaluasi*: `connected` (socket terbuka dan banner greeting `220` terbaca), `simulation` (jika driver `log` atau `array`), `offline` (koneksi ditolak / port timeout).
+   - **Google Console OAuth 2.0 (Socialite)**:
+     - *Discovery Probe*: `GET https://accounts.google.com/.well-known/openid-configuration`.
+     - *Status Evaluasi*: `connected` (HTTP 200 dan endpoint OpenID terbaca dengan Client ID valid), `ready` (siap dikonfigurasi), `offline` (koneksi timeout).
+
+2. **Endpoint & Kontrak Data API Diagnostik**:
+   - `GET /admin/settings` -> Merender halaman dashboard konfigurasi dan log notifikasi.
+   - `POST /admin/settings/test/{gateway}` -> Mengembalikan respon JSON:
+     ```json
+     {
+       "key": "midtrans",
+       "name": "Midtrans Payment Gateway (Snap API & Webhook)",
+       "configured": true,
+       "mode": "Sandbox Mode",
+       "status": "connected",
+       "latency_ms": 118,
+       "message": "Koneksi API Midtrans terhubung aktif (118ms)"
+     }
+     ```
+
+3. **Sinkronisasi Shell View Composer (`AppServiceProvider`)**:
+   - Menyediakan data status 4 gateway secara terpusat untuk topbar masthead panel Admin (`layouts.admin`) dan Owner (`layouts.admin`), sehingga staf dan pemilik usaha mendapatkan peringatan visual instan jika salah satu gateway pihak ketiga mengalami disrupsi.
 
 ---
 
@@ -536,11 +583,11 @@ resources/views/
 ├── layouts/
 │   ├── customer.blade.php       <-- Top Promo Ticker + Sticky Daylight Header + Digimap Footer
 │   └── admin.blade.php          <-- Digimap Enterprise Clean Light Sidebar & Topbar
-├── auth/
-│   ├── admin-login.blade.php    <-- Fase 14: Halaman Login Mandiri Admin Operasional (/admin/login)
-│   ├── owner-login.blade.php    <-- Fase 15: Halaman Login Mandiri Eksekutif Owner (/owner/login)
-│   ├── login.blade.php          <-- Fase 16: Halaman Login Mandiri Pelanggan + Google OAuth (/login)
-│   └── register.blade.php       <-- Fase 16: Halaman Registrasi Mandiri Pelanggan (/register)
+├── auth/                        <-- Fase 35: Hallmark Luxury Editorial & Studio Redesign Multi-Portal Suite
+│   ├── login.blade.php          <-- Fase 35: Customer Login Studio Precision (Sentient Serif, Token --cust-*, Google OAuth)
+│   ├── register.blade.php       <-- Fase 35: Customer Registration Form Terstruktur & Zero Card-in-Card
+│   ├── admin-login.blade.php    <-- Fase 35: Admin Operations Ledger Login (Sentient Serif, Token --adm-*, Inline Demo Chip)
+│   └── owner-login.blade.php    <-- Fase 35: Owner Executive Financial Portal Login (Titanium Accent, Token --adm-*)
 ├── components/
 │   ├── customer/                <-- Fase 25: product-card, spec-badge, button, color-swatch, battery-health-meter, section-header
 │   ├── admin/                   <-- Fase 17: page-header, stat-card, card, empty-state, status-badge
@@ -763,6 +810,72 @@ Seluruh warna, tipografi, dan spasi diwajibkan melewati token CSS deklarasi `:ro
 
 ---
 
+#### 6.6. Hallmark Multi-Portal Authentication Design System (Fase 35)
+
+Rangkaian antarmuka autentikasi (`/login`, `/register`, `/admin/login`, `/owner/login`) ditransformasi total menggunakan kerangka kerja **Hallmark Redesign** dengan standar keahlian `.agent/skills/hallmark/`:
+
+**a. Identifikasi Cacat Visual Desain Lama (Audit of Legacy Auth UI Flaws)**
+1. **Warna Literal Arbitrer**: Seluruh view auth lama menggunakan ratusan kelas warna heksadesimal Tailwind (`bg-[#F5F5F7]`, `border-[#E5E5EA]`, `text-[#1D1D1F]`, `text-[#0066CC]`, `text-[#B45309]`, `text-[#E30000]`) yang melanggar aturan F1 (wajib melalui token `:root`).
+2. **Kartu Bersarang (Card-in-Card Nesting - Pelanggaran F11)**:
+   - Pada `/login` dan `/register`: Container form dibungkus `rounded-3xl` card, lalu di dalamnya terdapat demo account chip yang dibungkus `rounded-xl` card lagi, serta shopping perk grid yang masing-masing berupa `rounded-xl` card kecil.
+   - Pada `/admin/login` dan `/owner/login`: Card utama membungkus demo chip yang juga berupa sub-card terpisah.
+3. **Gerak Mikro Sembarangan (Pelanggaran F2)**: Penggunaan `transition: all` dan `active:scale-[0.99]` tanpa kurva transisi terukur atau fallback reduced-motion.
+4. **Tipografi & Label Usang (Pelanggaran F9 & F10)**:
+   - Penggunaan huruf kapital renggang (`uppercase tracking-wider`, `tracking-widest`).
+   - Penggunaan middle-dot (`&bull;`) pada link navigasi multi-portal.
+5. **Sudut Balon & Ketiadaan Fokus Instan**: Penggunaan `rounded-3xl` yang kekanak-kanakan dan tidak konsisten dengan sistem desain Hallmark (`--cust-radius: 4px` / `--adm-radius: 2px`), serta ketiadaan status `:focus-visible` instan (F6).
+
+**b. Arsitektur Desain Baru per Portal Autentikasi**
+
+| Portal | Jalur & File View | Sistem Token & Gaya | Tipografi Utama | Pola Formulir & Demo Helper |
+|---|---|---|---|---|
+| **Customer Login** | `GET /login`<br>`resources/views/auth/login.blade.php` | **Hallmark Luxury Retail & Studio Precision**<br>Token `--cust-*` (`customer.css`) | Display: **Sentient** (300/400)<br>Body: **Hanken Grotesk** / **Geist** | Form cotton stock bergaris hairline, tombol Google OAuth minimalis, demo credential chip beralur satu baris (*inline ruled action*, zero card-in-card), trust strip bergaris datar. |
+| **Customer Register** | `GET /register`<br>`resources/views/auth/register.blade.php` | **Hallmark Luxury Retail & Studio Precision**<br>Token `--cust-*` (`customer.css`) | Display: **Sentient** (300/400)<br>Body: **Hanken Grotesk** / **Geist** | Form registrasi 1 kolom terstruktur, input nama/email/WhatsApp/password bergaris hairline, checklist syarat & ketentuan presisi, Google OAuth 1-klik. |
+| **Admin Login** | `GET /admin/login`<br>`resources/views/auth/admin-login.blade.php` | **Hallmark Luxury / Editorial**<br>Token `--adm-*` (`admin.css`) | Display: **Sentient** (300/400)<br>Body: **Hanken Grotesk** / tabular | Karakter *Store Operations Ledger*: header masthead tenang, kartu cotton stock radius 2px, input ruled lines, demo credential chip staf inline satu baris. |
+| **Owner Login** | `GET /owner/login`<br>`resources/views/auth/owner-login.blade.php` | **Hallmark Luxury / Editorial**<br>Token `--adm-*` (`admin.css`) | Display: **Sentient** (300/400)<br>Body: **Hanken Grotesk** / tabular | Karakter *Executive Financial Portal*: wibawa tenang display Sentient, sentuhan Cool Slate Titanium (`--adm-accent`), bebas dari efek glow/gradien oranye norak, demo helper eksekutif inline. |
+
+**c. Pola Formulir & 8 Status Kontrol Interaktif (References: patterns.md & interaction-and-states.md)**
+Setiap kontrol input teks, sandi, tombol aksi, dan checkbox pada seluruh portal autentikasi wajib mendukung 8 status interaksi yang presisi:
+1. *Default*: Border hairline `1px solid var(--cust-rule-hair)` / `var(--adm-rule-hair)`, latar bersih.
+2. *Hover*: Border menggelap halus ke tinta sekunder (`var(--cust-ink-muted)` / `var(--adm-ink-muted)`).
+3. *Focus-Visible Instan (F6)*: Muncul seketika tanpa jeda transisi:
+   - Customer: `outline: 2px solid var(--cust-signal)` dengan `outline-offset: 1px`.
+   - Admin & Owner: `outline: 2px solid var(--adm-focus)` dengan `outline-offset: 1px`.
+4. *Active*: Permukaan feedback mekanik tanpa efek scale sembarangan.
+5. *Filled*: Teks terisi menggunakan warna tinta utama `--cust-ink` / `--adm-ink` kontras tinggi.
+6. *Invalid / Error*: Garis batas semantik merah tenang (`oklch(55% 0.18 25)`), pesan error inline satu kalimat lugas.
+7. *Valid / Success*: Feedback validasi tenang tanpa icon centang berlebihan.
+8. *Disabled*: Opasitas 50%, kursor `not-allowed`.
+
+**d. Transformasi Demo Helper (Eliminasi Card-in-Card — F11)**
+- *Sebelum (AI Slop)*: Kartu bersarang besar di dalam form utama dengan ikon kartun, multiple nested divs, border berulang, dan tag badge melayang.
+- *Sesudah (Hallmark Inline Ruled Action)*: Satu baris aksi datar bergaris tipis (*ruled border top*):
+  ```html
+  <div class="auth-demo-bar">
+      <span class="auth-demo-label">Akun Demo Pelanggan</span>
+      <button type="button" onclick="fillLogin('customer@rap-iphone.com', 'password123')" class="auth-demo-action">
+          <span class="auth-demo-badge">C</span>
+          <span class="auth-demo-email">customer@rap-iphone.com</span>
+          <span class="auth-demo-cta">Gunakan &rarr;</span>
+      </button>
+  </div>
+  ```
+
+**e. Penegakan 16 Aturan "The Floor" Hallmark pada Seluruh Portal Autentikasi**
+- **F1**: 100% token `:root`, bebas dari kelas warna arbitrer hex di Blade.
+- **F2**: Bebas dari `transition: all`.
+- **F4**: `overflow-x: clip` pada html dan body.
+- **F6**: `:focus-visible` seketika pada semua kontrol form.
+- **F7**: Fallback `prefers-reduced-motion: reduce`.
+- **F9**: Label dalam sentence case atau lower case untracked (tidak ada tracked caps).
+- **F10**: Tidak ada middle dots (`&bull;`).
+- **F11**: Zero card-in-card, zero emoji icon, zero gaudy gradients.
+- **F12 & F13**: "One Idea Per Screen": tajuk dan form tampak utuh pada 1280x800 tanpa scrolling berlebihan.
+- **F14**: Kontainer form terpusat dan dibatasi maksimal 460px - 520px.
+- **F16**: Wajib lolos audit linter Hallmark (`node .agent/skills/hallmark/scripts/sloplint.mjs resources/views/auth --genre editorial --render`).
+
+---
+
 ### 7. Siklus Hidup & State Machine Terpadu (Unified State Machine Lifecycle)
 
 #### 7.1. State Machine Pesanan (Order Lifecycle)
@@ -835,4 +948,5 @@ Seluruh warna, tipografi, dan spasi diwajibkan melewati token CSS deklarasi `:ro
 | **Executive Dashboard (Omzet & Laba)** | ❌ 403 Forbidden | ❌ 403 Forbidden | ✅ Eksklusif | Middleware `role:owner` + Historical HPP Cost Snapshot Isolation |
 | **Buku Besar Finansial & Ekspor CSV/PDF**| ❌ 403 Forbidden | ❌ 403 Forbidden | ✅ Eksklusif | Middleware `role:owner` + Rate Limiting + Stream Response |
 | **Manajemen Akun Staf Toko (Admin)** | ❌ 403 Forbidden | ❌ 403 Forbidden | ✅ Eksklusif | Middleware `role:owner` + Self-Deletion & Role Demotion Guards |
+| **Monitoring Status API & Diagnostic Probe** | ❌ 403 Forbidden | ✅ Penuh | ✅ Penuh | Middleware `role:admin,owner` + Network Timeout Guards + AJAX Probe |
 
