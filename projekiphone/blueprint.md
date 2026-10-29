@@ -364,12 +364,144 @@ app/
 
 ---
 
-### 5. Keamanan & Idempotensi Sistem
-1. **Idempotensi Callback**:
-   - Jika Midtrans mengirim webhook berulang kali untuk status yang sama, sistem memeriksa apakah pesanan sudah berstatus `paid`. Jika ya, sistem tidak akan mengirim pesan notifikasi ganda atau merusak stok inventaris.
-2. **Pengurangan Stok Otomatis**:
-   - Pengurangan kuantitas stok varian dieksekusi menggunakan database transaction (`DB::transaction`) saat status pembayaran terkonfirmasi `paid` guna mencegah *race conditions* atau *overselling*.
-3. **Role-Based Access Control (RBAC) & Arsitektur Login Terpisah (Fase 14, 15, & 16)**:
+### 5. Keamanan Sistem, Kepatuhan ACID & Mitigasi Konkurensi Enterprise (Fase 34)
+
+Untuk menjamin keandalan transaksi finansial dan integritas sistem berskala produksi, platform Rap-iPhone menerapkan prinsip-prinsip keamanan berlapis (*defense-in-depth*), kepatuhan transaksi database ACID, mitigasi IDOR berbasis kebijakan, serta kontrol konkurensi terhadap *race conditions*:
+
+#### 5.1. Matriks Mitigasi IDOR (Insecure Direct Object Reference) & Otorisasi Ketat
+Kerentanan IDOR dicegah pada seluruh titik masuk (*entrypoints*) melalui otorisasi deklaratif pada level Controller dan Policy Eloquent:
+
+| Entitas / Endpoint | Potensi Celah IDOR | Mekanisme Mitigasi & Penegakan Kebijakan | Respon Pelanggaran |
+|---|---|---|:---:|
+| **Detail Pesanan Pelanggan**<br>`GET /checkout/success/{order:order_number}` | Akses URL nota pesanan milik pelanggan lain dengan mengubah nomor pesanan | Pemeriksaan kepemilikan eksplisit: `$order->user_id === auth()->id()`. Pengguna lain ditolak seketika. | `403 Forbidden` |
+| **Unduh & Preview Faktur PDF**<br>`GET /orders/{order:order_number}/invoice` | Unduh file faktur PDF berisi data PII dan nomor IMEI milik pelanggan lain | Otorisasi via `OrderPolicy@downloadInvoice`: Admin & Owner diizinkan; Customer hanya untuk `order.user_id === auth()->id()` berstatus lunas (`paid`, `shipped`, `completed`). | `403 Forbidden` |
+| **Pengajuan Tukar Tambah**<br>`GET /trade-in/{tradeIn:trade_in_code}` | Melihat hasil taksiran unit dan data rekening bank customer lain | Otorisasi via `TradeInPolicy@view`: Customer hanya dapat mengakses unit miliknya sendiri (`tradeIn.user_id === auth()->id()`). Admin/Owner memiliki akses inspeksi. | `403 Forbidden` |
+| **Riwayat Transaksi Pribadi**<br>`GET /customer/orders` | Menginjeksi parameter filter untuk melihat pesanan pengguna lain | Query database dibatasi secara absolut menggunakan user context: `Order::where('user_id', auth()->id())` dan `TradeIn::where('user_id', auth()->id())`. | `Data Terisolasi` |
+| **Ekskalasi Hak Akses Admin/Owner**<br>`/owner/*` & `/admin/*` | Pengguna biasa memanggil rute eksekutif atau admin mengubah staf owner | Proteksi `RoleMiddleware` berjenjang; larangan bagi Owner menghapus akun dirinya sendiri atau menurunkan rolenya saat sedang aktif di `StaffManagementController`. | `403 Forbidden` |
+
+#### 5.2. Desain Transaksi Database ACID & Batas Transaksional Multi-Tabel
+Seluruh operasi basis data yang melibatkan perubahan nilai moneter, status pesanan, dan kuantitas inventaris dikelola dengan prinsip **ACID**:
+
+1. **Atomicity (Semua Berhasil atau Semua Dibatalkan)**:
+   - **Alur Pembuatan Pesanan (`CheckoutController::process`)**:
+     Pembuatan *Order*, pembuatan seluruh record *OrderItems* (snapshot HPP & IMEI), pengaitan kupon *Trade-In* (`target_order_id`), serta inisialisasi record *Payment* dibungkus dalam blok `DB::transaction()`. Jika salah satu entitas gagal dibuat atau API Midtrans mengembalikan error fatal, database melakukan *rollback* 100% sehingga tidak ada data yatim (*orphan records*).
+   - **Alur Pelunasan Webhook Midtrans (`MidtransCallbackController::handle`)**:
+     Pembaruan status order menjadi `paid`, pengurangan stok seluruh varian, dan pencatatan riwayat webhook dijalankan dalam transaksi atomik tunggal.
+   - **Alur Inspeksi & Approval Tukar Tambah (`TradeInVerificationController`)**:
+     Penetapan harga final, penerbitan kode voucher toko unik, dan perubahan status pengajuan terikat dalam satu blok transaksi database.
+2. **Consistency (Integritas Data Sesuai Aturan Bisnis)**:
+   - Integritas referensial relasi antar tabel ditegakkan melalui *Foreign Key Constraints* (MySQL InnoDB).
+   - *Stock Non-Negative Constraint*: Nilai kolom `stock` pada `product_variants` divalidasi tidak boleh kurang dari 0 (`max(0, stock - qty)` dan pengecekan klausa `where('stock', '>=', $qty)`).
+   - Invariant State Machine: Pesanan tidak dapat berpindah dari `pending` langsung ke `shipped` tanpa status perantara `paid`.
+3. **Isolation (Isolasi Transaksi Konkuren)**:
+   - Menggunakan mesin basis data **InnoDB** dengan tingkat isolasi default `REPEATABLE READ`.
+   - Menerapkan *pessimistic row-level locking* (`lockForUpdate()`) pada baris varian produk dan voucher trade-in saat transaksi dieksekusi guna mencegah anomali *dirty read*, *non-repeatable read*, dan *lost update*.
+4. **Durability (Ketahanan & Permanensi Data)**:
+   - Data yang telah di-*commit* tersimpan permanen pada disk fisik MySQL melalui mekanisme *Write-Ahead Logging* (WAL InnoDB `ib_logfile`) dan *Doublewrite Buffer*, aman dari kegagalan daya atau *crash* mendadak.
+
+#### 5.3. Pencegahan Race Condition & Concurrency Control
+Pada saat terjadi lonjakan trafik tinggi (*flash sale* iPhone seri terbaru atau klaim promo serentak), sistem menerapkan strategi penguncian baris data (*pessimistic locking*) untuk mencegah *overselling* stok dan *double-spending* kupon:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Customer_A as Customer A (Checkout Tab 1)
+    actor Customer_B as Customer B (Checkout Tab 2)
+    participant DB as MySQL InnoDB (Product Variants)
+    participant GW as Midtrans Gateway
+
+    Note over Customer_A,Customer_B: Kondisi Awal: Sisa Stok Varian iPhone 16 Pro = 1 Unit
+
+    Customer_A->>DB: Process Checkout (Request Lock: lockForUpdate)
+    activate DB
+    Note over DB: Row Variant ID #10 DIKUNCI oleh Transaksi A
+    Customer_B->>DB: Process Checkout (Request Lock: lockForUpdate)
+    Note over DB: Transaksi B TERTANGGUH (Waiting for lock release)
+
+    DB-->>Customer_A: Stok Tersedia (1 unit) -> Kurangi Stok (1 - 1 = 0)
+    Customer_A->>GW: Ambil Midtrans Snap Token
+    Customer_A->>DB: COMMIT Transaksi A (Stok Sekarang = 0)
+    deactivate DB
+
+    activate DB
+    Note over DB: Lock Dilepas -> Transaksi B Melanjutkan Eksekusi
+    DB-->>Customer_B: Evaluasi Stok (Tersisa 0 unit)
+    Note over DB: STOK TIDAK MENCUKUPI -> ROLLBACK Transaksi B
+    deactivate DB
+    Customer_B-->>Customer_B: Tampilkan Pesan: "Maaf, stok unit telah habis."
+```
+
+1. **Pencegahan Overselling Inventaris (Flash-Sale Stock Protection)**:
+   - Saat checkout dan saat webhook settlement, sistem memanggil query:
+     ```php
+     $variant = ProductVariant::where('id', $item->product_variant_id)
+         ->lockForUpdate()
+         ->first();
+     ```
+   - Pengurangan stok dilakukan menggunakan query atomik yang menjamin kuantitas tidak negatif:
+     ```php
+     ProductVariant::where('id', $variantId)
+         ->where('stock', '>=', $quantity)
+         ->decrement('stock', $quantity);
+     ```
+   - Jika baris yang terpengaruh (*affected rows*) bernilai 0, sistem langsung menggugurkan transaksi dan melempar *insufficient stock exception*.
+2. **Pencegahan Double-Spending Voucher Trade-In**:
+   - Jika pelanggan mencoba menggunakan voucher tukar tambah yang sama pada 2 sesi atau tab browser secara bersamaan, baris voucher dikunci menggunakan:
+     ```php
+     $tradeIn = TradeIn::where('customer_account_number', $voucherCode)
+         ->whereIn('status', ['approved', 'paid_out'])
+         ->whereNull('target_order_id')
+         ->lockForUpdate()
+         ->first();
+     ```
+   - Begitu transaksi pertama mengaitkan voucher ke order (`target_order_id = $order->id`), transaksi kedua yang antre akan mendapati `whereNull('target_order_id')` bernilai kosong dan seketika menolak penggunaan voucher ganda.
+3. **Idempotensi Webhook Callback Midtrans**:
+   - Webhook yang dikirim berulang kali untuk status yang sama (*retried HTTP POST*) diverifikasi secara idempotent:
+     ```php
+     $order = Order::where('order_number', $orderId)->lockForUpdate()->first();
+     if ($order->status === 'paid' && $targetStatus === 'paid') {
+         return response()->json(['status' => 'success', 'message' => 'Idempotent (Already paid).'], 200);
+     }
+     ```
+   - Menghindari pemotongan stok ganda (*double stock decrement*) dan duplikasi pengiriman notifikasi WhatsApp/Email ke pelanggan.
+
+#### 5.4. Tata Kelola Sesi & Proteksi Brute-Force Multi-Portal (Defense-in-Depth)
+1. **Isolasi Rate Limiting Anti-Brute-Force**:
+   - `/admin/login`: `throttle:5,1` (Maksimal 5 percobaan gagal per menit per kombinasi email/IP).
+   - `/owner/login`: `throttle:3,1` (Maksimal 3 percobaan gagal per menit).
+   - `/login` & `/register`: `throttle:10,1` (Maksimal 10 percobaan per menit).
+   - `/verifikasi-nota/{orderNumber}/{code}`: `throttle:30,1` (Maksimal 30 permintaan per menit untuk mencegah *scraping* atau *brute-force enumeration*).
+2. **Mitigasi Session Fixation & Hijacking**:
+   - Pemanggilan wajib `$request->session()->regenerate()` pada setiap proses masuk (*login*) berhasil di seluruh portal.
+   - Pemanggilan `$request->session()->invalidate()` dan `$request->session()->regenerateToken()` pada saat keluar (*logout*).
+   - Konfigurasi cookie sesi aman (`config/session.php`):
+     - `http_only => true` (Mencegah pencurian cookie sesi via serangan XSS).
+     - `same_site => 'lax'` (Mencegah serangan CSRF lintas-situs).
+     - `secure => env('APP_ENV') === 'production'` (Menjamin cookie hanya ditransmisikan melalui HTTPS).
+
+#### 5.5. Integritas Kriptografis, Anti-Tampering & Pertahanan Aplikasi Web
+1. **Verifikasi Tanda Tangan Webhook**:
+   - Validasi SHA-512 Signature Hash pada header callback Midtrans:
+     $$\text{Signature} = \text{SHA512}(\text{order\_id} + \text{status\_code} + \text{gross\_amount} + \text{server\_key})$$
+   - Request callback tanpa signature yang cocok langsung ditolak dengan respon `403 Forbidden`.
+2. **Integritas Nota Faktur PDF & Verifikasi QR Code**:
+   - Kode verifikasi unik pada setiap nota di-generate secara deterministik dan tahan manipulasi (*tamper-proof*) menggunakan HMAC-SHA256:
+     ```php
+     $verificationCode = hash_hmac('sha256', "{$order->order_number}|{$order->grand_total}|{$order->created_at->timestamp}", config('app.key'));
+     ```
+   - Mengubah parameter nomor pesanan atau nominal pada URL nota secara otomatis menggugurkan keabsahan faktur pada halaman verifikasi.
+3. **Penyamaran Data Privasi Pelanggan (PII Masking)**:
+   - Halaman verifikasi publik `/verifikasi-nota/{orderNumber}/{code}` secara otomatis menyamarkan nama pemesan (`B*** S***`) dan nomor telepon (`0812****890`) guna mematuhi prinsip perlindungan privasi data pribadi (*Data Privacy Protection*).
+4. **Header Keamanan HTTP (`SecurityHeadersMiddleware`)**:
+   - `X-Frame-Options: SAMEORIGIN` (Mencegah serangan Clickjacking).
+   - `X-Content-Type-Options: nosniff` (Mencegah eksploitasi MIME-type sniffing).
+   - `X-XSS-Protection: 1; mode=block` (Mengaktifkan filter XSS peramban).
+   - `Referrer-Policy: strict-origin-when-cross-origin`.
+5. **Validasi & Pengamanan Upload Berkas**:
+   - Validasi ketat pada berkas unggahan foto varian dan fisik trade-in: hanya menerima format MIME `image/jpeg`, `image/png`, `image/webp` dengan batasan ukuran berkas maksimum 3MB.
+   - Penamaan file otomatis diobfuskasi dengan hash kriptografis `Str::random(40) . '.' . $extension` untuk mencegah *Path Traversal* (`../../`) dan eksekusi skrip berbahaya (*Arbitrary PHP Shell Upload*).
+
+#### 5.6. Role-Based Access Control (RBAC) & Arsitektur Login Terpisah (Fase 14, 15, & 16)
    - Diterapkan melalui `RoleMiddleware` dan 3 pengontrol autentikasi mandiri yang memisahkan pintu masuk (*login pathway*) berdasarkan role:
 
 | Fase | Peran (Role) | Endpoint Login & Register | Controller Penangan | Validasi & Isolasi Role | Target Redirect Utama |
@@ -686,17 +818,21 @@ Seluruh warna, tipografi, dan spasi diwajibkan melewati token CSS deklarasi `:ro
 
 ### 8. Matriks Hak Akses & Batasan Keamanan Peran (Security & Role Boundary Architecture)
 
-| Modul / Kemampuan Operasional | Customer | Admin Operasional | Pemilik Usaha (Owner) | Mekanisme Proteksi |
+| Modul / Kemampuan Operasional | Customer | Admin Operasional | Pemilik Usaha (Owner) | Mekanisme Proteksi & Keamanan (IDOR / ACID / Concurrency) |
 |---|:---:|:---:|:---:|---|
-| **Portal Autentikasi Mandiri** | `/login` | `/admin/login` | `/owner/login` | `RoleMiddleware` + Custom Auth Controllers |
-| **Katalog, Keranjang, & Checkout** | ✅ Penuh | ✅ Testing | ✅ Testing | Publik & `auth` |
-| **Riwayat Pesanan Pribadi** | ✅ Milik Sendiri | ✅ Seluruh Toko | ✅ Seluruh Toko | Query Scope `where('user_id', auth()->id())` |
-| **Download Nota PDF Resmi** | ✅ Milik Sendiri | ✅ Seluruh Toko | ✅ Seluruh Toko | `OrderPolicy@downloadInvoice` |
-| **Verifikasi Keaslian Nota via QR** | ✅ Publik | ✅ Publik | ✅ Publik | SHA-256 HMAC Code Hash + Rate Limiter |
-| **Manajemen Produk & Varian (HPP, Stok)** | ❌ 403 Forbidden | ✅ Penuh | ✅ Penuh | Middleware `role:admin,owner` |
-| **Alokasi IMEI & Pemrosesan Resi** | ❌ 403 Forbidden | ✅ Penuh | ✅ Penuh | Middleware `role:admin,owner` |
-| **Inspeksi & Keputusan Trade-In** | ❌ 403 Forbidden | ✅ Penuh | ✅ Penuh | Middleware `role:admin,owner` |
-| **Executive Dashboard (Omzet & Laba)** | ❌ 403 Forbidden | ❌ 403 Forbidden | ✅ Eksklusif | Middleware `role:owner` |
-| **Buku Besar Finansial & Ekspor CSV/PDF**| ❌ 403 Forbidden | ❌ 403 Forbidden | ✅ Eksklusif | Middleware `role:owner` |
-| **Manajemen Akun Staf Toko (Admin)** | ❌ 403 Forbidden | ❌ 403 Forbidden | ✅ Eksklusif | Middleware `role:owner` |
+| **Portal Autentikasi Mandiri** | `/login` | `/admin/login` | `/owner/login` | `RoleMiddleware` + Custom Auth Controllers + Multi-Portal Rate Limiter |
+| **Katalog, Keranjang, & Checkout** | ✅ Penuh | ✅ Testing | ✅ Testing | Publik & `auth` + Pessimistic Row Lock (`lockForUpdate`) + ACID Transaction |
+| **Klaim Voucher Diskon Trade-In** | ✅ Milik Sendiri | ❌ 403 Forbidden | ❌ 403 Forbidden | IDOR `where('user_id', auth()->id())` + Lock Voucher Row Anti-Double-Spend |
+| **Riwayat Pesanan Pribadi** | ✅ Milik Sendiri | ✅ Seluruh Toko | ✅ Seluruh Toko | Query Scope IDOR `where('user_id', auth()->id())` |
+| **Halaman Tanda Terima Lunas** | ✅ Milik Sendiri | ✅ Seluruh Toko | ✅ Seluruh Toko | IDOR Ownership Guard: `abort_unless($order->user_id === auth()->id(), 403)` |
+| **Pengajuan & Detail Tukar Tambah** | ✅ Milik Sendiri | ✅ Seluruh Toko | ✅ Seluruh Toko | IDOR Otorisasi via `TradeInPolicy@view` (`tradeIn.user_id === auth()->id()`) |
+| **Download Nota PDF Resmi** | ✅ Milik Sendiri | ✅ Seluruh Toko | ✅ Seluruh Toko | IDOR Otorisasi via `OrderPolicy@downloadInvoice` |
+| **Verifikasi Keaslian Nota via QR** | ✅ Publik | ✅ Publik | ✅ Publik | Deterministic SHA-256 HMAC Code Hash + Rate Limiter `throttle:30,1` + PII Masking |
+| **Webhook Callback Midtrans** | ❌ Sistem Only | ❌ Sistem Only | ❌ Sistem Only | SHA-512 Signature Hash + Atomic Lock + Idempotent State Guard |
+| **Manajemen Produk & Varian (HPP, Stok)** | ❌ 403 Forbidden | ✅ Penuh | ✅ Penuh | Middleware `role:admin,owner` + Transactional Consistency |
+| **Alokasi IMEI & Pemrosesan Resi** | ❌ 403 Forbidden | ✅ Penuh | ✅ Penuh | Middleware `role:admin,owner` + Audit Notification Dispatch |
+| **Inspeksi & Keputusan Trade-In** | ❌ 403 Forbidden | ✅ Penuh | ✅ Penuh | Middleware `role:admin,owner` + ACID Transaction Payout/Voucher Generation |
+| **Executive Dashboard (Omzet & Laba)** | ❌ 403 Forbidden | ❌ 403 Forbidden | ✅ Eksklusif | Middleware `role:owner` + Historical HPP Cost Snapshot Isolation |
+| **Buku Besar Finansial & Ekspor CSV/PDF**| ❌ 403 Forbidden | ❌ 403 Forbidden | ✅ Eksklusif | Middleware `role:owner` + Rate Limiting + Stream Response |
+| **Manajemen Akun Staf Toko (Admin)** | ❌ 403 Forbidden | ❌ 403 Forbidden | ✅ Eksklusif | Middleware `role:owner` + Self-Deletion & Role Demotion Guards |
 

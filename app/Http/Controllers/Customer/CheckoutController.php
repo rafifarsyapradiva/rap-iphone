@@ -15,6 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -133,16 +134,7 @@ class CheckoutController extends Controller
             }
         }
 
-        $appliedTradeIn = null;
-        if ($voucherCode !== '') {
-            $appliedTradeIn = TradeIn::where('customer_account_number', strtoupper($voucherCode))
-                ->whereIn('status', ['approved', 'paid_out'])
-                ->whereNull('target_order_id')
-                ->where('user_id', auth()->id())
-                ->first();
-        }
-
-        // Stock availability verification
+        // Preliminary fast check for stock before transaction
         foreach ($cart as $item) {
             $variant = ProductVariant::find($item['variant_id']);
             if (!$variant || $variant->stock < $item['quantity']) {
@@ -155,7 +147,34 @@ class CheckoutController extends Controller
         }
 
         try {
-            $order = DB::transaction(function () use ($validated, $cart, $appliedTradeIn) {
+            $order = DB::transaction(function () use ($validated, $cart, $voucherCode) {
+                // 1. Strict Concurrency Lock: Verify & lock stock rows inside transaction to prevent overselling
+                foreach ($cart as $item) {
+                    $variantRow = ProductVariant::where('id', $item['variant_id'])
+                        ->lockForUpdate()
+                        ->first();
+
+                    if (!$variantRow || (int) $variantRow->stock < (int) $item['quantity']) {
+                        $avail = $variantRow ? $variantRow->stock : 0;
+                        throw new \RuntimeException("Maaf, stok unit {$item['product_name']} tidak mencukupi (Tersisa {$avail} unit).");
+                    }
+                }
+
+                // 2. Strict Concurrency Lock: Verify & lock Trade-In Voucher (Pencegahan Double-Spending)
+                $appliedTradeIn = null;
+                if ($voucherCode !== '') {
+                    $appliedTradeIn = TradeIn::where('customer_account_number', strtoupper($voucherCode))
+                        ->whereIn('status', ['approved', 'paid_out'])
+                        ->whereNull('target_order_id')
+                        ->where('user_id', auth()->id())
+                        ->lockForUpdate()
+                        ->first();
+
+                    if (!$appliedTradeIn) {
+                        throw new \RuntimeException("Kupon voucher Trade-In tidak valid, sudah digunakan pada transaksi lain, atau bukan milik Anda.");
+                    }
+                }
+
                 // Calculate totals
                 $subtotal = 0;
                 foreach ($cart as $item) {
@@ -200,7 +219,7 @@ class CheckoutController extends Controller
                     'customer_notes' => $validated['customer_notes'] ?? null,
                 ]);
 
-                // Link trade-in voucher if applied
+                // Link trade-in voucher if applied (atomically burned)
                 if ($appliedTradeIn) {
                     $appliedTradeIn->update([
                         'target_order_id' => $order->id,
@@ -236,16 +255,12 @@ class CheckoutController extends Controller
                         'payment_time' => now(),
                     ]);
 
-                    // Immediate stock decrement with row lock
+                    // Immediate stock decrement with atomic decrement
                     foreach ($order->items as $item) {
                         if ($item->product_variant_id) {
-                            $variantRow = ProductVariant::where('id', $item->product_variant_id)
-                                ->lockForUpdate()
-                                ->first();
-                            if ($variantRow) {
-                                $newStock = max(0, (int) $variantRow->stock - (int) $item->quantity);
-                                $variantRow->update(['stock' => $newStock]);
-                            }
+                            ProductVariant::where('id', $item->product_variant_id)
+                                ->where('stock', '>=', $item->quantity)
+                                ->decrement('stock', $item->quantity);
                         }
                     }
                 } else {
@@ -293,15 +308,22 @@ class CheckoutController extends Controller
 
             return redirect()->route('checkout.success', $order->order_number);
 
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
+            $isClientSafe = $e instanceof \RuntimeException;
+            $errorMessage = $isClientSafe
+                ? $e->getMessage()
+                : 'Terjadi kesalahan sistem saat memproses pesanan: ' . $e->getMessage();
+
+            $statusCode = $isClientSafe ? 422 : 500;
+
             if ($request->expectsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Terjadi kesalahan sistem saat memproses pesanan: ' . $e->getMessage(),
-                ], 500);
+                    'message' => $errorMessage,
+                ], $statusCode);
             }
 
-            return back()->with('error', 'Terjadi kesalahan sistem saat memproses pesanan. Silakan coba kembali.');
+            return back()->with('error', $errorMessage);
         }
     }
 
@@ -310,11 +332,7 @@ class CheckoutController extends Controller
      */
     public function success(Order $order): View
     {
-        abort_unless(
-            $order->user_id === auth()->id() || (auth()->check() && auth()->user()->hasRole('admin', 'owner')),
-            403,
-            'Anda tidak memiliki akses ke pesanan ini.'
-        );
+        Gate::authorize('view', $order);
 
         $order->load(['items.variant', 'payment']);
 

@@ -438,3 +438,50 @@
   - [x] Pembuatan test suite terpadu `tests/Feature/EndToEndWorkflowTest.php` yang menguji siklus lengkap Customer -> Midtrans -> Admin -> Owner.
   - [x] Verifikasi seluruh test suite lulus 100% (`php artisan test` - 152 passed, 1081 assertions).
 
+---
+
+### Phase 34: System Security Hardening, IDOR Mitigation, ACID Compliance, Race Condition Prevention & Defense-in-Depth Verification
+> **Konteks Fase 34:** Penguatan ketahanan sistem platform Rap-iPhone terhadap ancaman siber enterprise, integritas data finansial, serta proteksi konkurensi tinggi. Menegakkan prinsip IDOR (Insecure Direct Object Reference) melalui Policies & Gates, transaksi database ACID multi-tabel pada MySQL InnoDB, pencegahan Race Condition & overselling stok via *pessimistic row locking* (`lockForUpdate()`) dan *atomic decrement*, proteksi *double-spending* kupon voucher trade-in, isolasi rate limiting anti-brute-force multi-portal, mitigasi session fixation, integritas kriptografis HMAC QR Code invoice, penyamaran privasi pelanggan (PII), serta pengujian otomatis keamanan berlapis.
+
+- [x] **34.1. Audit & Penguatan IDOR (Insecure Direct Object Reference) Protection**
+  - [x] Pembuatan `App\Policies\TradeInPolicy` dengan metode `view`, `update`, dan `cancel`, serta pendaftaran pada service provider.
+  - [x] Penegakan otorisasi IDOR pada endpoint `GET /checkout/success/{order:order_number}` (`CheckoutController::success`) untuk memastikan hanya pembeli sah yang dapat melihat tanda terima pembayaran.
+  - [x] Penegakan otorisasi IDOR pada endpoint invoice `GET /orders/{order:order_number}/invoice` (`InvoiceController`) via `OrderPolicy@downloadInvoice` untuk mencegah pelanggan mengunduh faktur orang lain.
+  - [x] Penegakan isolasi data riwayat pesanan `GET /customer/orders` dan profil customer murni berbasis `auth()->id()`.
+  - [x] Verifikasi pencegahan eskalasi hak akses horizontal dan vertikal pada seluruh endpoint Admin dan Owner (`RoleMiddleware` & Policy).
+- [x] **34.2. Penegakan Kepatuhan Transaksi Database ACID Multi-Tabel**
+  - [x] Pembungkusan alur pembuatan pesanan di `CheckoutController::process` dalam `DB::transaction()` terisolasi dengan rollback menyeluruh jika terjadi kegagalan Midtrans atau pembuatan item pesanan.
+  - [x] Atomisitas perubahan status pembayaran dan mutasi kuantitas stok pada `MidtransCallbackController::handle` dengan proteksi rollback penuh.
+  - [x] Atomisitas persetujuan trade-in, penerbitan kupon voucher diskon, dan pencatatan arus kas pada `TradeInVerificationController`.
+  - [x] Penegakan integritas foreign key dan invariant constraint `stock >= 0` di level basis data MySQL InnoDB.
+- [x] **34.3. Mitigasi Race Condition & Kontrol Konkurensi Tinggi (Pessimistic Locking)**
+  - [x] Implementasi pessimistic row-level locking (`ProductVariant::where('id', ...)->lockForUpdate()->first()`) pada saat verifikasi stok checkout dan pengurangan stok webhook settlement.
+  - [x] Penerapan atomic decrement query bertingkat (`where('stock', '>=', $qty)->decrement('stock', $qty)`) untuk mencegah *overselling* saat flash sale atau lonjakan trafik.
+  - [x] Penguncian baris voucher tukar tambah (`TradeIn::where('customer_account_number', $voucherCode)->lockForUpdate()->first()`) untuk mencegah *double-spending* kupon voucher di beberapa transaksi paralel.
+  - [x] Penegakan idempotensi webhook Midtrans dengan row lock pada pesanan untuk mencegah *double stock deduction* saat menerima webhook berulang secara bersamaan.
+- [x] **34.4. Proteksi Autentikasi, Rate Limiting Multi-Portal & Session Hardening**
+  - [x] Penerapan rate limiting ketat pada `/admin/login` (`throttle:5,1`) dan `/owner/login` (`throttle:3,1`).
+  - [x] Penerapan rate limiting pada registrasi dan login customer `/login` & `/register` (`throttle:10,1`).
+  - [x] Penerapan rate limiting pada endpoint publik verifikasi nota `/verifikasi-nota/{orderNumber}/{code}` (`throttle:30,1`).
+  - [x] Penegakan session regeneration (`$request->session()->regenerate()`) saat login sukses di ketiga portal untuk mematikan risiko *session fixation*.
+  - [x] Penegakan pembersihan sesi total (`session()->invalidate()` & `regenerateToken()`) saat logout.
+  - [x] Audit konfigurasi cookie sesi (`http_only = true`, `same_site = lax`, `secure = true`).
+- [x] **34.5. Sanitasi Input, Proteksi Web (CSRF, XSS, SQLi) & Hardening Upload Berkas**
+  - [x] Penegakan token CSRF pada seluruh form Blade dan endpoint AJAX yang memodifikasi status/data.
+  - [x] Sanitasi Blade `{{ }}` dan pembersihan input HTML berbahaya pada `customer_notes` dan deskripsi produk.
+  - [x] Audit atribut `$fillable` pada seluruh model Eloquent untuk mencegah eksploitasi *mass-assignment* pada atribut sensitif (`role`, `status`, `cost_price`).
+  - [x] Validasi ketat unggahan foto produk dan unit tukar tambah: whitelist MIME (`image/jpeg,image/png,image/webp`), batas ukuran berkas maksimum 3MB, dan penamaan hash acak `Str::random(40)` guna menangkal serangan *Path Traversal* dan *PHP Shell Upload*.
+- [x] **34.6. Integritas Kriptografis, Anti-Tampering & Perlindungan Privasi (PII)**
+  - [x] Verifikasi keaslian webhook Midtrans menggunakan SHA-512 signature hash matching dengan server key rahasia.
+  - [x] Verifikasi keaslian QR Code Invoice menggunakan HMAC-SHA256 berbasis `app.key` untuk mencegah manipulasi isi faktur.
+  - [x] Penyamaran data sensitif pemesan (nama dan nomor telepon) pada halaman publik verifikasi nota untuk melindungi privasi pelanggan (PII).
+- [x] **34.7. Pembuatan Automated Security Test Suite & Eksekusi QA Menyeluruh**
+  - [x] Pembuatan test suite terdedikasi `tests/Feature/SecurityHardeningTest.php` yang menguji skenario:
+    - Penolakan IDOR pesanan, faktur, dan tukar tambah antar-pengguna (`403 Forbidden`).
+    - Simulasi transaksi konkuren / race condition checkout stok terbatas dengan pessimistic lock.
+    - Simulasi pencegahan double-spending voucher tukar tambah paralel.
+    - Pengujian idempotensi webhook callback ganda.
+    - Pengujian rate limiter anti-brute force multi-portal.
+    - Pengujian integritas dan anti-tamper QR Code faktur serta masking PII.
+  - [x] Eksekusi seluruh pengujian aplikasi (`php artisan test`) untuk memastikan nol regresi fungsional (162 passed, 1120 assertions).
+

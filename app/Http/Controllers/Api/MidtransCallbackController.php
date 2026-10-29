@@ -75,35 +75,50 @@ class MidtransCallbackController extends Controller
         // 3. Map status to Rap-iPhone domain status
         $targetStatus = $this->midtransService->mapTransactionStatus($transactionStatus, $fraudStatus);
 
-        // 4. Idempotency Check: Avoid double-processing and duplicate stock decrement
-        if ($order->status === 'paid' && $targetStatus === 'paid') {
-            Log::info("Midtrans Webhook: Order {$orderId} is already paid. Skipping duplicate processing (Idempotent).");
-
-            if ($order->payment) {
-                $order->payment->update([
-                    'raw_payload' => $payload,
-                ]);
-            }
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Pesanan sudah berstatus lunas sebelumnya (Idempotent).',
-            ], 200);
-        }
-
-        // 5. Database Transaction: Atomic state update and stock decrement
+        // 4. Concurrency & Idempotency: Process state transition inside locked transaction
         $transitionedToPaid = false;
+        $responsePayload = null;
 
         DB::transaction(function () use (
-            $order,
+            $orderId,
             $targetStatus,
             $transactionStatus,
             $transactionId,
             $paymentType,
             $transactionTime,
             $payload,
-            &$transitionedToPaid
+            &$transitionedToPaid,
+            &$responsePayload
         ) {
+            // Lock order row to serialize concurrent webhook callbacks
+            $order = Order::where('order_number', $orderId)
+                ->with(['payment', 'items'])
+                ->lockForUpdate()
+                ->first();
+
+            if (!$order) {
+                $responsePayload = response()->json([
+                    'status' => 'error',
+                    'message' => 'Pesanan tidak ditemukan.',
+                ], 404);
+                return;
+            }
+
+            // Idempotency Check: Avoid double-processing and duplicate stock decrement
+            if ($order->status === 'paid' && $targetStatus === 'paid') {
+                Log::info("Midtrans Webhook: Order {$orderId} is already paid. Skipping duplicate processing (Idempotent).");
+
+                if ($order->payment) {
+                    $order->payment->update(['raw_payload' => $payload]);
+                }
+
+                $responsePayload = response()->json([
+                    'status' => 'success',
+                    'message' => 'Pesanan sudah berstatus lunas sebelumnya (Idempotent).',
+                ], 200);
+                return;
+            }
+
             // Update or create payment record
             $parsedPaymentTime = $transactionTime ? Carbon::parse($transactionTime) : now();
 
@@ -123,7 +138,7 @@ class MidtransCallbackController extends Controller
                 $order->update(['status' => 'paid']);
                 $transitionedToPaid = true;
 
-                // Decrement inventory stock safely with row lock to prevent race conditions / negative stock
+                // Decrement inventory stock safely with row lock and atomic decrement
                 foreach ($order->items as $item) {
                     if ($item->product_variant_id) {
                         $variant = ProductVariant::where('id', $item->product_variant_id)
@@ -143,6 +158,10 @@ class MidtransCallbackController extends Controller
                 Log::info("Midtrans Webhook: Order {$order->order_number} marked as CANCELLED.");
             }
         });
+
+        if ($responsePayload) {
+            return $responsePayload;
+        }
 
         // 6. Trigger simultaneous WhatsApp & Email (+ PDF Invoice attachment) when newly paid
         if ($transitionedToPaid) {

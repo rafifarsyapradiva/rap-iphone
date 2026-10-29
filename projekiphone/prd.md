@@ -260,6 +260,28 @@ Untuk menjaga keandalan sistem berskala produksi, platform Rap-iPhone menerapkan
 3. **Kemudahan Pemeliharaan (Maintainability)**:
    - Arsitektur kode bersih berorientasi layanan (*Service Layer Pattern*) untuk Midtrans, Fonnte, Mailer, dan PDF Generator.
    - Konfigurasi kredensial terisolasi penuh pada file `.env`.
+4. **Standar Keamanan Sistem & Mitigasi Risiko Transaksi Enterprise (Fase 34)**:
+   - **Prinsip IDOR (Insecure Direct Object Reference) & Otorisasi Ketat**: Setiap akses terhadap objek sensitif (detail pesanan, tanda terima pembayaran, faktur PDF, dan pengajuan tukar tambah) wajib divalidasi kepemilikannya (`order.user_id === auth()->id()`) melalui otorisasi deklaratif `Policy` & `Gate` (`OrderPolicy`, `TradeInPolicy`). Pelanggan dilarang keras dapat melihat atau mengunduh dokumen pesanan atau trade-in milik pelanggan lain. Jalur internal Admin/Owner dipagari middleware RBAC yang ketat untuk mencegah *horizontal* maupun *vertical privilege escalation*.
+   - **Prinsip Transaksi ACID (Atomicity, Consistency, Isolation, Durability)**:
+     - *Atomicity*: Seluruh transaksi pembuatan pesanan, pembentukan item pesanan, pengaitan/pembakaran voucher trade-in, serta alokasi token pembayaran dibungkus dalam blok transaksi database tunggal (`DB::transaction`). Jika salah satu proses gagal, seluruh perubahan di-rollback 100%. Demikian pula pada webhook Midtrans, perubahan status menjadi `paid` dan pemotongan stok dieksekusi secara atomik.
+     - *Consistency*: Menegakkan integritas referensial foreign key, aturan non-negatif pada stok inventaris (`stock >= 0`), dan invariant state machine (pesanan tidak dapat melompat status tanpa melalui prasyarat alur bisnis yang valid).
+     - *Isolation*: Menjamin isolasi konkurensi di MySQL InnoDB menggunakan *pessimistic row locking* (`lockForUpdate()`) guna menghindari anomali *dirty read*, *non-repeatable read*, dan *lost update* saat lonjakan transaksi serentak.
+     - *Durability*: Seluruh komitmen transaksi tersimpan permanen pada penyimpanan fisik database engine InnoDB yang terlindungi transaksi log (WAL).
+   - **Prinsip Pencegahan Race Condition & Concurrency Control**:
+     - *Mitigasi Overselling Stok*: Penguncian baris varian (`ProductVariant::where('id', ...)->lockForUpdate()->first()`) dan mutasi atomik (`where('stock', '>=', $qty)->decrement('stock', $qty)`) saat checkout dan webhook settlement. Menjamin stok unit iPhone tidak pernah terjual melebihi kuantitas fisik riil saat terjadi lonjakan trafik (*flash sale / launch event*).
+     - *Mitigasi Double-Spending Voucher Trade-In*: Penguncian baris voucher pada saat proses checkout menggunakan `TradeIn::where(...)->lockForUpdate()` untuk memastikan kupon voucher hanya dapat diklaim tepat 1 kali dan tidak dapat dipakai ganda melalui pembukaan beberapa tab/request paralel.
+     - *Idempotensi Webhook Callback*: Penguncian baris pesanan saat webhook tiba; jika status sudah `paid`, sistem mengembalikan respon 200 OK secara idempotent tanpa mengurangi stok berulang atau memicu notifikasi ganda.
+   - **Prinsip Pertahanan Autentikasi, Sesi & Brute-Force**:
+     - *Rate Limiting Multi-Portal Terisolasi*: Pembatasan frekuensi request login Admin (`throttle:5,1`), Owner (`throttle:3,1`), Customer (`throttle:10,1`), dan verifikasi nota publik (`throttle:30,1`).
+     - *Session Hardening*: Regenerasi session ID (`$request->session()->regenerate()`) pada setiap perubahan status autentikasi untuk mematikan risiko *Session Fixation*, serta penghancuran sesi penuh saat logout.
+   - **Prinsip Integritas Kriptografis, Anti-Tampering & Proteksi Privasi (PII)**:
+     - *Verifikasi Hash Webhook*: SHA-512 signature hash matching untuk validasi keaslian payload dari gateway Midtrans.
+     - *Verifikasi HMAC QR Code Invoice*: Kode keaslian nota diverifikasi menggunakan algoritma HMAC-SHA256 berbasis `app.key`.
+     - *Masking Data Privasi (PII)*: Informasi nama dan nomor kontak pada halaman verifikasi nota publik disamarkan demi melindungi privasi pelanggan.
+   - **Prinsip Sanitasi Web & Upload Berkas**:
+     - CSRF token di setiap form dan AJAX request mutasi data.
+     - Sanitasi Blade `{{ }}` dan pembersihan input HTML berbahaya pada catatan transaksi.
+     - Validasi ketat upload foto produk dan bukti trade-in (whitelist MIME `image/jpeg,image/png,image/webp`, batas 3MB, penamaan hash acak non-predictable).
 
 ---
 
@@ -286,3 +308,14 @@ Untuk menjaga keandalan sistem berskala produksi, platform Rap-iPhone menerapkan
 ### 8. Roadmap Lanjutan: Audit, Review & Perbaikan Logika Bisnis (Fase 33)
 - Menjamin keterpaduan 100% tanpa celah antara aksi antarmuka Customer, pemenuhan operasional Admin, dan pembukuan eksekutif Owner.
 - Verifikasi otomatis melalui unit/feature test suite (`tests/Feature/EndToEndWorkflowTest.php`) yang mencakup seluruh siklus pesanan, tukar tambah, mitigasi race condition stok, dan rekonsiliasi keuangan.
+
+---
+
+### 9. Roadmap Lanjutan: Penguatan Keamanan Sistem Enterprise (Fase 34)
+- **Fase 34: System Security Hardening, IDOR Mitigation, ACID Compliance, Race Condition Prevention & Concurrency Defense**
+  - Mengimplementasikan seluruh kebijakan otorisasi kepemilikan resource (IDOR) pada modul Pesanan, Faktur PDF, Pelacakan Unit, dan Tukar Tambah via `Policy` & `Gate`.
+  - Memastikan 100% kepatuhan transaksi database ACID dan isolasi penguncian baris data (*pessimistic row locking* `lockForUpdate()`) pada checkout dan webhook settlement.
+  - Mencegah *race condition* stok (*no overselling*) dan *double-spending* kupon voucher trade-in pada kondisi konkurensi tinggi melalui atomic decrement query.
+  - Menegakkan rate limiting anti-brute force multi-portal, perlindungan session fixation, dan security headers lengkap.
+  - Mengamankan upload file (whitelist MIME, ukuran max 3MB, hash acak) dan menerapkan verifikasi integritas HMAC-SHA256 pada nota faktur PDF ber-QR Code dengan masking PII pelanggan.
+  - Verifikasi otomatis komprehensif melalui automated test suite `tests/Feature/SecurityHardeningTest.php` dan eksekusi seluruh regression suite `php artisan test`.

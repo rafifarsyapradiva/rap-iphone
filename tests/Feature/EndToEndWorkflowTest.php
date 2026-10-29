@@ -89,6 +89,8 @@ class EndToEndWorkflowTest extends TestCase
      */
     public function test_complete_order_lifecycle_from_customer_to_admin_to_owner(): void
     {
+        $initialSummary = app(FinancialAnalyticsService::class)->calculatePeriodFinancials();
+
         // 1. Customer adds unit to cart
         $cartData = [
             $this->variant->id => [
@@ -194,11 +196,11 @@ class EndToEndWorkflowTest extends TestCase
         $analytics = app(FinancialAnalyticsService::class);
         $summary = $analytics->calculatePeriodFinancials();
 
-        $this->assertEquals(1, $summary['orders_count']);
-        $this->assertEquals(1, $summary['units_sold']);
-        $this->assertEquals(20999000.00, $summary['revenue']);
-        $this->assertEquals(17500000.00, $summary['cogs']);
-        $this->assertEquals(3499000.00, $summary['net_profit']); // 20.999.000 - 17.500.000
+        $this->assertEquals($initialSummary['orders_count'] + 1, $summary['orders_count']);
+        $this->assertEquals($initialSummary['units_sold'] + 1, $summary['units_sold']);
+        $this->assertEquals($initialSummary['revenue'] + 20999000.00, $summary['revenue']);
+        $this->assertEquals($initialSummary['cogs'] + 17500000.00, $summary['cogs']);
+        $this->assertEquals($initialSummary['net_profit'] + 3499000.00, $summary['net_profit']); // 20.999.000 - 17.500.000
     }
 
     /**

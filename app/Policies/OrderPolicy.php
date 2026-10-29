@@ -8,6 +8,21 @@ use App\Models\User;
 class OrderPolicy
 {
     /**
+     * Hak melihat rincian / bukti pesanan (IDOR Mitigation).
+     *
+     * - Admin & Owner: semua pesanan.
+     * - Customer: hanya pesanan miliknya sendiri.
+     */
+    public function view(User $user, Order $order): bool
+    {
+        if ($user->hasAdminAccess()) {
+            return true;
+        }
+
+        return (int) $order->user_id === (int) $user->id;
+    }
+
+    /**
      * Hak unduh / cetak nota faktur PDF.
      *
      * - Admin & Owner: semua pesanan, semua status.

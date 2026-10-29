@@ -37,8 +37,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/katalog', [CatalogController::class, 'index'])->name('catalog.index');
 Route::get('/katalog/{slug}', [CatalogController::class, 'show'])->name('catalog.show');
 Route::get('/api/products/search', [CatalogController::class, 'liveSearch'])->name('catalog.search');
-Route::get('/cek-garansi', [StorefrontUtilityController::class, 'warrantyCheck'])->name('warranty.check');
-Route::get('/lacak-pesanan', [StorefrontUtilityController::class, 'trackOrder'])->name('orders.track');
+Route::get('/cek-garansi', [StorefrontUtilityController::class, 'warrantyCheck'])->middleware('throttle:30,1')->name('warranty.check');
+Route::get('/lacak-pesanan', [StorefrontUtilityController::class, 'trackOrder'])->middleware('throttle:30,1')->name('orders.track');
 Route::get('/syarat-garansi', [StorefrontUtilityController::class, 'warrantyTerms'])->name('warranty.terms');
 Route::get('/brand', function () {
     return view('customer.brand');

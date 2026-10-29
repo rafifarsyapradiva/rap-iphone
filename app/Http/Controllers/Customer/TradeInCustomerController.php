@@ -9,6 +9,7 @@ use App\Services\TradeInCalculatorService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -167,11 +168,7 @@ class TradeInCustomerController extends Controller
      */
     public function show(TradeIn $tradeIn): View
     {
-        abort_unless(
-            $tradeIn->user_id === auth()->id() || (auth()->check() && auth()->user()->hasAdminAccess()),
-            403,
-            'Anda tidak memiliki akses untuk melihat pengajuan Trade-In ini.'
-        );
+        Gate::authorize('view', $tradeIn);
 
         $tradeIn->load(['user', 'targetOrder']);
 
