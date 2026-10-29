@@ -202,6 +202,48 @@ Etalase belanja pelanggan (*Customer Storefront*) ditransformasi menggunakan ker
 
 ---
 
+#### 4.7. Alur Kerja Terpadu & Interaksi Antar-Peran (End-to-End Multi-Role Workflow)
+Sistem Rap-iPhone menghubungkan 3 peran pengguna (**Customer**, **Admin Operasional**, dan **Owner**) dalam siklus terpadu yang menjamin keandalan data dari etalase toko hingga pembukuan keuangan:
+
+1. **Alur Transaksi & Pemenuhan Pesanan (Order Fulfillment Lifecycle)**:
+   - **Customer**: Memilih varian unit iPhone (Warna, Kapasitas, BH, IMEI) $\rightarrow$ Masuk Keranjang $\rightarrow$ Mengisi Alamat & Kurir (JNE / SiCepat / J&T / Pick-up Store) $\rightarrow$ Membayar tagihan via Midtrans Snap.
+   - **Sistem Otomatis (Midtrans Webhook)**: Memverifikasi tanda tangan SHA512 $\rightarrow$ Mengubah status pesanan menjadi `paid` $\rightarrow$ Memotong kuantitas stok varian secara atomik dengan *row-level locking* (`lockForUpdate`) guna mencegah *overselling* $\rightarrow$ Mengirim notifikasi WhatsApp dan Email konfirmasi pembayaran beserta lampiran Nota PDF resmi ber-QR Code.
+   - **Admin Operasional**: Memantau antrean pesanan berstatus `paid` $\rightarrow$ Menyiapkan unit fisik dan mengalokasikan nomor IMEI unit pada pesanan $\rightarrow$ Mengemas barang dan mencetak Label Pengiriman massal $\rightarrow$ Menginput nomor resi pengiriman kurir (`shipping_tracking_number`) dan mengubah status menjadi `shipped` (yang otomatis memicu notifikasi WhatsApp & Email resi ke customer).
+   - **Customer**: Menerima paket fisik $\rightarrow$ Memeriksa unit fisik dan memvalidasi keaslian nota via QR Code `/verifikasi-nota/{orderNumber}/{code}`.
+   - **Owner**: Transaksi lunas secara *real-time* tercatat pada *Executive Dashboard* dan laporan laba rugi: sistem menghitung Omzet Penjualan, HPP unit terjual (*Cost of Goods Sold*), dan Laba Bersih (*Net Profit*).
+
+2. **Alur Program Tukar Tambah / Buyback (Trade-In Lifecycle)**:
+   - **Customer**: Melakukan kalkulasi estimasi nilai iPhone lama via 4-Step Wizard $\rightarrow$ Memilih opsi pencairan: **Transfer Rekening Bank** atau **Kupon Voucher Belanja Toko** $\rightarrow$ Mengajukan permohonan (`submitted`) $\rightarrow$ Mengirimkan atau membawa unit lama ke gerai Rap-iPhone.
+   - **Admin / Teknisi**: Menerima unit di toko dan memperbarui status ke `unit_received` $\rightarrow$ Menjalankan inspeksi 4 dimensi (kondisi fisik bodi, layar/TrueTone/FaceID, kesehatan baterai, fungsi kamera & IMEI) $\rightarrow$ Memperbarui hasil inspeksi (`inspected`) dan menentukan harga penawaran final (`final_price`) $\rightarrow$ Memutuskan persetujuan (`approved` atau `rejected`).
+   - **Sistem**: Mengirimkan notifikasi penawaran harga final dan status persetujuan ke WhatsApp & Email pelanggan secara seketika.
+   - **Pencairan & Pemanfaatan**:
+     - *Jika Transfer Bank*: Admin memproses pembayaran tunai dan menandai status `paid_out`.
+     - *Jika Kupon Toko*: Kode voucher potongan belanja diaktifkan dan dapat digunakan customer langsung sebagai diskon pada saat checkout unit iPhone baru.
+   - **Owner**: Nilai unit yang diakuisisi dicatat sebagai arus kas keluar (*Cash Outflow Trade-In*) pada laporan keuangan eksekutif, dan unit fisik dapat dimasukkan kembali oleh Admin ke inventaris iPhone *Second Teruji*.
+
+3. **Alur Manajemen Inventaris & Kontrol Produk**:
+   - **Admin**: Menginput master seri iPhone, varian kapasitas, warna resmi, persentase Battery Health, nomor IMEI unit, harga modal (HPP), dan harga jual retail $\rightarrow$ Mengunggah galeri multi-angle resolusi tinggi $\rightarrow$ Memantau peringatan stok menipis (*low stock alert* $\le$ 3).
+   - **Customer**: Menikmati transparansi penuh pada etalase toko (status garansi TAM/iBox vs Second QC 32-titik, Battery Health riil, foto asli tanpa AI fluff).
+   - **Owner**: Memperoleh kepastian perhitungan margin laba kotor (*Gross Margin*) berbasis HPP yang akurat pada setiap unit yang terjual.
+
+4. **Alur Tata Kelola Eksekutif & Staf (Owner Governance)**:
+   - **Owner**: Memonitor KPI bisnis melalui Executive Dashboard (Omzet, HPP, Laba Bersih, Tren Penjualan 30 Hari, Produk Terlaris, dan Rasio Konversi).
+   - **Owner**: Mengaudit dan mengekspor buku besar Laba Rugi dan Arus Kas ke format CSV/Excel (dengan UTF-8 BOM) dan PDF Eksekutif.
+   - **Owner**: Memiliki wewenang eksklusif mengelola akun staf toko (`role: admin`), mereset kredensial, atau menonaktifkan akses staf yang telah berhenti.
+
+---
+
+#### 4.8. Invarian Logika Bisnis & Aturan Integritas Data (Business Invariants)
+Untuk menjaga keandalan sistem berskala produksi, platform Rap-iPhone menerapkan aturan logika bisnis yang tidak boleh dilanggar (*non-waivable business invariants*):
+1. **Integritas Stok & Pencegahan Overselling**: Pemotongan kuantitas stok varian hanya terjadi sekali saat webhook pembayaran Midtrans berstatus `settlement/capture` (lunas) dengan menggunakan transaksi database atomik dan *pessimistic row locking* (`lockForUpdate`). Kuantitas stok tidak boleh bernilai negatif (`max(0, stock - qty)`).
+2. **Idempotensi Webhook Callback**: Webhook Midtrans yang diterima berulang kali untuk pesanan yang sudah berstatus `paid` tidak boleh mengurangi stok lagi atau memicu duplikasi notifikasi.
+3. **Preservasi Snapshot HPP Historis**: Saat transaksi dibuat, nilai `cost_price` (HPP) varian disalin secara permanen ke tabel `order_items`. Jika Admin mengubah master HPP produk di masa depan, laporan laba rugi historis transaksi masa lalu tetap akurat 100%.
+4. **Isolasi Jalur Autentikasi (Strict Role-Isolated Auth)**: Portal `/login` khusus pelanggan, `/admin/login` khusus staf operasional, dan `/owner/login` khusus pemilik usaha. Upaya login silang (*cross-portal login*) wajib ditolak dengan pesan kesalahan yang jelas dan pengalihan ke portal yang sah.
+5. **Integritas Alokasi IMEI**: Setiap unit fisik yang dikirimkan kepada pelanggan wajib dialokasikan nomor IMEI unik pada detail pesanan (`allocated_imei`) sebelum status diubah menjadi `shipped`. Nomor IMEI ini dicantumkan pada Faktur PDF dan menjadi rujukan klaim garansi toko.
+6. **Perlakuan Finansial Kupon vs Transfer Bank**: Pencairan Trade-In berbasis transfer bank dicatat sebagai pengeluaran tunai langsung (*Cash Outflow*), sedangkan pencairan berbasis voucher toko dicatat sebagai kewajiban potongan belanja (*Discount Allowance*) yang mengurangi penerimaan kotor pesanan target.
+
+---
+
 ### 5. Kebutuhan Non-Fungsional (NFR)
 1. **Keamanan (Security & Role-Isolated Auth)**:
    - Sanitasi input dan proteksi terhadap CSRF, XSS, serta SQL Injection (Eloquent ORM).
@@ -223,8 +265,24 @@ Etalase belanja pelanggan (*Customer Storefront*) ditransformasi menggunakan ker
 
 ### 6. Matriks Status Pesanan (Order State Machine)
 - `pending`: Menunggu pembayaran via Midtrans Snap.
-- `paid`: Pembayaran terverifikasi lunas (Webhook).
-- `processing`: Pesanan sedang dipersiapkan dan unit IMEI dialokasikan oleh Admin.
-- `shipped`: Pesanan telah diserahkan ke ekspedisi dan nomor resi terbit.
-- `completed`: Paket diterima oleh customer.
-- `cancelled`: Pesanan dibatalkan (kadaluarsa Midtrans / pembatalan sistem).
+- `paid`: Pembayaran terverifikasi lunas (Webhook); stok unit berkurang secara otomatis dan aman (*row lock*).
+- `processing`: Pesanan sedang dipersiapkan dan nomor seri/IMEI unit dialokasikan oleh Admin.
+- `shipped`: Pesanan telah diserahkan ke ekspedisi kurir, nomor resi terbit, notifikasi WhatsApp/Email terkirim otomatis ke customer.
+- `completed`: Paket diterima oleh customer, masa garansi unit aktif.
+- `cancelled`: Pesanan dibatalkan (kadaluarsa Midtrans / pembatalan sistem); stok dikembalikan jika sebelumnya terpotong.
+
+---
+
+### 7. Matriks Status Tukar Tambah (Trade-In State Machine)
+- `submitted`: Customer telah mengirimkan form taksiran unit lama; menunggu unit diserahkan/dikirimkan ke toko.
+- `unit_received`: Unit fisik telah tiba di gerai Rap-iPhone dan diterima oleh staf toko.
+- `inspected`: Teknisi telah selesai melakukan inspeksi fisik 4-titik (body, layar, baterai, IMEI/fungsi) dan memperbarui nilai penawaran final.
+- `approved`: Penawaran disetujui; jika memilih kupon belanja maka kode voucher aktif, jika memilih transfer bank maka antre pencairan.
+- `rejected`: Pengajuan ditolak (misal unit bypass, iCloud terkunci, atau tidak memenuhi syarat minimum toko); unit dikembalikan ke customer.
+- `paid_out`: Dana tunai telah ditransfer ke rekening bank customer atau voucher belanja telah berhasil digunakan pada pesanan unit baru.
+
+---
+
+### 8. Roadmap Lanjutan: Audit, Review & Perbaikan Logika Bisnis (Fase 33)
+- Menjamin keterpaduan 100% tanpa celah antara aksi antarmuka Customer, pemenuhan operasional Admin, dan pembukuan eksekutif Owner.
+- Verifikasi otomatis melalui unit/feature test suite (`tests/Feature/EndToEndWorkflowTest.php`) yang mencakup seluruh siklus pesanan, tukar tambah, mitigasi race condition stok, dan rekonsiliasi keuangan.

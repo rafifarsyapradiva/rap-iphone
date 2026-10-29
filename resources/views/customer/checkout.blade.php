@@ -180,15 +180,53 @@
                         </div>
 
                         <div class="space-y-1">
+                            <div class="flex items-center justify-between">
+                                <label for="voucher_code" class="cust-label">
+                                    Kupon Voucher Tukar Tambah / Trade-In (Opsional)
+                                </label>
+                                <span class="text-[10px] text-[var(--cust-tone-healthy-ink)] font-medium">
+                                    Potongan Langsung
+                                </span>
+                            </div>
+                            <input 
+                                type="text" 
+                                id="voucher_code" 
+                                name="voucher_code" 
+                                value="{{ old('voucher_code') }}" 
+                                placeholder="Masukkan kode voucher (Contoh: VCH-XXXXXX)"
+                                class="cust-input text-xs font-mono uppercase"
+                            >
+                            @if(!empty($availableVouchers) && $availableVouchers->count() > 0)
+                                <div class="mt-2 p-2.5 rounded bg-emerald-50/70 border border-emerald-200 space-y-1.5">
+                                    <span class="text-[10px] uppercase font-bold text-emerald-800 tracking-wider block">Kupon Trade-In Aktif Anda:</span>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        @foreach($availableVouchers as $vch)
+                                            <button 
+                                                type="button" 
+                                                onclick="document.getElementById('voucher_code').value = '{{ $vch->customer_account_number }}'"
+                                                class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-white border border-emerald-300 text-emerald-900 text-[11px] font-mono hover:bg-emerald-100 transition-colors"
+                                                title="Klik untuk menggunakan voucher ini"
+                                            >
+                                                <i data-lucide="tag" class="w-3 h-3 text-emerald-600"></i>
+                                                <span>{{ $vch->customer_account_number }}</span>
+                                                <span class="font-bold text-emerald-700">(Rp {{ number_format((float) ($vch->final_price ?? $vch->estimated_price), 0, ',', '.') }})</span>
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+
+                        <div class="space-y-1">
                             <label for="customer_notes" class="cust-label">
-                                Catatan Pesanan / Kode Voucher Trade-In (Opsional)
+                                Catatan Tambahan untuk Toko / Kurir (Opsional)
                             </label>
                             <input 
                                 type="text" 
                                 id="customer_notes" 
                                 name="customer_notes" 
                                 value="{{ old('customer_notes') }}" 
-                                placeholder="Contoh: Voucher Trade-In VCH-XXXXXX atau jam pengambilan"
+                                placeholder="Contoh: Titip ke satpam / jam pengambilan unit di gerai"
                                 class="cust-input text-xs"
                             >
                         </div>

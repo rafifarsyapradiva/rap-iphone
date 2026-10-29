@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
 use App\Models\ProductVariant;
+use App\Models\TradeIn;
 use App\Services\MidtransService;
 use App\Services\NotificationOrchestrator;
 use Exception;
@@ -83,10 +84,19 @@ class CheckoutController extends Controller
             ],
         ];
 
+        $availableVouchers = TradeIn::where('user_id', $user->id)
+            ->whereIn('status', ['approved', 'paid_out'])
+            ->where(function ($q) {
+                $q->where('customer_bank_name', TradeIn::VOUCHER_BANK_MARKER)
+                  ->orWhere('customer_account_number', 'like', 'VCH-%');
+            })
+            ->whereNull('target_order_id')
+            ->get();
+
         $clientKey = $this->midtransService->getClientKey();
         $isProduction = $this->midtransService->isProduction();
 
-        return view('customer.checkout', compact('cart', 'subtotal', 'totalQuantity', 'user', 'couriers', 'clientKey', 'isProduction'));
+        return view('customer.checkout', compact('cart', 'subtotal', 'totalQuantity', 'user', 'couriers', 'clientKey', 'isProduction', 'availableVouchers'));
     }
 
     /**
@@ -112,7 +122,25 @@ class CheckoutController extends Controller
             'shipping_address' => 'required|string|max:1000',
             'shipping_courier' => 'required|string|max:50',
             'customer_notes' => 'nullable|string|max:500',
+            'voucher_code' => 'nullable|string|max:50',
         ]);
+
+        // Extract voucher code from dedicated input or customer_notes
+        $voucherCode = trim((string) ($request->input('voucher_code') ?? ''));
+        if ($voucherCode === '' && !empty($validated['customer_notes'])) {
+            if (preg_match('/(VCH-[A-Z0-9]{4,10})/i', $validated['customer_notes'], $matches)) {
+                $voucherCode = strtoupper($matches[1]);
+            }
+        }
+
+        $appliedTradeIn = null;
+        if ($voucherCode !== '') {
+            $appliedTradeIn = TradeIn::where('customer_account_number', strtoupper($voucherCode))
+                ->whereIn('status', ['approved', 'paid_out'])
+                ->whereNull('target_order_id')
+                ->where('user_id', auth()->id())
+                ->first();
+        }
 
         // Stock availability verification
         foreach ($cart as $item) {
@@ -127,7 +155,7 @@ class CheckoutController extends Controller
         }
 
         try {
-            $order = DB::transaction(function () use ($validated, $cart) {
+            $order = DB::transaction(function () use ($validated, $cart, $appliedTradeIn) {
                 // Calculate totals
                 $subtotal = 0;
                 foreach ($cart as $item) {
@@ -136,7 +164,13 @@ class CheckoutController extends Controller
 
                 $shippingCost = 0.00; // Apple Store Free Shipping promo
                 $discountAmount = 0.00;
-                $grandTotal = $subtotal + $shippingCost - $discountAmount;
+
+                if ($appliedTradeIn) {
+                    $voucherVal = (float) ($appliedTradeIn->final_price ?? $appliedTradeIn->estimated_price);
+                    $discountAmount = min($subtotal, $voucherVal);
+                }
+
+                $grandTotal = max(0.00, $subtotal + $shippingCost - $discountAmount);
 
                 // Unique Order Number: RAP-YYYYMMDD-XXXX
                 $datePrefix = date('Ymd');
@@ -148,6 +182,8 @@ class CheckoutController extends Controller
                     $orderNumber = "RAP-{$datePrefix}-" . strtoupper(Str::random(4));
                 }
 
+                $initialStatus = ($grandTotal <= 0.00) ? 'paid' : 'pending';
+
                 // 1. Create Order
                 $order = Order::create([
                     'order_number' => $orderNumber,
@@ -156,7 +192,7 @@ class CheckoutController extends Controller
                     'shipping_cost' => $shippingCost,
                     'discount_amount' => $discountAmount,
                     'grand_total' => $grandTotal,
-                    'status' => 'pending',
+                    'status' => $initialStatus,
                     'shipping_courier' => $validated['shipping_courier'],
                     'shipping_address' => $validated['shipping_address'],
                     'recipient_name' => $validated['recipient_name'],
@@ -164,33 +200,67 @@ class CheckoutController extends Controller
                     'customer_notes' => $validated['customer_notes'] ?? null,
                 ]);
 
+                // Link trade-in voucher if applied
+                if ($appliedTradeIn) {
+                    $appliedTradeIn->update([
+                        'target_order_id' => $order->id,
+                        'status' => 'paid_out',
+                    ]);
+                }
+
                 // 2. Create Order Items
                 foreach ($cart as $item) {
+                    $variant = ProductVariant::find($item['variant_id']);
                     OrderItem::create([
                         'order_id' => $order->id,
                         'product_variant_id' => $item['variant_id'],
                         'product_name' => $item['product_name'],
                         'variant_details' => $item['color_name'] . ' / ' . $item['storage_capacity'],
                         'price' => $item['price'],
-                        'cost_price' => $item['cost_price'] ?? 0,
+                        'cost_price' => $item['cost_price'] ?? ($variant ? (float) $variant->cost_price : 0),
                         'quantity' => $item['quantity'],
                         'subtotal' => $item['price'] * $item['quantity'],
-                        'allocated_imei' => $item['imei'] ?? null,
+                        'allocated_imei' => $item['imei'] ?? ($variant ? $variant->imei : null),
                     ]);
                 }
 
-                // 3. Generate Snap Token via MidtransService
-                $snapToken = $this->midtransService->getSnapToken($order);
+                // 3. Payment record creation
+                if ($grandTotal <= 0.00) {
+                    // Fully covered by Trade-In Voucher
+                    Payment::create([
+                        'order_id' => $order->id,
+                        'gross_amount' => 0.00,
+                        'payment_type' => 'voucher',
+                        'snap_token' => 'voucher_full_' . md5($order->order_number),
+                        'transaction_status' => 'settlement',
+                        'payment_time' => now(),
+                    ]);
 
-                // 4. Create Payment Record
-                Payment::create([
-                    'order_id' => $order->id,
-                    'gross_amount' => $grandTotal,
-                    'snap_token' => $snapToken,
-                    'transaction_status' => 'pending',
-                ]);
+                    // Immediate stock decrement with row lock
+                    foreach ($order->items as $item) {
+                        if ($item->product_variant_id) {
+                            $variantRow = ProductVariant::where('id', $item->product_variant_id)
+                                ->lockForUpdate()
+                                ->first();
+                            if ($variantRow) {
+                                $newStock = max(0, (int) $variantRow->stock - (int) $item->quantity);
+                                $variantRow->update(['stock' => $newStock]);
+                            }
+                        }
+                    }
+                } else {
+                    // Generate Snap Token via MidtransService
+                    $snapToken = $this->midtransService->getSnapToken($order);
 
-                // 5. Clear Cart Session
+                    Payment::create([
+                        'order_id' => $order->id,
+                        'gross_amount' => $grandTotal,
+                        'snap_token' => $snapToken,
+                        'transaction_status' => 'pending',
+                    ]);
+                }
+
+                // 4. Clear Cart Session
                 session()->forget('cart');
                 session()->put('cart_count', 0);
 
@@ -199,10 +269,14 @@ class CheckoutController extends Controller
 
             $order->load(['payment', 'items', 'user']);
 
-            // Trigger simultaneous WhatsApp & Email invoice notification (Phase 8)
-            $this->notificationOrchestrator->notifyOrderCreated($order);
+            // Trigger notification based on order status
+            if ($order->status === 'paid') {
+                $this->notificationOrchestrator->notifyPaymentSuccess($order);
+            } else {
+                $this->notificationOrchestrator->notifyOrderCreated($order);
+            }
 
-            $snapToken = $order->payment->snap_token;
+            $snapToken = $order->payment?->snap_token;
             $redirectUrl = route('checkout.success', $order->order_number);
 
             if ($request->expectsJson() || $request->ajax()) {
@@ -211,7 +285,9 @@ class CheckoutController extends Controller
                     'order_number' => $order->order_number,
                     'snap_token' => $snapToken,
                     'redirect_url' => $redirectUrl,
-                    'message' => 'Pesanan berhasil dibuat. Silakan selesaikan pembayaran.',
+                    'message' => ($order->status === 'paid')
+                        ? 'Pesanan berhasil dibayar menggunakan Kupon Voucher Trade-In!'
+                        : 'Pesanan berhasil dibuat. Silakan selesaikan pembayaran.',
                 ]);
             }
 

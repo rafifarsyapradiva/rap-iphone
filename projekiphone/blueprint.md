@@ -65,6 +65,52 @@
 
 ---
 
+### 1.1. Alur Arsitektur & Sekuens Interaksi Antar-Peran (End-to-End Multi-Role Interaction Sequence)
+
+Berikut adalah diagram urutan terpadu yang memetakan pertukaran data dari aksi Customer di Storefront, pemenuhan fisik oleh Admin, hingga audit performa oleh Owner:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor C as Customer
+    participant CF as Customer Storefront
+    participant GW as Midtrans Gateway
+    participant MC as MidtransCallbackController
+    participant DB as MySQL Database
+    participant NO as NotificationOrchestrator
+    actor A as Admin Operasional
+    actor O as Pemilik Usaha (Owner)
+
+    Note over C,CF: 1. Alur Pemesanan & Pembayaran
+    C->>CF: Checkout unit iPhone (Pilih Kurir/Pickup)
+    CF->>DB: Buat Order (status: pending) & simpan snapshot HPP (cost_price)
+    CF->>GW: Minta Snap Token pembayaran
+    GW-->>CF: Kembalikan Snap Token
+    C->>GW: Selesaikan pembayaran (QRIS / VA / CC)
+    
+    Note over GW,DB: 2. Webhook & Pengurangan Stok Atomik
+    GW->>MC: HTTP POST Webhook (Settlement)
+    MC->>MC: Verifikasi SHA-512 Signature Hash
+    MC->>DB: UPDATE order (status: paid) & LOCK row decrement stock (atomic)
+    MC->>NO: Dispatch Notifikasi Pembayaran Sukses
+    NO-->>C: Notifikasi WhatsApp + Email + Lampiran Nota PDF (QR Code)
+
+    Note over A,DB: 3. Pemenuhan Pesanan (Fulfillment)
+    A->>DB: Ambil antrean pesanan paid (/admin/orders)
+    A->>A: Packing fisik unit & verifikasi kelayakan
+    A->>DB: Alokasikan nomor IMEI fisik & Input Nomor Resi Ekspedisi
+    DB-->>A: Status diperbarui ke shipped
+    A->>NO: Dispatch Notifikasi Resi Pengiriman
+    NO-->>C: Notifikasi WhatsApp & Email Resi + Link Pelacakan
+
+    Note over O,DB: 4. Pembukuan & Audit Finansial
+    O->>DB: Buka /owner/dashboard & /owner/financial-report
+    DB-->>O: Rekapitulasi Real-Time: Omzet, HPP (COGS), Laba Bersih, & Arus Kas
+    O->>O: Ekspor Laporan Laba Rugi Eksekutif (CSV / PDF)
+```
+
+---
+
 ### 2. Skema Basis Data (Database Schema & Relasi)
 
 #### 2.1. Tabel `users`
@@ -191,6 +237,22 @@
 - `error_message` (TEXT, Nullable)
 - `response_payload` (JSON, Nullable)
 - `created_at` (TIMESTAMP)
+
+#### 2.7. Model Rekonsiliasi & Pipeline Finansial (Financial Metrics Engine)
+Dijalankan oleh `App\Services\FinancialAnalyticsService` untuk merekap data keuangan riil pesanan berstatus *realized* (`paid`, `processing`, `shipped`, `completed`):
+
+1. **Penjualan Kotor Produk (*Gross Items Sales*)**:
+   $$\text{Gross Sales} = \sum (\text{item.price} \times \text{item.quantity})$$
+2. **Total Harga Pokok Penjualan (*Total Cost of Goods Sold / COGS*)**:
+   $$\text{COGS} = \sum (\text{item.cost\_price} \times \text{item.quantity})$$
+3. **Laba Kotor Produk (*Gross Profit*)**:
+   $$\text{Gross Profit} = \text{Gross Sales} - \text{COGS}$$
+4. **Laba Bersih Toko (*Net Profit*)**:
+   $$\text{Net Profit} = \text{Gross Profit} - \sum \text{order.discount\_amount}$$
+5. **Rasio Margin Laba Bersih (*Net Profit Margin %*)**:
+   $$\text{Margin \%} = \frac{\text{Net Profit}}{\text{Total Revenue}} \times 100\%$$
+6. **Arus Kas Bersih (*Net Cash Flow*)**:
+   $$\text{Net Cash Flow} = \text{Revenue Masuk} - \text{Total Kas Keluar Trade-In}$$
 
 ---
 
@@ -566,3 +628,75 @@ Seluruh warna, tipografi, dan spasi diwajibkan melewati token CSS deklarasi `:ro
 - **F11**: Dilarang menggunakan kartu bersarang (*card inside a card*), gradien ungu-ke-biru, atau emotikon sebagai ikon.
 - **F12 & F13**: Hero headline, kalimat pengantar, dan tombol aksi tampak utuh pada resolusi 1280x800 tanpa scroll; rasio ~80 kata per layar.
 - **F14**: Kontainer etalase terpusat dan dibatasi maksimal 1440px / 1920px (gutters melebar pada layar lebar, grid tidak melar tak berbatas).
+
+---
+
+### 7. Siklus Hidup & State Machine Terpadu (Unified State Machine Lifecycle)
+
+#### 7.1. State Machine Pesanan (Order Lifecycle)
+```
+       [Customer Checkout]
+               │
+               ▼
+           (pending)
+               │
+       [Midtrans Webhook: Settlement]
+               │
+               ▼
+            (paid) ──── [Kurangi Stok Atomik & Lock DB]
+               │   ──── [Kirim Notif WA + Email Invoice PDF]
+               ▼
+          (processing) ── [Admin Alokasi Nomor Seri/IMEI]
+               │
+               ▼
+           (shipped) ──── [Admin Input Resi Ekspedisi]
+               │     ──── [Kirim Notif WA + Email Resi]
+               ▼
+          (completed) ─── [Paket Tiba di Customer & Garansi Toko Aktif]
+```
+- Transisi `pending` $\rightarrow$ `cancelled`: Terjadi bila pembayaran kadaluarsa (*expire*) atau dibatalkan oleh gateway; stok dikembalikan jika sebelumnya terpotong.
+
+#### 7.2. State Machine Tukar Tambah / Buyback (Trade-In Lifecycle)
+```
+     [Customer Submit Wizard]
+               │
+               ▼
+          (submitted)
+               │
+      [Unit Diterima di Gerai]
+               │
+               ▼
+        (unit_received)
+               │
+    [Teknisi Toko Uji 4-Titik]
+               │
+               ▼
+          (inspected) ─── [Input Hasil Uji & Penawaran Final]
+               │
+        ┌──────┴──────┐
+        ▼             ▼
+   (approved)     (rejected) ── [Unit Dikembalikan ke Customer]
+        │
+    [Pencairan]
+        ├── Transfer Bank ───────► (paid_out) [Kas Keluar Toko]
+        └── Kupon Voucher Toko ──► (paid_out) [Diskon Belanja Unit Baru]
+```
+
+---
+
+### 8. Matriks Hak Akses & Batasan Keamanan Peran (Security & Role Boundary Architecture)
+
+| Modul / Kemampuan Operasional | Customer | Admin Operasional | Pemilik Usaha (Owner) | Mekanisme Proteksi |
+|---|:---:|:---:|:---:|---|
+| **Portal Autentikasi Mandiri** | `/login` | `/admin/login` | `/owner/login` | `RoleMiddleware` + Custom Auth Controllers |
+| **Katalog, Keranjang, & Checkout** | ✅ Penuh | ✅ Testing | ✅ Testing | Publik & `auth` |
+| **Riwayat Pesanan Pribadi** | ✅ Milik Sendiri | ✅ Seluruh Toko | ✅ Seluruh Toko | Query Scope `where('user_id', auth()->id())` |
+| **Download Nota PDF Resmi** | ✅ Milik Sendiri | ✅ Seluruh Toko | ✅ Seluruh Toko | `OrderPolicy@downloadInvoice` |
+| **Verifikasi Keaslian Nota via QR** | ✅ Publik | ✅ Publik | ✅ Publik | SHA-256 HMAC Code Hash + Rate Limiter |
+| **Manajemen Produk & Varian (HPP, Stok)** | ❌ 403 Forbidden | ✅ Penuh | ✅ Penuh | Middleware `role:admin,owner` |
+| **Alokasi IMEI & Pemrosesan Resi** | ❌ 403 Forbidden | ✅ Penuh | ✅ Penuh | Middleware `role:admin,owner` |
+| **Inspeksi & Keputusan Trade-In** | ❌ 403 Forbidden | ✅ Penuh | ✅ Penuh | Middleware `role:admin,owner` |
+| **Executive Dashboard (Omzet & Laba)** | ❌ 403 Forbidden | ❌ 403 Forbidden | ✅ Eksklusif | Middleware `role:owner` |
+| **Buku Besar Finansial & Ekspor CSV/PDF**| ❌ 403 Forbidden | ❌ 403 Forbidden | ✅ Eksklusif | Middleware `role:owner` |
+| **Manajemen Akun Staf Toko (Admin)** | ❌ 403 Forbidden | ❌ 403 Forbidden | ✅ Eksklusif | Middleware `role:owner` |
+

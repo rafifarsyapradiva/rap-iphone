@@ -414,3 +414,27 @@
 - [x] **32.3. Pengujian Fungsional End-to-End (E2E)**
   - [x] Verifikasi alur belanja penuh: Katalog -> PDP (Pilih Varian) -> Tambah Keranjang -> Checkout Midtrans -> Webhook Callback -> Notifikasi WA Fonnte & Email SMTP -> Faktur PDF.
   - [x] Eksekusi suite pengujian Laravel: `php artisan test` dan kompilasi aset `npm run build`.
+
+---
+
+### Phase 33: Audit, Review, & Perbaikan Logika Bisnis Alur Kerja Terpadu Customer – Admin – Owner (End-to-End Workflow Verification & Business Logic Rectification)
+- [x] **33.1. Audit & Validasi Alur Transaksi Customer $\rightarrow$ Midtrans $\rightarrow$ Admin Fulfillment**
+  - [x] Audit validasi ketersediaan stok & row-level locking pada saat checkout (`CheckoutController` & `MidtransCallbackController`).
+  - [x] Audit alur nomor resi kurir, alokasi nomor IMEI fisik, dan trigger otomatis notifikasi WhatsApp (Fonnte) & Email (SMTP).
+  - [x] Audit sinkronisasi status pesanan (`pending` -> `paid` -> `processing` -> `shipped` -> `completed` / `cancelled`).
+- [x] **33.2. Audit & Validasi Alur Program Tukar Tambah (Trade-In) Customer $\rightarrow$ Teknisi Admin**
+  - [x] Audit kalkulasi estimasi nilai unit lama pada `TradeInCalculatorService` & `TradeInCustomerController`.
+  - [x] Audit form inspeksi fisik teknisi toko, validasi penawaran harga final, dan keputusan (`approved`, `rejected`, `paid_out`).
+  - [x] Audit metode pencairan dana: Transfer Rekening vs Kupon Voucher Belanja Toko terintegrasi di checkout.
+- [x] **33.3. Audit & Validasi Akurasi Finansial Eksekutif Owner (HPP, Laba Bersih, Arus Kas)**
+  - [x] Audit integritas snapshot `cost_price` (HPP) historis pada `order_items`.
+  - [x] Audit formula Laba Kotor, Diskon, Laba Bersih, dan Arus Kas Bersih pada `FinancialAnalyticsService`.
+  - [x] Audit integritas ekspor CSV (UTF-8 BOM untuk Microsoft Excel) dan PDF Laba Rugi Eksekutif.
+- [x] **33.4. Audit Batasan Hak Akses & Isolasi Autentikasi Multi-Portal (Role Boundaries & Staff Management)**
+  - [x] Audit proteksi penolakan login silang (*cross-portal rejection*) antar `/login`, `/admin/login`, dan `/owner/login`.
+  - [x] Audit isolasi akses data pesanan dan faktur (Customer hanya akses pesanan sendiri, Admin & Owner akses penuh).
+  - [x] Audit proteksi akun pada modul manajemen staf (pencegahan Owner menghapus akun dirinya sendiri).
+- [x] **33.5. Penulisan Automated End-to-End Feature Test & Eksekusi QA Komprehensif**
+  - [x] Pembuatan test suite terpadu `tests/Feature/EndToEndWorkflowTest.php` yang menguji siklus lengkap Customer -> Midtrans -> Admin -> Owner.
+  - [x] Verifikasi seluruh test suite lulus 100% (`php artisan test` - 152 passed, 1081 assertions).
+
