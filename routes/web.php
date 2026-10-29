@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\TradeInVerificationController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\Auth\OwnerAuthController;
 use App\Http\Controllers\Customer\CartController;
 use App\Http\Controllers\Customer\CatalogController;
 use App\Http\Controllers\Customer\CheckoutController;
@@ -125,6 +126,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AdminAuthController::class, 'login'])->name('login.submit');
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Phase 15: Dedicated Owner Executive Authentication Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('owner')->name('owner.')->group(function () {
+    Route::get('/login', [OwnerAuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [OwnerAuthController::class, 'login'])->name('login.submit');
+    Route::post('/logout', [OwnerAuthController::class, 'logout'])->name('logout');
 });
 
 /*

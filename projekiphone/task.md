@@ -216,18 +216,18 @@
 ---
 
 ### Phase 15: Jalur Login Owner Sendiri (Dedicated Executive Owner Login Portal)
-- [ ] **15.1. Rute & Controller Autentikasi Eksklusif Owner (`OwnerAuthController`)**
-  - [ ] Pembuatan rute khusus Pemilik Usaha pada `routes/web.php`: `GET /owner/login` (`owner.login`), `POST /owner/login` (`owner.login.submit`), dan `POST /owner/logout` (`owner.logout`).
-  - [ ] Pembuatan `App\Http\Controllers\Auth\OwnerAuthController` dengan proteksi *rate limiting* khusus eksekutif (`owner-login|{email}|{ip}`).
-  - [ ] Implementasi *Strict Owner Role Guard*: Hanya mengizinkan akun dengan `role === 'owner'` untuk masuk melalui `/owner/login`; menolak tegas percobaan login dari akun `admin` maupun `customer`.
-- [ ] **15.2. Antarmuka Halaman Login Eksekutif Owner (`resources/views/auth/owner-login.blade.php`)**
-  - [ ] Desain halaman login eksklusif **Rap-iPhone Executive & Financial Portal** bergaya *Apple Executive Daylight & Titanium Accent*.
-  - [ ] Antarmuka eksekutif bebas distraksi tanpa opsi registrasi publik dan tanpa tombol Google OAuth pelanggan.
-  - [ ] Penyediaan *Quick Demo Account Chip* khusus Pemilik Usaha (`owner@rap-iphone.com`) untuk kemudahan pengujian.
-- [ ] **15.3. Pengalihan Otomatis (Redirect) & Proteksi Middleware Owner**
-  - [ ] Pengalihan pasca-login sukses langsung menuju `route('owner.dashboard')` (`/owner/dashboard`).
-  - [ ] Pembaruan `RoleMiddleware` agar pengguna *guest* yang mencoba mengakses prefix `/owner/*` otomatis diarahkan ke `route('owner.login')` (`/owner/login`).
-  - [ ] Pengalihan pasca-logout dari dashboard finansial owner kembali menuju halaman `/owner/login`.
+- [x] **15.1. Rute & Controller Autentikasi Eksklusif Owner (`OwnerAuthController`)**
+  - [x] Pembuatan rute khusus Pemilik Usaha pada `routes/web.php`: `GET /owner/login` (`owner.login`), `POST /owner/login` (`owner.login.submit`), dan `POST /owner/logout` (`owner.logout`).
+  - [x] Pembuatan `App\Http\Controllers\Auth\OwnerAuthController` dengan proteksi *rate limiting* khusus eksekutif (`owner-login|{email}|{ip}`).
+  - [x] Implementasi *Strict Owner Role Guard*: Hanya mengizinkan akun dengan `role === 'owner'` untuk masuk melalui `/owner/login`; menolak tegas percobaan login dari akun `admin` maupun `customer`.
+- [x] **15.2. Antarmuka Halaman Login Eksekutif Owner (`resources/views/auth/owner-login.blade.php`)**
+  - [x] Desain halaman login eksklusif **Rap-iPhone Executive & Financial Portal** bergaya *Apple Executive Daylight & Titanium Accent*.
+  - [x] Antarmuka eksekutif bebas distraksi tanpa opsi registrasi publik dan tanpa tombol Google OAuth pelanggan.
+  - [x] Penyediaan *Quick Demo Account Chip* khusus Pemilik Usaha (`owner@rap-iphone.com`) untuk kemudahan pengujian.
+- [x] **15.3. Pengalihan Otomatis (Redirect) & Proteksi Middleware Owner**
+  - [x] Pengalihan pasca-login sukses langsung menuju `route('owner.dashboard')` (`/owner/dashboard`).
+  - [x] Pembaruan `RoleMiddleware` agar pengguna *guest* yang mencoba mengakses prefix `/owner/*` otomatis diarahkan ke `route('owner.login')` (`/owner/login`).
+  - [x] Pengalihan pasca-logout dari dashboard finansial owner kembali menuju halaman `/owner/login`.
 
 ---
 

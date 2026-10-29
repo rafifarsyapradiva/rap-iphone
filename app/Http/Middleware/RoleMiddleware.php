@@ -27,11 +27,7 @@ class RoleMiddleware
             }
 
             if ($request->is('owner*')) {
-                $ownerLoginRoute = \Illuminate\Support\Facades\Route::has('owner.login')
-                    ? route('owner.login')
-                    : route('login');
-
-                return redirect()->guest($ownerLoginRoute)->with(
+                return redirect()->guest(route('owner.login'))->with(
                     'error',
                     'Silakan masuk ke Portal Eksekutif Owner terlebih dahulu.'
                 );

@@ -19,9 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 return route('admin.login');
             }
             if ($request->is('owner*')) {
-                return \Illuminate\Support\Facades\Route::has('owner.login')
-                    ? route('owner.login')
-                    : route('login');
+                return route('owner.login');
             }
             return route('login');
         });

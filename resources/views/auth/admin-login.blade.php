@@ -169,7 +169,7 @@
                         <i data-lucide="chevron-left" class="w-3 h-3"></i>
                         <span>Ke Toko Publik</span>
                     </a>
-                    <a href="{{ url('/owner/login') }}" class="text-[#86868B] hover:text-[#BF4800] transition-colors inline-flex items-center gap-1" title="Akses Portal Pemilik Usaha">
+                    <a href="{{ route('owner.login') }}" class="text-[#86868B] hover:text-[#BF4800] transition-colors inline-flex items-center gap-1" title="Akses Portal Pemilik Usaha">
                         <span>Portal Owner</span>
                         <i data-lucide="crown" class="w-3 h-3"></i>
                     </a>
