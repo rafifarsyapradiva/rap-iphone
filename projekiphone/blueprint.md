@@ -7,12 +7,12 @@
 
 ```
 +-----------------------------------------------------------------------------------+
-|                    CLIENT LAYER (DIGIMAP DAYLIGHT UI v2.0)                        |
-|  +---------------------------+  +--------------------------+  +-----------------+  |
-|  | Customer Portal           |  | Admin Operations         |  | Owner Dashboard |  |
-|  | (Digimap Clean White &    |  | (Enterprise Light UI:    |  | (Analitik Laba, |  |
-|  |  Daylight Frosted Blade)  |  |  Katalog, Order, Resi)   |  |  Omzet, Rekap)  |  |
-|  +---------------------------+  +--------------------------+  +-----------------+  |
+|                    CLIENT LAYER (DIGIMAP DAYLIGHT & HALLMARK EDITORIAL)           |
+|  +---------------------------+  +-----------------------------------------------+  |
+|  | Customer Storefront       |  | Admin & Owner Executive Console               |  |
+|  | (Digimap Clean White &    |  | (Hallmark Luxury / Editorial Redesign Suite:  |  |
+|  |  Daylight Frosted Blade)  |  |  Sentient Serif, Trade Ledgers, Cotton Stock) |  |
+|  +---------------------------+  +-----------------------------------------------+  |
 +----------------------------------------+------------------------------------------+
                                          | HTTP / HTTPS Requests
                                          v
@@ -365,34 +365,83 @@ resources/views/
     └── trade-in.blade.php       <-- 4-Step Wizard Tukar Tambah bergaya Apple/Digimap Trade-In
 ```
 
-#### 6.3. Admin Console Design System (Fase 17–24)
-Lapisan presentasi panel Admin & Owner dirapikan dengan satu design system berbasis token `--dm-*`. Kelas `.daylight-enterprise …` (tambalan kompatibilitas tema gelap) dihapus pada Fase 24.
+#### 6.3. Hallmark Luxury / Editorial Design System (Fase 17–24)
+Lapisan presentasi panel Admin Operasional dan Pemilik Usaha (Owner) ditransformasi menggunakan kerangka kerja **Hallmark Redesign** dengan tone **Luxury / Editorial** (genre: `editorial`). Desain memadukan ketenangan buku besar retail mewah (*trade ledger*), kertas limewash, tipografi display serif berbobot ringan, serta disiplin ketat aturan *The Floor* dari Hallmark.
 
-**a. Kelas CSS (`resources/css/admin.css`, di-`@import` dari `app.css`)**
+**a. Spesifikasi Token CSS (`resources/css/admin.css` & `tokens.css`)**
+Seluruh warna, tipografi, dan spasi diwajibkan melewati token CSS deklarasi `:root` tanpa nilai literal di dalam view:
 
-| Kelas | Fungsi |
+```css
+:root {
+  /* Palet Kertas & Permukaan (Limewash & Cotton Stock) */
+  --adm-paper: oklch(96% 0.008 80);        /* Kanvas limewash alabaster hangat (#FBFBFA) */
+  --adm-paper-subtle: oklch(94% 0.010 78); /* Seksi sekunder / tabel background (#F5F4F0) */
+  --adm-surface: #FFFFFF;                  /* Permukaan kartu cotton card stock */
+  
+  /* Tinta & Keterbacaan (Obsidian & Pencilled Slate) */
+  --adm-ink: oklch(19% 0.024 52);          /* Tinta utama judul dan angka (#141413) */
+  --adm-ink-muted: oklch(47% 0.014 60);    /* Teks sekunder pencilled (#6B6864) */
+  --adm-ink-faint: oklch(65% 0.010 65);    /* Label wall-text dan caption (#9E9B95) */
+  
+  /* Garis Pembatas (Hairlines & Double Rules) */
+  --adm-rule-hair: 1px solid oklch(88% 0.008 75); /* Pembatas baris hairline halus (#E5E2DC) */
+  --adm-rule-head: 1px solid var(--adm-ink);      /* Garis kepala seksi / tabel */
+  --adm-rule-double: 3px double var(--adm-ink);   /* Garis ganda buku kas master ledger */
+  
+  /* Aksen Tunggal & Fokus */
+  --adm-accent: oklch(41% 0.075 248);      /* Cool Slate Titanium (#2C353D) */
+  --adm-accent-soft: oklch(93% 0.02 248);  /* Latar badge tenang / hover row */
+  --adm-focus: var(--adm-accent);          /* Ring fokus keyboard :focus-visible */
+  
+  /* Tipografi Editorial */
+  --adm-font-display: "Sentient", "Playfair Display", Georgia, serif;
+  --adm-font-body: "Hanken Grotesk", "Inter", -apple-system, sans-serif;
+  --adm-tracking-display: -0.018em;
+  --adm-display-weight: 300;               /* Bobot ringan serif elegan */
+  
+  /* Geometri & Sudut */
+  --adm-radius: 2px;                       /* Sudut presisi ala buku cetak, tanpa sudut bulat balon */
+  --adm-shadow: 0 1px 3px rgba(20, 20, 19, 0.04);
+}
+```
+
+**b. Kelas Utility Utama (`resources/css/admin.css`)**
+
+| Kelas | Karakteristik Visual Editorial & Fungsinya |
 |---|---|
-| `.adm-page` | Wrapper konten, `max-width: 1400px`, `gap: 1.5rem` |
-| `.adm-page-header`, `.adm-title`, `.adm-subtitle` | Kepala halaman: judul 24 px, subjudul 13 px, slot aksi |
-| `.adm-card`, `.adm-card-head`, `.adm-card-body` | Kartu putih, radius 16 px, border `#E5E5EA` |
-| `.adm-stat` | Kartu metrik (label 11 px uppercase, angka 1.75 rem `tabular-nums`, ikon 40 px) |
-| `.adm-toolbar`, `.adm-tabs` | Baris filter/pencarian dan tab pill |
-| `.adm-table`, `.adm-num` | Tabel dengan header sticky dan angka rata kanan |
-| `.adm-field`, `.adm-input`, `.adm-select`, `.adm-textarea` | Kontrol form (tinggi 40 px, fokus ring `#0066CC`) |
-| `.adm-badge` | Badge status semantik (tone: green/amber/red/blue/purple/gray) |
-| `.adm-empty` | State kosong |
+| `.adm-page` | Kontainer utama halaman, `max-width: 1440px`, padding lega, terikat `overflow-x: clip` |
+| `.adm-page-header` | Kepala halaman editorial: judul serif display (`--adm-font-display`), subjudul satu kalimat terukur |
+| `.adm-card` | Kartu *cotton stock* putih bersih dengan garis pembatas *hairline* `1px`, radius `2px`, tanpa bayangan tebal |
+| `.adm-stat` | Panel *Statement Number*: angka moneter/volume serif ukuran besar, label pencilled untracked di bawahnya |
+| `.adm-toolbar` | Baris kontrol bergaris tipis, pemilih status pill minimalis, dan kolom pencarian tanpa ornamen |
+| `.adm-table` | Format *Master Trade Ledger*: kepala tabel bergaris ganda (`--adm-rule-double`), baris bergaris tipis, hover wash lembut |
+| `.adm-num` | Angka moneter dan kuantitas rata kanan dengan font tubuh `tabular-nums` |
+| `.adm-field`, `.adm-input` | Kontrol form dengan garis batas presisi 1px, state focus ring seketika (`:focus-visible`) |
+| `.adm-badge` | Badge stempel (*editorial stamp*): berbingkai halus 1px, latar lembut monokromatik/semantik tenang |
+| `.adm-empty` | State kosong bersahaja dengan deskripsi singkat tanpa ilustrasi kartun generik |
 
-**b. Komponen Blade (`resources/views/components/admin/`)**
-`page-header`, `stat-card`, `card`, `empty-state`, `status-badge`.
+**c. Komponen Reusable Blade (`resources/views/components/admin/`)**
+1. `<x-admin.page-header>`: Slot judul serif, subjudul satu kalimat terukur, dan aksi bergaris tinta (*hairline-outlined controls*).
+2. `<x-admin.stat-card>`: Menampilkan angka metrik format *Statement Figure* bersahaja yang jujur dari database.
+3. `<x-admin.card>`: Kontainer permukaan kertas bertekstur halus untuk membungkus konten formulir atau tabel.
+4. `<x-admin.table>`: Tabel data dengan struktur *Trade Ledger* berstandar akuntansi presisi.
+5. `<x-admin.status-badge>`: Label status transaksi (*paid*, *processing*, *shipped*, *completed*, *cancelled*) dengan gaya cap stempel kurasi.
+6. `<x-admin.empty-state>`: Pesan ketiadaan data yang ringkas dan faktual.
 
-**c. Aturan Layout (`layouts/admin.blade.php`)**
-- Sidebar 256 px (latar `#F5F5F7`), topbar 64 px sticky `z-30`, konten dibungkus `.adm-page`.
-- Breadcrumb sadar-role (`Admin › …` / `Owner › …`).
-- `View Composer: layouts.admin` mengirim `$shell` (jumlah pesanan `paid`, trade-in `submitted`, status konfigurasi Midtrans/Fonnte) untuk badge sidebar dan chip header.
-- Lucide icons dipin ke versi tetap.
+**d. Tata Kelola Layout (`layouts/admin.blade.php`)**
+- **Pemuatan Aset Font Eksekutif**:
+  ```html
+  <link href="https://api.fontshare.com/v2/css?f[]=sentient@300,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+  ```
+- **Masthead Topbar**: Latar limewash dengan garis bawah 1px, jam operasional lokal presisi, breadcrumb ringan, dan indikator status API Midtrans & Fonnte berbasis data riil `$shell`.
+- **Editorial Sidebar (Lebar 260px)**: Navigasi vertikal dengan garis pembatas halus, nomor antrean pesanan & trade-in ditampilkan sebagai nomor edisi (*pencilled edition count*), tanpa icon berwarna-warni norak.
+- **Transisi & Animasi**: Bebas dari `transition: all`; hanya transisi properti terukur (`opacity`, `transform`, `background-color`) maksimal 150ms dengan fallback `@media (prefers-reduced-motion: reduce)`.
 
-**d. Pola Halaman**
-Page Header → Stat Cards (opsional) → Toolbar → Card/Table → State kosong. Dipakai oleh `admin/dashboard`, `admin/products/*`, `admin/orders/*`, `admin/trade-ins/*`, `owner/dashboard`, `owner/financial-report`, `owner/staff`, `admin/settings`.
+**e. Pola Halaman Baku**
+`Page Header Editorial` $\rightarrow$ `Statement Stat Row` (opsional) $\rightarrow$ `Toolbar / Ledger Tabs` $\rightarrow$ `Trade Ledger Table / Cotton Form Card`. Diterapkan konsisten di:
+- Admin: `/admin/dashboard`, `/admin/products/*`, `/admin/orders/*`, `/admin/trade-ins/*`, `/admin/settings`.
+- Owner: `/owner/dashboard`, `/owner/financial-report`, `/owner/staff`.
 
 #### 6.4. Fitur Interaktif Frontend (JavaScript / Vanilla DOM)
 1. **Dynamic Variant & Price Switcher (PDP & Product Card)**:

@@ -15,7 +15,7 @@ Didukung oleh framework **Laravel 12**, basis data **MySQL**, dan template engin
   - **Customer (Pelanggan)** melalui jalur publik mandiri (`/login` & `/register` + Google OAuth — **Fase 16**).
   - **Admin Operasional** melalui portal operasional mandiri (`/admin/login` — **Fase 14**).
   - **Pemilik Usaha (Owner)** melalui portal eksekutif mandiri (`/owner/login` — **Fase 15**).
-- **Panel Admin & Owner yang rapi dan konsisten (Fase 17–24)**: seluruh halaman operasional (dashboard, produk, pesanan, trade-in, dashboard owner, laporan keuangan, staf, konfigurasi) dirapikan dengan satu Admin Design System (lihat §4.5).
+- **Panel Admin & Owner Hallmark Luxury / Editorial Redesign (Fase 17–24)**: seluruh halaman operasional dan analitik eksekutif (dashboard admin, produk, pesanan, trade-in, dashboard owner, laporan keuangan, staf, konfigurasi) diredesain menggunakan standar keahlian **Hallmark Redesign** dengan tone **Luxury / Editorial** (kombinasi display serif anggun, grotesque tajam, buku besar *Trade Ledger*, palet limewash hangat, aksen titanium slate, hairlines presisi, dan kepatuhan penuh aturan *The Floor* — lihat §4.5).
 
 ---
 
@@ -134,15 +134,30 @@ Setiap tingkatan pengguna (*Customer*, *Admin Operasional*, dan *Owner*) memilik
 
 ---
 
-#### 4.5. Standar UI/UX Panel Admin & Owner (`Fase 17–24`)
-Panel Admin Operasional dan Owner wajib mengikuti **Admin Design System** (`blueprint.md` §6.3) agar tampilan rapi, konsisten, dan nyaman dipandang:
-1. **Pola halaman baku**: Page Header (judul, subjudul, aksi utama) → Kartu Metrik (opsional) → Toolbar (tab, pencarian, filter) → Kartu/Tabel konten.
-2. **Konsistensi visual**: seluruh halaman memakai kelas/komponen `adm-*` dan token Digimap Daylight (`#FFFFFF`, `#F5F5F7`, `#1D1D1F`, `#0066CC`/`#0071E3`); dilarang memakai kelas tema gelap (`text-white` pada latar terang, `bg-[#161B22]`, `border-white/*`, `text-[#8E8E93]`).
-3. **Keterbacaan data**: angka moneter rata kanan dengan `tabular-nums`, header tabel sticky, status memakai badge semantik seragam, kontras teks utama ≥ 4.5:1.
-4. **State lengkap**: setiap tabel memiliki state kosong; setiap form menampilkan pesan error per field; aksi destruktif memakai konfirmasi.
-5. **Navigasi jujur**: indikator di sidebar/header (jumlah pesanan perlu diproses, trade-in menunggu inspeksi, status Midtrans/Fonnte) menampilkan data nyata, bukan label statis.
-6. **Responsivitas**: tanpa scroll horizontal pada lebar 390 px kecuali di dalam kontainer tabel.
-7. **Cakupan halaman**: Fase 17 `/admin/dashboard`, Fase 18 `/admin/products`, Fase 19 `/admin/orders`, Fase 20 `/admin/trade-ins`, Fase 21 `/owner/dashboard`, Fase 22 `/owner/financial-report`, Fase 23 `/owner/staff`, Fase 24 `/admin/settings`.
+#### 4.5. Standar UI/UX Panel Admin & Owner — Hallmark Luxury / Editorial Redesign (`Fase 17–24`)
+Panel Admin Operasional dan Pemilik Usaha (Owner) mengadopsi kerangka kerja **Hallmark Redesign** dengan arahan estetika **Luxury / Editorial** (mengacu pada `blueprint.md` §6.3 dan keahlian desain `.agent/skills/hallmark/`):
+
+1. **Filosofi & Karakter Visual Luxury Editorial**:
+   - Memadukan presisi tinggi retail jam tangan & gawai mewah dengan ketenangan majalah editorial independen (*high-end atelier & trade ledger aesthetic*).
+   - Menghilangkan kesan dasbor SaaS generik berbasis template AI (*AI Slop*): tanpa drop shadow tebal berwarna-warni, tanpa tombol gradien ungu-ke-biru, dan tanpa kartu bersarang (*card-in-card*).
+2. **Materialitas, Palet Warna & Permukaan**:
+   - Kanvas Limewash Alabaster (`#FBFBFA` / `oklch(96% 0.008 80)`), permukaan kartu *Cotton Card Stock* (`#FFFFFF` dengan batas luar *hairline* `1px solid #E5E2DC`), tinta utama obsidian pekat (`#141413` / `oklch(19% 0.024 52)`), teks sekunder *pencilled slate* (`#6B6864`), dan aksen tunggal *Cool Slate Titanium* (`#2C353D` / `oklch(41% 0.075 248)`).
+3. **Tipografi Editorial Bersahaja**:
+   - **Display & Heading Eksekutif**: Menggunakan font serif anggun utama **Sentient** (Fontshare CDN, bobot *Light 300 / Regular 400*, fallback: *Playfair Display* / *Georgia*), line-height rapat, sentence case, memberikan wibawa tenang pada judul modul dan nominal pernyataan omzet/laba.
+   - **Teks Tubuh & Data Moneter**: Menggunakan font grotesque utama **Hanken Grotesk** (Google Fonts CDN, bobot *400 / 500*, fallback: *Inter* / *system-ui*) dengan `tabular-nums` untuk perataan angka finansial, tanggal, nomor IMEI, dan stok.
+   - **Label & Navigasi**: Huruf berukuran setingkat lebih kecil, *untracked*, tanpa huruf kapital kecil (*small caps*) atau huruf kapital renggang (*tracked capitals*).
+4. **Format Buku Kas / Master Trade Ledger**:
+   - Seluruh tabel operasional (pesanan, produk, verifikasi trade-in, laporan laba rugi) disusun dengan format buku besar: garis ganda (*double rule*) pada kepala tabel, garis tipis (*hairlines 1px*) antar baris, angka moneter rata kanan, serta status transaksi menggunakan badge stempel resmi (*editorial stamp badge*).
+5. **Kepatuhan Terhadap Hallmark "The Floor"**:
+   - Seluruh warna dan font wajib bersumber dari token CSS deklarasi `:root` (tanpa warna literal di dalam view).
+   - Dilarang keras memakai `transition: all` dan dilarang menganimasikan `width`, `height`, `top`, `left`.
+   - Wajib memiliki `:focus-visible` instan pada setiap elemen interaktif dan fallback `prefers-reduced-motion: reduce`.
+   - Menggunakan `overflow-x: clip` pada kontainer root (bukan `hidden` atau `100vw`).
+   - Tidak memuat metrik fiktif atau elemen dekoratif palsu; data yang ditampilkan mencerminkan kondisi riil database.
+6. **Preservasi Konten & Wiring Backend**:
+   - Seluruh rute Laravel, aksi Controller, form handler, CSRF token, validasi, dan alur logic status pesanan/trade-in dipertahankan utuh tanpa perubahan fungsional (*zero breaking change*).
+7. **Cakupan Halaman**:
+   - Fase 17 `/admin/dashboard`, Fase 18 `/admin/products`, Fase 19 `/admin/orders`, Fase 20 `/admin/trade-ins`, Fase 21 `/owner/dashboard`, Fase 22 `/owner/financial-report`, Fase 23 `/owner/staff`, Fase 24 `/admin/settings`.
 
 ---
 
@@ -157,7 +172,7 @@ Panel Admin Operasional dan Owner wajib mengikuti **Admin Design System** (`blue
    - Optimasi gambar produk dengan format WebP dan *lazy loading*.
    - Standar visual **Digimap-Inspired Daylight Minimalist & Frosted White UI** (`redesign.md`): menggunakan latar terang ber-kontras tinggi (`#FFFFFF` & `#F5F5F7`), tipografi `#1D1D1F`, dan *sticky purchase bar* untuk kenyamanan baca di bawah kondisi pencahayaan apa pun.
    - Antarmuka *mobile-first* yang mulus di smartphone, tablet, maupun layar desktop (baik untuk Portal Customer maupun Dashboard Enterprise Admin & Owner).
-   - **Panel Admin & Owner (Fase 17–24)** wajib memakai Admin Design System (`adm-*`) sesuai §4.5 dan tidak boleh memakai kelas tema gelap.
+   - **Panel Admin & Owner (Fase 17–24)**: Menerapkan standar **Hallmark Luxury / Editorial Redesign** sesuai §4.5 dengan kepatuhan terhadap aturan *The Floor* dan lulus audit linter Hallmark (`node .agent/skills/hallmark/scripts/sloplint.mjs resources/views/admin resources/views/owner --genre editorial`). Dilarang memakai kelas tema gelap atau warna literal di luar token.
 3. **Kemudahan Pemeliharaan (Maintainability)**:
    - Arsitektur kode bersih berorientasi layanan (*Service Layer Pattern*) untuk Midtrans, Fonnte, Mailer, dan PDF Generator.
    - Konfigurasi kredensial terisolasi penuh pada file `.env`.
