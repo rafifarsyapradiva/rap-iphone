@@ -196,3 +196,50 @@
   - [x] Penyelarasan visual halaman Keranjang (`cart.blade.php`), Checkout Midtrans (`checkout.blade.php`), Wizard Tukar Tambah (`trade-in.blade.php`), Cek IMEI/Garansi (`utilities.blade.php`), dan Autentikasi (`login`/`register`).
 - [x] **13.6. Penyelarasan Panel Admin & Owner ke Digimap Enterprise Light UI**
   - [x] Pembaruan `layouts/admin.blade.php` serta halaman Dashboard Admin & Owner ke tema putih terang bersih (`#FFFFFF` & `#F5F5F7`) untuk kenyamanan operasional harian.
+
+---
+
+### Phase 14: Jalur Login Admin Sendiri (Dedicated Admin Operations Login Portal)
+- [ ] **14.1. Rute & Controller Autentikasi Khusus Admin (`AdminAuthController`)**
+  - [ ] Pembuatan rute khusus Admin pada `routes/web.php`: `GET /admin/login` (`admin.login`), `POST /admin/login` (`admin.login.submit`), dan `POST /admin/logout` (`admin.logout`).
+  - [ ] Pembuatan `App\Http\Controllers\Auth\AdminAuthController` dengan proteksi *brute-force rate limiting* terpisah (`admin-login|{email}|{ip}`).
+  - [ ] Implementasi *Strict Admin Role Guard*: Memvalidasi bahwa kredensial yang masuk wajib memiliki `role === 'admin'`. Jika akun ber-role `customer` atau `owner` mencoba masuk melalui `/admin/login`, autentikasi ditolak dengan pesan otorisasi spesifik.
+- [ ] **14.2. Antarmuka Halaman Login Admin Mandiri (`resources/views/auth/admin-login.blade.php`)**
+  - [ ] Desain halaman login khusus **Rap-iPhone Store Operations Portal** dengan estetika *Digimap Enterprise Light UI* (`#FFFFFF` & `#F5F5F7`).
+  - [ ] Isolasi penuh dari elemen pelanggan: Tanpa tombol Google OAuth publik dan tanpa tautan pendaftaran akun pelanggan (*register*).
+  - [ ] Penyediaan *Quick Demo Account Chip* khusus Admin Operasional (`admin@rap-iphone.com`) untuk percepatan pengujian internal.
+- [ ] **14.3. Pengalihan Otomatis (Redirect) & Proteksi Middleware Admin**
+  - [ ] Pengalihan pasca-login sukses langsung menuju `route('admin.dashboard')` (`/admin/dashboard`).
+  - [ ] Pembaruan `RoleMiddleware` agar pengguna *guest* (belum terautentikasi) yang mengakses prefix `/admin/*` otomatis diarahkan ke `route('admin.login')` (`/admin/login`).
+  - [ ] Pengalihan pasca-logout dari panel operasional admin kembali menuju halaman `/admin/login`.
+
+---
+
+### Phase 15: Jalur Login Owner Sendiri (Dedicated Executive Owner Login Portal)
+- [ ] **15.1. Rute & Controller Autentikasi Eksklusif Owner (`OwnerAuthController`)**
+  - [ ] Pembuatan rute khusus Pemilik Usaha pada `routes/web.php`: `GET /owner/login` (`owner.login`), `POST /owner/login` (`owner.login.submit`), dan `POST /owner/logout` (`owner.logout`).
+  - [ ] Pembuatan `App\Http\Controllers\Auth\OwnerAuthController` dengan proteksi *rate limiting* khusus eksekutif (`owner-login|{email}|{ip}`).
+  - [ ] Implementasi *Strict Owner Role Guard*: Hanya mengizinkan akun dengan `role === 'owner'` untuk masuk melalui `/owner/login`; menolak tegas percobaan login dari akun `admin` maupun `customer`.
+- [ ] **15.2. Antarmuka Halaman Login Eksekutif Owner (`resources/views/auth/owner-login.blade.php`)**
+  - [ ] Desain halaman login eksklusif **Rap-iPhone Executive & Financial Portal** bergaya *Apple Executive Daylight & Titanium Accent*.
+  - [ ] Antarmuka eksekutif bebas distraksi tanpa opsi registrasi publik dan tanpa tombol Google OAuth pelanggan.
+  - [ ] Penyediaan *Quick Demo Account Chip* khusus Pemilik Usaha (`owner@rap-iphone.com`) untuk kemudahan pengujian.
+- [ ] **15.3. Pengalihan Otomatis (Redirect) & Proteksi Middleware Owner**
+  - [ ] Pengalihan pasca-login sukses langsung menuju `route('owner.dashboard')` (`/owner/dashboard`).
+  - [ ] Pembaruan `RoleMiddleware` agar pengguna *guest* yang mencoba mengakses prefix `/owner/*` otomatis diarahkan ke `route('owner.login')` (`/owner/login`).
+  - [ ] Pengalihan pasca-logout dari dashboard finansial owner kembali menuju halaman `/owner/login`.
+
+---
+
+### Phase 16: Jalur Login dan Register Customer Sendiri (Dedicated Customer Auth & Registration Portal)
+- [ ] **16.1. Pemurnian Rute & Controller Autentikasi Pelanggan (`AuthController` / `CustomerAuthController` & `GoogleAuthController`)**
+  - [ ] Penataan jalur autentikasi mandiri khusus pelanggan pada `GET /login` (`login`), `POST /login`, `GET /register` (`register`), `POST /register`, serta alias `customer.login` dan `customer.register`.
+  - [ ] Implementasi *Strict Customer Role Guard* pada halaman `/login` pelanggan: Hanya mengizinkan akun dengan `role === 'customer'`. Apabila akun internal (`admin` atau `owner`) mencoba masuk di halaman login pelanggan, autentikasi ditolak dan diarahkan ke portal internal masing-masing (`/admin/login` atau `/owner/login`).
+  - [ ] Pengamanan `GoogleAuthController` (`/auth/google` & `/auth/google/callback`): Memastikan autentikasi & pembuatan akun 1-klik Google OAuth dikhususkan murni bagi akun ber-role `customer` serta menolak email yang terdaftar sebagai `admin` atau `owner`.
+- [ ] **16.2. Pemurnian Antarmuka Login & Registrasi Mandiri Pelanggan (`resources/views/auth/login.blade.php` & `register.blade.php`)**
+  - [ ] Pembersihan halaman `resources/views/auth/login.blade.php` dari *Quick Demo Chips* milik Admin dan Owner, sehingga hanya menampilkan *Quick Demo Chip* khusus Pelanggan (`customer@rap-iphone.com`) dan fitur relevan belanja B2C.
+  - [ ] Penyempurnaan halaman registrasi mandiri pelanggan (`resources/views/auth/register.blade.php`) dengan validasi Nama Lengkap, Email, Nomor WhatsApp aktif (untuk notifikasi Fonnte), Kata Sandi (Bcrypt), persetujuan Syarat & Ketentuan, serta opsi *Daftar 1-Klik dengan Google*.
+  - [ ] Penambahan informasi dan tautan bantuan pelanggan yang jelas antara halaman `/login` dan `/register`.
+- [ ] **16.3. Sinkronisasi Navigasi Layout & Pengujian Isolasi Lintas-Jalur (End-to-End Multi-Portal Auth)**
+  - [ ] Penyelarasan tombol Masuk, Daftar, dan Logout pada `layouts/customer.blade.php` dan `layouts/admin.blade.php` agar sesuai dengan jalur autentikasi masing-masing role (`customer`, `admin`, `owner`).
+  - [ ] Pengujian menyeluruh skenario positif dan negatif (*cross-role login rejection* & *contextual guest redirect*) pada ketiga jalur autentikasi mandiri (Fase 14, Fase 15, dan Fase 16).

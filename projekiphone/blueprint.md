@@ -21,11 +21,17 @@
 |                                                                                   |
 |  [ ROUTING & MIDDLEWARE ]                                                         |
 |  + web.php, api.php                                                               |
-|  + AuthMiddleware, RoleMiddleware (customer | admin | owner)                      |
+|  + Multi-Portal Auth Routes:                                                      |
+|    - Fase 14 Admin   : /admin/login, /admin/logout                                |
+|    - Fase 15 Owner   : /owner/login, /owner/logout                                |
+|    - Fase 16 Customer: /login, /register, /auth/google, /logout                   |
+|  + AuthMiddleware, RoleMiddleware (Contextual Guest Redirect: customer|admin|owner)|
 |  + VerifyCsrfToken (kecuali webhook endpoint api/midtrans/callback)               |
 |                                                                                   |
 |  [ CONTROLLER LAYER ]                                                             |
-|  + AuthController & GoogleAuthController (Socialite)                              |
+|  + Auth\AdminAuthController (Fase 14 — Jalur Login Admin Sendiri)                 |
+|  + Auth\OwnerAuthController (Fase 15 — Jalur Login Owner Sendiri)                 |
+|  + Auth\AuthController & GoogleAuthController (Fase 16 — Login/Register Customer) |
 |  + ProductController & CatalogController                                          |
 |  + CartController & CheckoutController                                            |
 |  + TradeInController                                                              |
@@ -193,8 +199,10 @@ app/
 ├── Http/
 │   ├── Controllers/
 │   │   ├── Auth/
-│   │   │   ├── LoginController.php
-│   │   │   └── GoogleAuthController.php  <-- Laravel Socialite
+│   │   │   ├── AdminAuthController.php   <-- Fase 14: Jalur Login Admin Sendiri (/admin/login)
+│   │   │   ├── OwnerAuthController.php   <-- Fase 15: Jalur Login Owner Sendiri (/owner/login)
+│   │   │   ├── AuthController.php        <-- Fase 16: Jalur Login & Register Customer (/login, /register)
+│   │   │   └── GoogleAuthController.php  <-- Fase 16: Google OAuth Khusus Customer (Socialite)
 │   │   ├── Customer/
 │   │   │   ├── HomeController.php
 │   │   │   ├── CatalogController.php
@@ -208,11 +216,12 @@ app/
 │   │   │   └── TradeInVerificationController.php
 │   │   ├── Owner/
 │   │   │   ├── ExecutiveDashboardController.php
-│   │   │   └── FinancialReportController.php
+│   │   │   ├── FinancialReportController.php
+│   │   │   └── StaffManagementController.php
 │   │   └── Api/
 │   │       └── MidtransCallbackController.php  <-- Webhook Handler
 │   └── Middleware/
-│       └── RoleMiddleware.php                  <-- RBAC Guard
+│       └── RoleMiddleware.php                  <-- RBAC Guard & Contextual Portal Redirect
 ├── Models/
 │   ├── User.php
 │   ├── Product.php
@@ -235,15 +244,16 @@ app/
 
 ### 4. Spesifikasi Integrasi API Pihak Ketiga
 
-#### 4.1. Google Console OAuth 2.0 (Laravel Socialite)
+#### 4.1. Google Console OAuth 2.0 (Laravel Socialite — Khusus Customer Fase 16)
 - **Library**: `laravel/socialite`
 - **Redirect URI**: `https://domain.com/auth/google/callback`
-- **Logika Autentikasi**:
-  1. Pengguna klik "Masuk dengan Google".
+- **Logika Autentikasi Pelanggan**:
+  1. Pelanggan klik "Masuk dengan Google" atau "Daftar 1-Klik dengan Google" pada halaman `/login` atau `/register`.
   2. Redirect ke Google Consent Screen.
   3. Callback menerima token dan profil: `email`, `name`, `id`, `avatar`.
   4. Cari user berdasarkan `google_id` atau `email`.
-  5. Jika user sudah ada, sinkronkan `google_id` dan *login*. Jika belum, buat record baru dengan role `customer`.
+  5. **Isolasi Role (`Fase 16`)**: Jika akun yang ditemukan memiliki role `admin` atau `owner`, proses login Google ditolak dan diarahkan untuk masuk melalui portal internal (`/admin/login` atau `/owner/login`).
+  6. Jika user `customer` sudah ada, sinkronkan `google_id` dan *login*. Jika belum, buat record baru dengan role `customer`.
 
 #### 4.2. Midtrans Payment Gateway (Snap API & Callback)
 - **Library**: `midtrans/midtrans-php`
@@ -295,11 +305,19 @@ app/
    - Jika Midtrans mengirim webhook berulang kali untuk status yang sama, sistem memeriksa apakah pesanan sudah berstatus `paid`. Jika ya, sistem tidak akan mengirim pesan notifikasi ganda atau merusak stok inventaris.
 2. **Pengurangan Stok Otomatis**:
    - Pengurangan kuantitas stok varian dieksekusi menggunakan database transaction (`DB::transaction`) saat status pembayaran terkonfirmasi `paid` guna mencegah *race conditions* atau *overselling*.
-3. **Role-Based Access Control (RBAC)**:
-   - Diterapkan melalui `RoleMiddleware` pada level rute:
-     - `/admin/*` hanya dapat diakses oleh user ber-role `admin` dan `owner`.
-     - `/owner/*` (laporan keuangan, laba rugi, kontrol admin) khusus user ber-role `owner`.
-     - `/customer/*` dan transaksi umum diperuntukkan bagi customer.
+3. **Role-Based Access Control (RBAC) & Arsitektur Login Terpisah (Fase 14, 15, & 16)**:
+   - Diterapkan melalui `RoleMiddleware` dan 3 pengontrol autentikasi mandiri yang memisahkan pintu masuk (*login pathway*) berdasarkan role:
+
+| Fase | Peran (Role) | Endpoint Login & Register | Controller Penangan | Validasi & Isolasi Role | Target Redirect Utama |
+|---|---|---|---|---|---|
+| **Fase 14** | **Admin Operasional** (`admin`) | `GET/POST /admin/login`<br>`POST /admin/logout` | `AdminAuthController` | Wajib `role === 'admin'` (Menolak `customer` & `owner` di pintu ini; tanpa Google OAuth & tanpa Register) | `/admin/dashboard` |
+| **Fase 15** | **Pemilik Usaha** (`owner`) | `GET/POST /owner/login`<br>`POST /owner/logout` | `OwnerAuthController` | Wajib `role === 'owner'` (Menolak `admin` & `customer` di pintu ini; tanpa Google OAuth & tanpa Register) | `/owner/dashboard` |
+| **Fase 16** | **Pelanggan** (`customer`) | `GET/POST /login`<br>`GET/POST /register`<br>`GET /auth/google` | `AuthController` & `GoogleAuthController` | Wajib `role === 'customer'` (Menolak `admin` & `owner` di pintu publik pelanggan; dilengkapi Register mandiri & Google OAuth) | `/` (atau halaman checkout/intended) |
+
+   - **Contextual Guest Redirection pada `RoleMiddleware`**:
+     - Pengguna belum login (*guest*) yang mengakses `/admin/*` diarahkan ke `route('admin.login')` (`/admin/login`).
+     - Pengguna belum login (*guest*) yang mengakses `/owner/*` diarahkan ke `route('owner.login')` (`/owner/login`).
+     - Pengguna belum login (*guest*) yang mengakses `/customer/*` atau `/checkout/*` diarahkan ke `route('login')` (`/login`).
 
 ---
 
@@ -322,6 +340,11 @@ resources/views/
 ├── layouts/
 │   ├── customer.blade.php       <-- Top Promo Ticker + Sticky Daylight Header + Digimap Footer
 │   └── admin.blade.php          <-- Digimap Enterprise Clean Light Sidebar & Topbar
+├── auth/
+│   ├── admin-login.blade.php    <-- Fase 14: Halaman Login Mandiri Admin Operasional (/admin/login)
+│   ├── owner-login.blade.php    <-- Fase 15: Halaman Login Mandiri Eksekutif Owner (/owner/login)
+│   ├── login.blade.php          <-- Fase 16: Halaman Login Mandiri Pelanggan + Google OAuth (/login)
+│   └── register.blade.php       <-- Fase 16: Halaman Registrasi Mandiri Pelanggan (/register)
 ├── components/
 │   ├── product-card.blade.php   <-- Kartu #F5F5F7, Badge Kondisi/BH, Color Dots, Info Cicilan/Trade-In
 │   ├── glass-card.blade.php     <-- Kontainer permukaan putih/abu terang bersih

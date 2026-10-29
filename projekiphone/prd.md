@@ -7,11 +7,14 @@
 **Rap-iPhone** adalah platform e-commerce web modern dan premium yang dirancang khusus untuk transaksi jual-beli serta tukar tambah (*trade-in / buyback*) produk iPhone. Mengadopsi standar layanan dan *user experience* dari *Apple Premium Partner* resmi **Digimap (`https://www.digimap.co.id/`)** dan **iBox** melalui metode **ATM (Amati, Tiru, Modifikasi)**, platform ini memadukan kemudahan alur belanja tanpa ribet, transparansi kondisi unit & garansi, serta estetika visual **Digimap-Inspired Daylight Minimalist & Frosted White UI** (`#FFFFFF` & `#F5F5F7` canvas, tipografi tajam `#1D1D1F`, dan aksen `#0066CC`/`#0071E3`) sebagaimana dirinci pada dokumen `redesign.md`.
 
 Didukung oleh framework **Laravel 12**, basis data **MySQL**, dan template engine **Laravel Blade**, Rap-iPhone dilengkapi integrasi menyeluruh:
-- **Google Console Login (OAuth 2.0)** untuk kemudahan masuk 1-klik bagi pelanggan.
+- **Google Console Login (OAuth 2.0)** untuk kemudahan masuk dan daftar 1-klik khusus bagi pelanggan (*Customer*).
 - **Midtrans Payment Gateway (Snap)** untuk transaksi aman melalui QRIS, Virtual Account, E-Wallet, dan Kartu Kredit.
 - **Notifikasi Otomatis WhatsApp (Fonnte API)** dan **Email (SMTP)** untuk *real-time updates* status transaksi.
 - **Nota / Invoice PDF Otomatis** dengan desain resmi untuk bukti pembelian yang sah.
-- **Manajemen 3 Tingkat Akses (Role)**: *Customer*, *Admin Operasional*, dan *Pemilik Usaha (Owner)*.
+- **Manajemen 3 Tingkat Akses (Role) dengan Jalur Login Mandiri Terpisah (*Multi-Portal Role-Isolated Authentication*)**:
+  - **Customer (Pelanggan)** melalui jalur publik mandiri (`/login` & `/register` + Google OAuth — **Fase 16**).
+  - **Admin Operasional** melalui portal operasional mandiri (`/admin/login` — **Fase 14**).
+  - **Pemilik Usaha (Owner)** melalui portal eksekutif mandiri (`/owner/login` — **Fase 15**).
 
 ---
 
@@ -29,11 +32,16 @@ Konsep usaha mengadaptasi ekosistem retail iPhone modern (B2C + Program Tukar Ta
 
 ---
 
-### 3. Pengguna & Matriks Hak Akses (Role-Based Access)
+### 3. Pengguna, Pemisahan Jalur Login, & Matriks Hak Akses (Role-Based Access)
+
+Setiap tingkatan pengguna (*Customer*, *Admin Operasional*, dan *Owner*) memiliki **jalur masuk (autentikasi/login) mandiri yang terpisah secara ketat (*Strict Role-Isolated Login Portals*)** agar tidak tercampur dalam satu halaman login yang sama:
 
 | Fitur / Modul | Customer (Pelanggan) | Admin Operasional | Pemilik Usaha (Owner) |
 |---|:---:|:---:|:---:|
-| Registrasi & Login (Email & Google OAuth) | Ya | Ya (Login) | Ya (Login) |
+| **Jalur Login Mandiri (Dedicated Portal)** | `/login` (**Fase 16**) | `/admin/login` (**Fase 14**) | `/owner/login` (**Fase 15**) |
+| **Registrasi Mandiri (Self-Registration)** | Ya (`/register`) | Tidak (Dikelola Owner) | Tidak (Akun Eksekutif) |
+| **Google OAuth 1-Click Login/Register** | Ya (`/auth/google`) | Tidak (Khusus Email & Sandi) | Tidak (Khusus Email & Sandi) |
+| **Target Redirect Pasca-Login** | `/` (Storefront / Intended) | `/admin/dashboard` | `/owner/dashboard` |
 | Jelajah Katalog & Filter Produk | Ya | Ya | Ya |
 | Keranjang & Checkout Midtrans | Ya | - | - |
 | Pengajuan Jual / Tukar Tambah iPhone | Ya | - | - |
@@ -52,10 +60,11 @@ Konsep usaha mengadaptasi ekosistem retail iPhone modern (B2C + Program Tukar Ta
 
 ### 4. Fitur Fungsional Utama
 
-#### 4.1. Modul Pelanggan (Customer Experience — Redesign ATM Digimap)
-1. **Autentikasi Cepat**:
-   - Login konvensional (Email & Password terenkripsi).
-   - Login 1-klik dengan Akun Google via Google Console OAuth.
+#### 4.1. Modul Pelanggan (Customer Experience — Redesign ATM Digimap & Fase 16)
+1. **Jalur Login & Registrasi Mandiri Pelanggan (`Fase 16`)**:
+   - **Portal Login Khusus Customer (`/login`)**: Hanya menerima autentikasi dari akun ber-role `customer` (menggunakan email & password terenkripsi Bcrypt). Apabila akun `admin` atau `owner` mencoba masuk melalui halaman login pelanggan, sistem menolak sesi dan mengarahkan ke portal internal terkait (`/admin/login` atau `/owner/login`). Halaman ini bersih dari informasi maupun *demo chip* milik Admin/Owner.
+   - **Portal Registrasi Mandiri Customer (`/register`)**: Formulir pendaftaran akun pelanggan baru (`role = 'customer'`) dilengkapi input Nama Lengkap, Email, Nomor WhatsApp aktif (terhubung dengan notifikasi Fonnte), serta konfirmasi Kata Sandi.
+   - **Google Console OAuth 1-Klik (`/auth/google`)**: Kemudahan masuk dan daftar instan 1-klik menggunakan akun Google yang dikhususkan secara eksklusif bagi akun pelanggan (`customer`).
 2. **Navigasi & Katalog Berstandar Digimap (`digimap.co.id`)**:
    - **Top Promo Announcement Bar & Sticky Daylight Header**: Bar informasi promo aktif (cicilan, gratis ongkir, trade-in) di atas header putih bersih dengan fitur pencarian instan (`⌘K`).
    - **Visual Series Icon Ribbon**: Navigasi ikon seri iPhone horizontal (*iPhone 16 Pro, 16, 15 Pro, 15, 14, 13, Second Like New, Trade-In*) untuk lompatan kategori 1-klik.
@@ -88,38 +97,47 @@ Konsep usaha mengadaptasi ekosistem retail iPhone modern (B2C + Program Tukar Ta
    - Email rincian pesanan dengan lampiran Nota PDF (*Invoice Attachment*).
    - Email notifikasi perubahan status transaksi.
 
-#### 4.3. Modul Admin Operasional
-1. **Manajemen Produk & Varian**:
+#### 4.3. Modul Admin Operasional (`Fase 14 — Jalur Login Admin Sendiri`)
+1. **Portal Login Mandiri Admin Operasional (`/admin/login` — `Fase 14`)**:
+   - Halaman masuk terpisah khusus staf operasional toko (*Rap-iPhone Store Operations Portal*) dengan tema *Digimap Enterprise Light UI*.
+   - Validasi *Strict Admin Role Guard*: Hanya akun ber-role `admin` yang diizinkan masuk melalui `/admin/login` (menolak percobaan masuk dari akun `customer` maupun `owner`).
+   - Bebas dari tombol Google OAuth publik dan link pendaftaran pelanggan; pasca-login langsung mengarah ke `/admin/dashboard`.
+2. **Manajemen Produk & Varian**:
    - Input produk induk (Seri, Deskripsi, Tipe Garansi).
    - Manajemen varian multi-dimensi (Kombinasi Warna + Kapasitas + Stok + IMEI + Harga + Foto Varian).
-2. **Manajemen Transaksi & Pesanan**:
+3. **Manajemen Transaksi & Pesanan**:
    - Monitoring pesanan masuk secara *real-time*.
    - Status otomatis berubah via Midtrans Webhook Callback (*Settlement, Pending, Expire, Cancel*).
    - Form input nomor resi kurir pengiriman (JNE, SiCepat, J&T).
-3. **Manajemen Unit Tukar Tambah / Jual iPhone**:
+4. **Manajemen Unit Tukar Tambah / Jual iPhone**:
    - Daftar antrean pengajuan dari customer.
    - Form verifikasi fisik unit saat diterima di toko.
    - Penyesuaian penawaran harga final & tombol persetujuan transfer/tukar.
 
-#### 4.4. Modul Pemilik Usaha (Owner Dashboard)
-1. **Executive Financial Summary**:
+#### 4.4. Modul Pemilik Usaha / Owner Dashboard (`Fase 15 — Jalur Login Owner Sendiri`)
+1. **Portal Login Mandiri Eksekutif Owner (`/owner/login` — `Fase 15`)**:
+   - Halaman masuk eksklusif bagi Pemilik Usaha (*Rap-iPhone Executive & Financial Portal*) dengan estetika *Apple Executive Daylight & Titanium Accent*.
+   - Validasi *Strict Owner Role Guard*: Hanya akun ber-role `owner` yang diizinkan masuk melalui `/owner/login` (menolak tegas percobaan login dari akun `admin` maupun `customer`).
+   - Tanpa opsi registrasi mandiri dan tanpa Google OAuth publik; pasca-login langsung mengarah ke `/owner/dashboard`.
+2. **Executive Financial Summary**:
    - Total Omzet Penjualan (Harian, Mingguan, Bulanan, Tahunan).
    - Perhitungan Estimasi Laba Kotor & Laba Bersih (Harga Jual dikurangi HPP unit).
    - Ringkasan Arus Kas Masuk (Penjualan) vs Arus Kas Keluar (Pencairan Trade-In).
-2. **Performa Bisnis & Produk Terlaris**:
+3. **Performa Bisnis & Produk Terlaris**:
    - Grafik interaktif tren penjualan.
    - Daftar *Top 5 Best-Selling iPhones* dan varian terpopuler.
    - Tingkat konversi transaksi (Pesanan Selesai vs Batal).
-3. **Laporan & Ekspor**:
+4. **Laporan & Ekspor**:
    - Ekspor laporan penjualan ke format PDF dan Excel/CSV.
    - Kontrol akun admin dan staf.
 
 ---
 
 ### 5. Kebutuhan Non-Fungsional (NFR)
-1. **Keamanan (Security)**:
+1. **Keamanan (Security & Role-Isolated Auth)**:
    - Sanitasi input dan proteksi terhadap CSRF, XSS, serta SQL Injection (Eloquent ORM).
    - Autentikasi aman password hashing via Bcrypt/Argon2.
+   - **Isolasi Jalur Login Berdasarkan Peran (*Multi-Portal Role Isolation — Fase 14, 15, & 16*)**: Pemisahan penuh endpoint, *rate limiter*, dan antarmuka login antara Admin (`/admin/login`), Owner (`/owner/login`), serta Customer (`/login` & `/register`), disertai proteksi penolakan lintas-jalur (*cross-portal login rejection*) dan pengalihan *guest* kontekstual sesuai prefix URL yang diakses.
    - Verifikasi SHA512 Signature Hash pada Webhook Midtrans untuk mencegah manipulasi status transaksi.
 2. **Performa, Desain UI/UX, & Responsivitas**:
    - Waktu muat halaman pertama di bawah 2 detik.
